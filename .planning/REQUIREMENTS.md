@@ -122,46 +122,46 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FAM-01 | — | Pending |
-| FAM-02 | — | Pending |
-| FAM-03 | — | Pending |
-| DATA-01 | — | Pending |
-| DATA-02 | — | Pending |
-| DATA-03 | — | Pending |
-| DATA-04 | — | Pending |
-| DATA-05 | — | Pending |
-| DATA-06 | — | Pending |
-| PERF-01 | — | Pending |
-| PERF-02 | — | Pending |
-| PERF-03 | — | Pending |
-| PERF-04 | — | Pending |
-| PERF-05 | — | Pending |
-| PERF-06 | — | Pending |
-| SIP-01 | — | Pending |
-| SIP-02 | — | Pending |
-| ALLOC-01 | — | Pending |
-| ALLOC-02 | — | Pending |
-| ALLOC-03 | — | Pending |
-| GOAL-01 | — | Pending |
-| GOAL-02 | — | Pending |
-| GOAL-03 | — | Pending |
-| TAX-01 | — | Pending |
-| TAX-02 | — | Pending |
-| TAX-03 | — | Pending |
-| TAX-04 | — | Pending |
-| TAX-05 | — | Pending |
-| AI-01 | — | Pending |
-| AI-02 | — | Pending |
-| AI-03 | — | Pending |
-| AI-04 | — | Pending |
-| ALRT-01 | — | Pending |
-| ALRT-02 | — | Pending |
+| FAM-01 | Phase 1 | Pending |
+| FAM-02 | Phase 1 | Pending |
+| FAM-03 | Phase 1 | Pending |
+| DATA-01 | Phase 1 | Pending |
+| DATA-02 | Phase 1 | Pending |
+| DATA-03 | Phase 5 | Pending |
+| DATA-04 | Phase 1 | Pending |
+| DATA-05 | Phase 1 | Pending |
+| DATA-06 | Phase 1 | Pending |
+| PERF-01 | Phase 2 | Pending |
+| PERF-02 | Phase 2 | Pending |
+| PERF-03 | Phase 2 | Pending |
+| PERF-04 | Phase 2 | Pending |
+| PERF-05 | Phase 2 | Pending |
+| PERF-06 | Phase 2 | Pending |
+| SIP-01 | Phase 2 | Pending |
+| SIP-02 | Phase 2 | Pending |
+| ALLOC-01 | Phase 2 | Pending |
+| ALLOC-02 | Phase 2 | Pending |
+| ALLOC-03 | Phase 5 | Pending |
+| GOAL-01 | Phase 5 | Pending |
+| GOAL-02 | Phase 5 | Pending |
+| GOAL-03 | Phase 5 | Pending |
+| TAX-01 | Phase 3 | Pending |
+| TAX-02 | Phase 3 | Pending |
+| TAX-03 | Phase 3 | Pending |
+| TAX-04 | Phase 3 | Pending |
+| TAX-05 | Phase 3 | Pending |
+| AI-01 | Phase 4 | Pending |
+| AI-02 | Phase 4 | Pending |
+| AI-03 | Phase 4 | Pending |
+| AI-04 | Phase 4 | Pending |
+| ALRT-01 | Phase 5 | Pending |
+| ALRT-02 | Phase 5 | Pending |
 
 **Coverage:**
 - v1 requirements: 34 total
-- Mapped to phases: 0
-- Unmapped: 34 ⚠️
+- Mapped to phases: 34
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-18*
-*Last updated: 2026-03-18 after initial definition*
+*Last updated: 2026-03-19 after roadmap creation — all 34 requirements mapped*
