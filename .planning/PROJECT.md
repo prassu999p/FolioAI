@@ -45,7 +45,7 @@ Give a long-term Indian investor complete clarity over their family's wealth: wh
 
 **Tax Intelligence (India)**
 - [ ] User can see LTCG/STCG breakdown per fund and stock (1-year rule for equity, 3-year for debt)
-- [ ] User receives tax loss harvesting suggestions before March 31 (book losses to offset LTCG)
+- [ ] LTCG harvesting: suggest exactly how many units to sell per fund to use the ₹1.25L annual exemption, then reinvest in the same fund — resets cost basis without exiting the position
 - [ ] User can generate ITR-ready capital gains statement (Schedule CG format)
 - [ ] User can see total LTCG exposure and estimated tax liability
 
