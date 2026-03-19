@@ -22,8 +22,9 @@ Creating analytics, tax calculations, and AI features are separate phases.
 - Deployment target: Supabase for DB; Next.js on Vercel or equivalent
 
 ### CAS Parser Strategy
-- Approach: Hybrid — `pdfplumber` extracts raw text deterministically → Claude parses text-to-structured JSON with a strict output schema → programmatic validation layer checks every number before writing to DB
-- Location: Server-side Next.js API route (never client-side)
+- Approach: `casparser` as primary extraction layer (purpose-built for CAMS/KFintech PDFs, MIT license, handles both formats natively) → Claude structured outputs for ambiguous rows that casparser flags → programmatic validation layer checks every number before writing to DB
+- Rationale: casparser is strictly better than pdfplumber for CAS PDFs — native format understanding, 29 releases of edge case fixes, returns AMFI scheme codes directly. Approved as casparser substitution during plan-phase (2026-03-19).
+- Location: Server-side Python FastAPI endpoint (called from Next.js API route; never client-side)
 - Password-protected PDFs (CAMS/KFintech use PAN+DOB as password): ask user to enter password at upload time; decrypt server-side; password never stored
 - On parse failure or ambiguous rows: flag for manual review — import what can be parsed cleanly, surface unclear rows to user for correction; never silently drop data; never fail the entire import because of one bad row
 
@@ -41,8 +42,8 @@ Creating analytics, tax calculations, and AI features are separate phases.
 
 ### Claude's Discretion
 - Exact Supabase RLS policy structure
-- pdfplumber configuration details and text extraction approach
-- Claude prompt template structure for CAS parsing (within the hybrid approach)
+- casparser configuration details and error handling approach
+- Claude prompt template structure for ambiguous row parsing
 - Specific schema column names and indexes beyond what's decided above
 - mfapi.in retry implementation details
 - UI layout for holdings list and family dashboard (Phase 2 handles analytics — Phase 1 just needs the list functional)
@@ -52,9 +53,9 @@ Creating analytics, tax calculations, and AI features are separate phases.
 <specifics>
 ## Specific Ideas
 
-- CAS PDFs are text-based (not scanned images) — pdfplumber can extract text directly without OCR
-- CAMS and KFintech have different PDF layouts; the Claude parsing step handles both formats without separate code paths
-- The hybrid CAS approach balances privacy (pdfplumber extracts locally, Claude sees text not raw financial blobs) with robustness (LLM handles format variations regex can't)
+- CAS PDFs are text-based (not scanned images) — casparser handles both CAMS and KFintech formats natively without separate code paths
+- casparser outputs AMFI scheme codes directly per folio, eliminating the need for a separate fund resolution step
+- Claude structured outputs handle ambiguous rows that casparser flags (the hybrid spirit: deterministic extraction + LLM for edge cases)
 - Grandfathering NAV seed: "Seed at Phase 1 setup — one-time script, load Jan 31 2018 NAVs for all active schemes"
 
 </specifics>
