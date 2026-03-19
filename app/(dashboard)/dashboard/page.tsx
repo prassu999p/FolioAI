@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { CreateFamilyForm } from '@/components/family/create-family-form'
 import type { Family } from '@/lib/supabase/types'
 
 export default async function DashboardPage() {
@@ -20,12 +21,16 @@ export default async function DashboardPage() {
     redirect(`/families/${family.id}`)
   }
 
-  // No family yet — show create family prompt (Plan 06 implements the full UI)
+  // No family yet — show create family form
   return (
-    <div className="text-center py-16">
-      <h1 className="text-2xl font-semibold mb-2">Welcome to FolioAI</h1>
-      <p className="text-muted-foreground">Set up your family portfolio to get started.</p>
-      {/* Family creation form — implemented in Plan 06 */}
+    <div className="py-16 flex flex-col items-center gap-8">
+      <div className="text-center">
+        <h1 className="text-2xl font-semibold mb-2">Welcome to FolioAI</h1>
+        <p className="text-muted-foreground">
+          Create a family portfolio to get started tracking your mutual fund investments.
+        </p>
+      </div>
+      <CreateFamilyForm />
     </div>
   )
 }
