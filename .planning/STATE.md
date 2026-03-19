@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 01-data-foundation/01-03-PLAN.md
-last_updated: "2026-03-19T05:01:11.568Z"
+stopped_at: Completed 01-data-foundation/01-04-PLAN.md
+last_updated: "2026-03-19T05:13:07.536Z"
 last_activity: 2026-03-19 — Roadmap created
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 6
-  completed_plans: 3
+  completed_plans: 4
   percent: 0
 ---
 
@@ -53,6 +53,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-data-foundation P01 | 10 | 3 tasks | 30 files |
 | Phase 01-data-foundation P02 | 7 | 3 tasks | 10 files |
 | Phase 01-data-foundation P03 | 7 | 3 tasks | 11 files |
+| Phase 01-data-foundation P04 | 8 | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -75,6 +76,8 @@ Recent decisions affecting current work:
 - [Phase 01-data-foundation]: getClaims() used everywhere for server-side auth (not getSession() — doesn't revalidate JWT)
 - [Phase 01-data-foundation]: Route group (dashboard)/dashboard/ subfolder required — route groups don't add URL path segments in Next.js
 - [Phase 01-data-foundation]: Database GenericSchema requires Relationships/Views/Functions fields — added to types.ts for postgrest-js compatibility
+- [Phase 01-data-foundation]: supabase.from() write ops use (as any) cast — postgrest-js v2.99.2 infers Insert as never for custom Database generics; typed insert objects declared first for type safety
+- [Phase 01-data-foundation]: pan_unmatched=true holder created for unknown PANs during CAS import — placeholder created, user can rename after import
 
 ### Pending Todos
 
@@ -91,6 +94,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-19T05:01:11.566Z
-Stopped at: Completed 01-data-foundation/01-03-PLAN.md
+Last session: 2026-03-19T05:13:07.533Z
+Stopped at: Completed 01-data-foundation/01-04-PLAN.md
 Resume file: None
