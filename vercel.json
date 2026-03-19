@@ -1,0 +1,14 @@
+{
+  "functions": {
+    "api/**/*.py": {
+      "maxDuration": 60,
+      "excludeFiles": "{tests/**,**/*.test.py,**/test_*.py,fixtures/**,sample-data/**,**/__pycache__/**}"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/cas/:path*",
+      "destination": "/api/cas/:path*"
+    }
+  ]
+}

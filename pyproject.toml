@@ -1,0 +1,7 @@
+[tool.pyright]
+pythonVersion = "3.12"
+
+[project]
+name = "folioai-cas-service"
+version = "0.1.0"
+requires-python = ">=3.12"
