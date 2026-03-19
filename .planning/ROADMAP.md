@@ -30,7 +30,15 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User can manually add a holding (fund name, units, purchase date, cost) and have it appear in the unified holdings list
   4. User can view all holdings (mutual funds) for any holder in a single list with current value updated from EOD NAV
   5. System automatically syncs NAV data from AMFI daily with no user action required
-**Plans**: TBD
+**Plans**: 6 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Project scaffold: Next.js 15, shadcn/ui, Vitest test infra, Python microservice manifest
+- [ ] 01-02-PLAN.md — Database schema, RLS policies, Supabase client utilities, grandfathering NAV seed script
+- [ ] 01-03-PLAN.md — Supabase auth (login/signup), Next.js middleware, protected route structure
+- [ ] 01-04-PLAN.md — CAS PDF import pipeline: casparser FastAPI endpoint, Zod validation, DB upsert, upload UI
+- [ ] 01-05-PLAN.md — Manual holding entry, holdings aggregation query, family/holder CRUD, holdings list UI
+- [ ] 01-06-PLAN.md — NAV sync (mfapi.in, retry, batching), family dashboard with total AUM, human verify checkpoint
 
 ### Phase 2: Portfolio Analytics
 **Goal**: Users can see exactly how their portfolio is performing — overall and per holding — with XIRR, absolute returns, benchmark comparison, SIP tracking, and asset allocation view
@@ -86,7 +94,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Data Foundation | 0/TBD | Not started | - |
+| 1. Data Foundation | 0/6 | Not started | - |
 | 2. Portfolio Analytics | 0/TBD | Not started | - |
 | 3. Tax Engine | 0/TBD | Not started | - |
 | 4. AI Intelligence | 0/TBD | Not started | - |
