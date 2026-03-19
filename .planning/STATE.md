@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 01-data-foundation/01-02-PLAN.md
-last_updated: "2026-03-19T04:51:06.451Z"
+stopped_at: Completed 01-data-foundation/01-03-PLAN.md
+last_updated: "2026-03-19T05:01:11.568Z"
 last_activity: 2026-03-19 — Roadmap created
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 6
-  completed_plans: 2
+  completed_plans: 3
   percent: 0
 ---
 
@@ -52,6 +52,7 @@ Progress: [░░░░░░░░░░] 0%
 *Updated after each plan completion*
 | Phase 01-data-foundation P01 | 10 | 3 tasks | 30 files |
 | Phase 01-data-foundation P02 | 7 | 3 tasks | 10 files |
+| Phase 01-data-foundation P03 | 7 | 3 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -71,6 +72,9 @@ Recent decisions affecting current work:
 - [Phase 01-data-foundation]: CookieMethodsServer explicit type annotation used in server.ts — strict TypeScript required explicit types for cookie setAll callback
 - [Phase 01-data-foundation]: Hierarchical RLS via subquery chains: transactions check folio → holder → family → user_id (no denormalized user_id on child tables)
 - [Phase 01-data-foundation]: Grandfathering seed as external TypeScript script (not SQL INSERT) — NAV data requires live mfapi.in API fetch
+- [Phase 01-data-foundation]: getClaims() used everywhere for server-side auth (not getSession() — doesn't revalidate JWT)
+- [Phase 01-data-foundation]: Route group (dashboard)/dashboard/ subfolder required — route groups don't add URL path segments in Next.js
+- [Phase 01-data-foundation]: Database GenericSchema requires Relationships/Views/Functions fields — added to types.ts for postgrest-js compatibility
 
 ### Pending Todos
 
@@ -87,6 +91,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-19T04:51:06.448Z
-Stopped at: Completed 01-data-foundation/01-02-PLAN.md
+Last session: 2026-03-19T05:01:11.566Z
+Stopped at: Completed 01-data-foundation/01-03-PLAN.md
 Resume file: None
