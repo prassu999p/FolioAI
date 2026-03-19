@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 01-data-foundation/01-05-PLAN.md
-last_updated: "2026-03-19T05:26:25.314Z"
+stopped_at: Completed 01-data-foundation/01-06-PLAN.md (awaiting human verify checkpoint)
+last_updated: "2026-03-19T05:33:45.473Z"
 last_activity: 2026-03-19 — Roadmap created
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 6
-  completed_plans: 5
+  completed_plans: 6
   percent: 0
 ---
 
@@ -55,6 +55,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-data-foundation P03 | 7 | 3 tasks | 11 files |
 | Phase 01-data-foundation P04 | 8 | 3 tasks | 6 files |
 | Phase 01-data-foundation P05 | 9 | 2 tasks | 15 files |
+| Phase 01-data-foundation P06 | 4min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -82,6 +83,9 @@ Recent decisions affecting current work:
 - [Phase 01-data-foundation]: HoldingRow interface moved before Database in types.ts — TypeScript forward reference requires declaration order before use in Functions type
 - [Phase 01-data-foundation]: Test constants use valid UUID format — Zod z.string().uuid() rejects non-UUID strings; test-holder-id fails validation causing false 400s
 - [Phase 01-data-foundation]: get_holder_holdings uses SECURITY DEFINER + HAVING net_units > 0 — runs with schema owner permissions, filters redeemed funds at DB level
+- [Phase 01-data-foundation]: supabase.from() as any cast in nav sync — same postgrest-js v2.99.2 limitation; typed results via inline type assertion
+- [Phase 01-data-foundation]: FamilyDashboard as Server Component with per-holder RPC calls — N+1 acceptable for Phase 1 (2-5 holders); optimize in Phase 2 if needed
+- [Phase 01-data-foundation]: already_current field in NAV sync response — prevents misleading 0 synced when all schemes were already up to date today
 
 ### Pending Todos
 
@@ -98,6 +102,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-19T05:26:25.311Z
-Stopped at: Completed 01-data-foundation/01-05-PLAN.md
+Last session: 2026-03-19T05:33:45.470Z
+Stopped at: Completed 01-data-foundation/01-06-PLAN.md (awaiting human verify checkpoint)
 Resume file: None
