@@ -3,14 +3,51 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export interface Database {
   public: {
     Tables: {
-      families: { Row: Family; Insert: FamilyInsert; Update: Partial<FamilyInsert> }
-      holders: { Row: Holder; Insert: HolderInsert; Update: Partial<HolderInsert> }
-      folios: { Row: Folio; Insert: FolioInsert; Update: Partial<FolioInsert> }
-      transactions: { Row: Transaction; Insert: TransactionInsert; Update: Partial<TransactionInsert> }
-      funds: { Row: Fund; Insert: FundInsert; Update: Partial<FundInsert> }
-      nav_prices: { Row: NavPrice; Insert: NavPriceInsert; Update: Partial<NavPriceInsert> }
-      grandfathering_nav: { Row: GrandfatheringNav; Insert: GrandfatheringNavInsert; Update: Partial<GrandfatheringNavInsert> }
+      families: {
+        Row: Family
+        Insert: FamilyInsert
+        Update: Partial<FamilyInsert>
+        Relationships: []
+      }
+      holders: {
+        Row: Holder
+        Insert: HolderInsert
+        Update: Partial<HolderInsert>
+        Relationships: []
+      }
+      folios: {
+        Row: Folio
+        Insert: FolioInsert
+        Update: Partial<FolioInsert>
+        Relationships: []
+      }
+      transactions: {
+        Row: Transaction
+        Insert: TransactionInsert
+        Update: Partial<TransactionInsert>
+        Relationships: []
+      }
+      funds: {
+        Row: Fund
+        Insert: FundInsert
+        Update: Partial<FundInsert>
+        Relationships: []
+      }
+      nav_prices: {
+        Row: NavPrice
+        Insert: NavPriceInsert
+        Update: Partial<NavPriceInsert>
+        Relationships: []
+      }
+      grandfathering_nav: {
+        Row: GrandfatheringNav
+        Insert: GrandfatheringNavInsert
+        Update: Partial<GrandfatheringNavInsert>
+        Relationships: []
+      }
     }
+    Views: Record<string, never>
+    Functions: Record<string, never>
   }
 }
 
