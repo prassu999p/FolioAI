@@ -1,5 +1,20 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
+// Holdings aggregation shape returned by GET /api/holdings
+// Declared before Database so it can be referenced in Functions
+export interface HoldingRow {
+  scheme_code: number
+  scheme_name: string
+  fund_house: string
+  folio_id: string
+  units: number              // SUM of (purchase - redemption) units
+  avg_cost_nav: number       // weighted average purchase NAV
+  total_invested: number     // SUM of purchase amounts
+  current_nav: number | null // latest nav_prices.nav
+  current_nav_date: string | null  // latest nav_prices.nav_date
+  current_value: number | null     // units * current_nav
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -47,7 +62,12 @@ export interface Database {
       }
     }
     Views: Record<string, never>
-    Functions: Record<string, never>
+    Functions: {
+      get_holder_holdings: {
+        Args: { p_holder_id: string }
+        Returns: HoldingRow[]
+      }
+    }
   }
 }
 
