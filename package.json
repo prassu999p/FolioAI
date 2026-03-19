@@ -9,7 +9,8 @@
     "lint": "next lint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "seed:grandfathering": "npx tsx scripts/seed-grandfathering-nav.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -44,6 +45,7 @@
     "eslint-config-next": "15.5.13",
     "jsdom": "^25.0.1",
     "next-test-api-route-handler": "^4.0.14",
+    "tsx": "^4.21.0",
     "typescript": "^5",
     "vitest": "^3.0.0"
   }
