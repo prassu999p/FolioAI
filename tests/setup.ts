@@ -20,8 +20,8 @@ export function createMockSupabase() {
   }
 }
 
-// Shared test data constants
-export const TEST_USER_ID = 'test-user-id'
-export const TEST_FAMILY_ID = 'test-family-id'
-export const TEST_HOLDER_ID = 'test-holder-id'
+// Shared test data constants — UUIDs required for Zod uuid() validation
+export const TEST_USER_ID = '00000000-0000-0000-0000-000000000001'
+export const TEST_FAMILY_ID = '00000000-0000-0000-0000-000000000002'
+export const TEST_HOLDER_ID = '00000000-0000-0000-0000-000000000003'
 export const TEST_PAN = 'ABCDE1234F'
