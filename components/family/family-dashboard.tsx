@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { SyncButton } from '@/components/nav/sync-button'
+import { AddHolderForm } from '@/components/family/add-holder-form'
 import type { HoldingRow } from '@/lib/supabase/types'
 
 const formatINR = (value: number) =>
@@ -105,7 +106,10 @@ export async function FamilyDashboard({ familyId }: FamilyDashboardProps) {
             </p>
           )}
         </div>
-        <SyncButton />
+        <div className="flex gap-2">
+          <AddHolderForm familyId={familyId} />
+          <SyncButton />
+        </div>
       </div>
 
       {/* Total AUM Card */}
@@ -124,11 +128,7 @@ export async function FamilyDashboard({ familyId }: FamilyDashboardProps) {
       {/* Holder Cards */}
       {holdersWithAUM.length === 0 ? (
         <p className="text-muted-foreground">
-          No holders yet.{' '}
-          <Link href="/dashboard" className="underline">
-            Add holders
-          </Link>{' '}
-          to get started.
+          No holders yet. Use &ldquo;Add Holder&rdquo; to get started.
         </p>
       ) : (
         <div>

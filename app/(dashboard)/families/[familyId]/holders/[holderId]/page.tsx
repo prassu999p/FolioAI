@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { HoldingsTable } from '@/components/holdings/holdings-table'
 import { ManualEntryForm } from '@/components/manual-entry/manual-entry-form'
+import { CASUploadForm } from '@/components/upload/cas-upload-form'
 import type { HoldingRow } from '@/lib/supabase/types'
 
 interface HolderHoldingsPageProps {
@@ -49,10 +50,8 @@ export default async function HolderHoldingsPage({ params }: HolderHoldingsPageP
           )}
         </div>
         <div className="flex gap-2">
-          <ManualEntryForm
-            holderId={holderId}
-            onEntryComplete={() => {}}
-          />
+          <CASUploadForm />
+          <ManualEntryForm holderId={holderId} />
         </div>
       </div>
 

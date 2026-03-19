@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -19,6 +19,7 @@ interface CASUploadFormProps {
 export function CASUploadForm({ onImportComplete }: CASUploadFormProps) {
   const [open, setOpen] = useState(false)
   const [file, setFile] = useState<File | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<{
@@ -71,7 +72,9 @@ export function CASUploadForm({ onImportComplete }: CASUploadFormProps) {
               id="cas-file"
               type="file"
               accept=".pdf"
+              ref={fileInputRef}
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+              onClick={(e) => { (e.target as HTMLInputElement).value = '' }}
               required
             />
           </div>

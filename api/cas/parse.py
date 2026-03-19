@@ -56,19 +56,13 @@ async def parse_cas(
         else:
             serialized = data
 
-        logger.info(f"Successfully parsed {len(serialized.get('folios', []))} folios")
+        folios = serialized.get('folios', [])
+        logger.info(f"Successfully parsed {len(folios)} folios")
         return {"status": "ok", "data": serialized}
 
-    except casparser.exceptions.CASParseError as e:
-        logger.warning(f"CAS parse error: {e}")
-        return {"status": "error", "message": str(e), "partial": None}
     except Exception as e:
-        logger.error(f"Unexpected error parsing CAS: {e}")
-        return {
-            "status": "error",
-            "message": "Failed to parse PDF. Check password and try again.",
-            "partial": None,
-        }
+        logger.error(f"CAS parse error [{type(e).__module__}.{type(e).__name__}]: {e}")
+        return {"status": "error", "message": str(e), "partial": None}
     finally:
         if tmp_path and os.path.exists(tmp_path):
             os.unlink(tmp_path)

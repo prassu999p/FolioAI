@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   Dialog,
   DialogContent,
@@ -43,10 +44,10 @@ type ManualEntryFormValues = z.infer<typeof ManualEntryFormSchema>
 
 interface ManualEntryFormProps {
   holderId: string
-  onEntryComplete: () => void
 }
 
-export function ManualEntryForm({ holderId, onEntryComplete }: ManualEntryFormProps) {
+export function ManualEntryForm({ holderId }: ManualEntryFormProps) {
+  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<FundSearchResult[]>([])
@@ -106,7 +107,7 @@ export function ManualEntryForm({ holderId, onEntryComplete }: ManualEntryFormPr
       setSelectedFund(null)
       setSearchQuery('')
       setOpen(false)
-      onEntryComplete()
+      router.refresh()
     } catch {
       setSubmitError('Network error. Please try again.')
     }
