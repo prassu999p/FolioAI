@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 01-data-foundation/01-04-PLAN.md
-last_updated: "2026-03-19T05:13:07.536Z"
+stopped_at: Completed 01-data-foundation/01-05-PLAN.md
+last_updated: "2026-03-19T05:26:25.314Z"
 last_activity: 2026-03-19 — Roadmap created
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 6
-  completed_plans: 4
+  completed_plans: 5
   percent: 0
 ---
 
@@ -54,6 +54,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-data-foundation P02 | 7 | 3 tasks | 10 files |
 | Phase 01-data-foundation P03 | 7 | 3 tasks | 11 files |
 | Phase 01-data-foundation P04 | 8 | 3 tasks | 6 files |
+| Phase 01-data-foundation P05 | 9 | 2 tasks | 15 files |
 
 ## Accumulated Context
 
@@ -78,6 +79,9 @@ Recent decisions affecting current work:
 - [Phase 01-data-foundation]: Database GenericSchema requires Relationships/Views/Functions fields — added to types.ts for postgrest-js compatibility
 - [Phase 01-data-foundation]: supabase.from() write ops use (as any) cast — postgrest-js v2.99.2 infers Insert as never for custom Database generics; typed insert objects declared first for type safety
 - [Phase 01-data-foundation]: pan_unmatched=true holder created for unknown PANs during CAS import — placeholder created, user can rename after import
+- [Phase 01-data-foundation]: HoldingRow interface moved before Database in types.ts — TypeScript forward reference requires declaration order before use in Functions type
+- [Phase 01-data-foundation]: Test constants use valid UUID format — Zod z.string().uuid() rejects non-UUID strings; test-holder-id fails validation causing false 400s
+- [Phase 01-data-foundation]: get_holder_holdings uses SECURITY DEFINER + HAVING net_units > 0 — runs with schema owner permissions, filters redeemed funds at DB level
 
 ### Pending Todos
 
@@ -94,6 +98,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-19T05:13:07.533Z
-Stopped at: Completed 01-data-foundation/01-04-PLAN.md
+Last session: 2026-03-19T05:26:25.311Z
+Stopped at: Completed 01-data-foundation/01-05-PLAN.md
 Resume file: None
