@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 02-portfolio-analytics-02-PLAN.md
-last_updated: "2026-03-20T03:43:32.275Z"
+stopped_at: Completed 02-portfolio-analytics-04-PLAN.md
+last_updated: "2026-03-20T03:52:27.434Z"
 last_activity: 2026-03-19 — Roadmap created
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 12
-  completed_plans: 9
+  completed_plans: 11
   percent: 0
 ---
 
@@ -59,6 +59,8 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02-portfolio-analytics P01 | 2min | 2 tasks | 4 files |
 | Phase 02-portfolio-analytics P03 | 3min | 2 tasks | 5 files |
 | Phase 02-portfolio-analytics P02 | 5min | 2 tasks | 8 files |
+| Phase 02-portfolio-analytics P05 | 4min | 2 tasks | 5 files |
+| Phase 02-portfolio-analytics P04 | 6min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -96,6 +98,10 @@ Recent decisions affecting current work:
 - [Phase 02-portfolio-analytics]: holder_allocation_targets uses DB-level CHECK (equity + debt + gold + international <= 100) as backup to Zod
 - [Phase 02-portfolio-analytics]: TDD RED→GREEN for analytics modules — tests with real imports written before implementation files, import failure confirms RED phase
 - [Phase 02-portfolio-analytics]: findSIPRun() iterates from each candidate start for longest qualifying run (25-35d gaps, ±5% amount) per folio — not greedy single-pass
+- [Phase 02-portfolio-analytics]: AllocationSection uses direct Supabase query for targets, not GET /api/allocation — avoids HTTP overhead in Server Component
+- [Phase 02-portfolio-analytics]: fundCategories prop passed from parent page to AllocationSection — parent fetches funds table scheme_code→category map, avoids N+1
+- [Phase 02-portfolio-analytics]: Tailwind v4 uses @theme inline CSS variables instead of tailwind.config.ts — MD3 tokens added as --color-* variables in globals.css
+- [Phase 02-portfolio-analytics]: HoldingsTable uses HoldingRowWithAnalytics instead of HoldingRow — holder page maps null for analytics fields until XIRR computation is wired
 
 ### Pending Todos
 
@@ -112,6 +118,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T03:43:32.272Z
-Stopped at: Completed 02-portfolio-analytics-02-PLAN.md
+Last session: 2026-03-20T03:52:21.819Z
+Stopped at: Completed 02-portfolio-analytics-04-PLAN.md
 Resume file: None
