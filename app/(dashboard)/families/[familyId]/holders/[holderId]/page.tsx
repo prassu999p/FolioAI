@@ -6,7 +6,8 @@ import { SummaryCards } from '@/components/analytics/summary-cards'
 import { SipSection } from '@/components/analytics/sip-section'
 import { AllocationSection } from '@/components/analytics/allocation-section'
 import { getPeriodBounds } from '@/lib/analytics/period-utils'
-import type { HoldingRow, HoldingRowWithAnalytics, AnalyticsTransaction } from '@/lib/supabase/types'
+import type { HoldingRow, HoldingRowWithAnalytics, AnalyticsTransaction, Transaction } from '@/lib/supabase/types'
+import { computeXIRR, computeGainLoss } from '@/lib/analytics/xirr'
 
 interface HolderHoldingsPageProps {
   params: Promise<{ familyId: string; holderId: string }>
@@ -61,10 +62,44 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
     ? []
     : (transactionsResult.data ?? [])
 
-  // Map holdings to HoldingRowWithAnalytics (analytics computed inside SummaryCards)
-  const holdingsWithAnalytics: HoldingRowWithAnalytics[] = rawHoldings.map(
-    (h) => ({ ...h, gain_loss: null, gain_loss_pct: null, xirr: null })
-  )
+  // Map holdings to HoldingRowWithAnalytics with per-holding XIRR computation
+  const validTxTypes = ['purchase', 'redemption', 'switch_in', 'switch_out', 'sip', 'dividend_reinvest'] as const
+  type ValidTxType = typeof validTxTypes[number]
+  const toHoldingTransaction = (r: AnalyticsTransaction): Transaction => ({
+    id: `${r.folio_id}-${r.transaction_date}`,
+    folio_id: r.folio_id,
+    transaction_date: r.transaction_date,
+    transaction_type: (validTxTypes.includes(r.transaction_type as ValidTxType)
+      ? r.transaction_type : 'purchase') as ValidTxType,
+    units: r.units, nav: r.nav, amount: r.amount,
+    import_status: 'clean' as const, source: 'cas_import' as const,
+    created_at: r.transaction_date,
+  })
+
+  const today = new Date()
+  const outflowTypes = new Set(['purchase', 'sip', 'switch_in', 'dividend_reinvest'])
+  const holdingsWithAnalytics: HoldingRowWithAnalytics[] = rawHoldings.map((h) => {
+    // Filter transactions to this holding's folio only
+    const folioTxs = transactions
+      .filter(t => t.folio_id === h.folio_id)
+      .map(toHoldingTransaction)
+
+    // Build cashflow series: outflows (purchases) + terminal value (current value as of today)
+    // Sign convention: purchases → negative, terminal value → positive
+    const cashflows = [
+      ...folioTxs.map(t => ({
+        amount: outflowTypes.has(t.transaction_type) ? -t.amount : +t.amount,
+        date: new Date(t.transaction_date),
+      })),
+      // Terminal cashflow: current value of this holding as of today
+      { amount: h.current_value ?? 0, date: today },
+    ]
+
+    const xirr = cashflows.length >= 2 ? computeXIRR(cashflows) : null
+    const { gainLoss, gainLossPct } = computeGainLoss(h)
+
+    return { ...h, gain_loss: gainLoss, gain_loss_pct: gainLossPct, xirr }
+  })
 
   // Fetch fund categories for AllocationSection
   const schemeCodes = rawHoldings.map(h => h.scheme_code)
