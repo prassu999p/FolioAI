@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 02-portfolio-analytics-13-PLAN.md
-last_updated: "2026-03-20T06:20:13.026Z"
+stopped_at: Completed 02-portfolio-analytics-15-PLAN.md
+last_updated: "2026-03-20T06:57:18.700Z"
 last_activity: 2026-03-19 — Roadmap created
 progress:
   total_phases: 5
   completed_phases: 2
-  total_plans: 20
-  completed_plans: 20
+  total_plans: 21
+  completed_plans: 21
   percent: 0
 ---
 
@@ -70,6 +70,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02-portfolio-analytics P11 | 3min | 1 tasks | 1 files |
 | Phase 02-portfolio-analytics P12 | 2min | 1 tasks | 3 files |
 | Phase 02-portfolio-analytics P13 | 3min | 1 tasks | 2 files |
+| Phase 02-portfolio-analytics P15 | 3min | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -124,6 +125,9 @@ Recent decisions affecting current work:
 - [Phase 02-portfolio-analytics]: Clicking active view tab deselects it (clears 'view' param) — returns to all-cards-equal mode without adding a separate 'All' button
 - [Phase 02-portfolio-analytics]: Benchmark mode highlights XIRR and AUM cards (XIRR shows vs Nifty 50 line; AUM is portfolio total being compared)
 - [Phase 02-portfolio-analytics]: FY case added to getPeriodBounds before msMap fallthrough — getCurrentFY() now user-visible via 'This FY' button in PeriodSelector
+- [Phase 02-portfolio-analytics]: Family dashboard: div-based table with role=table/row/cell used instead of tr/td to allow Link wrapping of rows in Server Component
+- [Phase 02-portfolio-analytics]: Family XIRR aggregates all holder transactions into one cashflow series with totalAUM as terminal value
+- [Phase 02-portfolio-analytics]: Top Performing Funds uses absolute return as proxy for 1Y return — 1Y NAV history not available in Phase 2
 
 ### Pending Todos
 
@@ -140,6 +144,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T06:02:44.455Z
-Stopped at: Completed 02-portfolio-analytics-13-PLAN.md
+Last session: 2026-03-20T06:57:18.697Z
+Stopped at: Completed 02-portfolio-analytics-15-PLAN.md
 Resume file: None
