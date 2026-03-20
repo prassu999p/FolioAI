@@ -38,7 +38,6 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
   const [holdingsResult, transactionsResult] = await Promise.all([
     (supabase as any).rpc('get_holder_holdings', {
       p_holder_id: holderId,
-      p_nav_date: endDateStr,
     }),
     (supabase as any).rpc('get_holder_analytics_transactions', {
       p_holder_id: holderId,
