@@ -52,7 +52,7 @@ Plans:
   3. User can compare portfolio returns against Nifty 50 and fund category average, and switch between XIRR, absolute, and benchmark views
   4. User can view all active SIPs with next debit date and see SIP XIRR separately from lumpsum holdings
   5. User can define a target asset allocation and see current allocation vs target deviation, segmented by Indian financial year
-**Plans**: 9 plans (6 feature + 3 gap closure)
+**Plans**: 14 plans (6 feature + 3 UAT gap closure + 5 analytical gap closure)
 
 Plans:
 - [ ] 02-01-PLAN.md — Analytics lib: XIRR cashflow engine, SIP detection, benchmark comparison modules
@@ -64,6 +64,11 @@ Plans:
 - [ ] 02-07-PLAN.md — Gap closure: fix MD3 design system (globals.css shadcn alias overwrite, layout sidebar, component tokens)
 - [ ] 02-08-PLAN.md — Gap closure: fix CAS import route to read flat casparser folio.transactions structure
 - [ ] 02-09-PLAN.md — Gap closure: fix Set Target button (uncontrolled Dialog, DialogClose pattern)
+- [ ] 02-10-PLAN.md — Gap closure: per-holding XIRR — compute xirr per folio_id in holder page (PERF-02)
+- [ ] 02-11-PLAN.md — Gap closure: Nifty 50 benchmark XIRR — query nifty50_daily, build synthetic cashflows (PERF-03)
+- [ ] 02-12-PLAN.md — Gap closure: view-mode toggle — XIRR/Absolute/Benchmark tabs in PeriodSelector (PERF-04)
+- [ ] 02-13-PLAN.md — Gap closure: FY period — add 'FY' to PeriodSelector, wire getCurrentFY in getPeriodBounds (PERF-06)
+- [ ] 02-14-PLAN.md — Gap closure: SIP XIRR — computeXIRR on sip_cashflows + terminal value in SipSection (SIP-02)
 
 ### Phase 3: Tax Engine
 **UI:** Follow `.planning/frontend.html` design system — MD3 tokens, Manrope headings, Material Symbols icons, bento card pattern for tax summary metrics.
@@ -111,7 +116,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Data Foundation | 6/6 | Complete   | 2026-03-19 |
-| 2. Portfolio Analytics | 6/9 | In Progress (gap closure)|  |
+| 2. Portfolio Analytics | 9/14 | In Progress (gap closure)|  |
 | 3. Tax Engine | 0/TBD | Not started | - |
 | 4. AI Intelligence | 0/TBD | Not started | - |
 | 5. Goals, Alerts and Broker Integration | 0/TBD | Not started | - |
