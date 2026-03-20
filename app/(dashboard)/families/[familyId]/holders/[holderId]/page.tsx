@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { HoldingsTable } from '@/components/holdings/holdings-table'
 import { ManualEntryForm } from '@/components/manual-entry/manual-entry-form'
 import { CASUploadForm } from '@/components/upload/cas-upload-form'
-import type { HoldingRow } from '@/lib/supabase/types'
+import type { HoldingRow, HoldingRowWithAnalytics } from '@/lib/supabase/types'
 
 interface HolderHoldingsPageProps {
   params: Promise<{ familyId: string; holderId: string }>
@@ -24,7 +24,12 @@ async function HoldingsList({ holderId }: { holderId: string }) {
     )
   }
 
-  return <HoldingsTable holdings={(holdings ?? []) as HoldingRow[]} />
+  // Map HoldingRow[] to HoldingRowWithAnalytics[] with null analytics fields
+  // Full XIRR computation happens on the dedicated analytics page
+  const holdingsWithAnalytics: HoldingRowWithAnalytics[] = ((holdings ?? []) as HoldingRow[]).map(
+    (h) => ({ ...h, gain_loss: null, gain_loss_pct: null, xirr: null })
+  )
+  return <HoldingsTable holdings={holdingsWithAnalytics} />
 }
 
 export default async function HolderHoldingsPage({ params }: HolderHoldingsPageProps) {
