@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -23,7 +24,7 @@ interface SetTargetModalProps {
 
 export function SetTargetModal({ holderId, currentTargets }: SetTargetModalProps) {
   const router = useRouter()
-  const [open, setOpen] = useState(false)
+  const closeRef = useRef<HTMLButtonElement>(null)
   const [apiError, setApiError] = useState<string | null>(null)
 
   const {
@@ -57,7 +58,7 @@ export function SetTargetModal({ holderId, currentTargets }: SetTargetModalProps
         setApiError((json as { error?: string }).error ?? 'Failed to save allocation targets')
         return
       }
-      setOpen(false)
+      closeRef.current?.click()
       router.refresh()
     } catch {
       setApiError('Network error — please try again')
@@ -65,7 +66,7 @@ export function SetTargetModal({ holderId, currentTargets }: SetTargetModalProps
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog>
       <DialogTrigger asChild>
         <button className="text-xs font-bold text-primary border border-outline-variant/30 px-3 py-1.5 rounded-xl hover:bg-surface-container transition-colors">
           Set Target
@@ -180,13 +181,14 @@ export function SetTargetModal({ holderId, currentTargets }: SetTargetModalProps
           )}
 
           <div className="flex gap-3 pt-2">
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="flex-1 py-2.5 border border-outline-variant/30 rounded-xl text-sm font-bold hover:bg-surface-container transition-colors"
-            >
-              Cancel
-            </button>
+            <DialogClose asChild>
+              <button
+                type="button"
+                className="flex-1 py-2.5 border border-outline-variant/30 rounded-xl text-sm font-bold hover:bg-surface-container transition-colors"
+              >
+                Cancel
+              </button>
+            </DialogClose>
             <button
               type="submit"
               disabled={isSubmitting || total > 100}
@@ -195,6 +197,7 @@ export function SetTargetModal({ holderId, currentTargets }: SetTargetModalProps
               {isSubmitting ? 'Saving...' : 'Save Targets'}
             </button>
           </div>
+          <DialogClose ref={closeRef} className="hidden" aria-hidden="true" />
         </form>
       </DialogContent>
     </Dialog>
