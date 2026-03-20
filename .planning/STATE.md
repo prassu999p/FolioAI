@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 02-portfolio-analytics-11-PLAN.md
-last_updated: "2026-03-20T05:57:14.263Z"
+stopped_at: Completed 02-portfolio-analytics-12-PLAN.md
+last_updated: "2026-03-20T05:59:27.085Z"
 last_activity: 2026-03-19 — Roadmap created
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 20
-  completed_plans: 18
+  completed_plans: 19
   percent: 0
 ---
 
@@ -68,6 +68,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02-portfolio-analytics P10 | 3min | 1 tasks | 1 files |
 | Phase 02-portfolio-analytics P14 | 2min | 1 tasks | 1 files |
 | Phase 02-portfolio-analytics P11 | 3min | 1 tasks | 1 files |
+| Phase 02-portfolio-analytics P12 | 2min | 1 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -119,6 +120,8 @@ Recent decisions affecting current work:
 - [Phase 02-portfolio-analytics]: Per-holding XIRR uses single folio's current_value as terminal cashflow, not buildPortfolioCashflows which sums all holdings
 - [Phase 02-portfolio-analytics]: estimateFolioCurrentValue uses net units x most recent transaction NAV as proxy for SIP terminal value — avoids adding holdings prop to SipSection; acceptable approximation for Phase 2
 - [Phase 02-portfolio-analytics]: Nifty 50 benchmark XIRR uses synthetic cashflows (same amounts, index units) — forward-5-day search handles holidays without crashing
+- [Phase 02-portfolio-analytics]: Clicking active view tab deselects it (clears 'view' param) — returns to all-cards-equal mode without adding a separate 'All' button
+- [Phase 02-portfolio-analytics]: Benchmark mode highlights XIRR and AUM cards (XIRR shows vs Nifty 50 line; AUM is portfolio total being compared)
 
 ### Pending Todos
 
@@ -135,6 +138,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T05:57:14.260Z
-Stopped at: Completed 02-portfolio-analytics-11-PLAN.md
+Last session: 2026-03-20T05:59:27.082Z
+Stopped at: Completed 02-portfolio-analytics-12-PLAN.md
 Resume file: None
