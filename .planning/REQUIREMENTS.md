@@ -44,7 +44,7 @@ Planners and executors for Phases 3, 4, and 5 must read `frontend.html` before b
 - [x] **PERF-01**: User can see total portfolio value, total invested amount, and absolute gain/loss (₹ and %) per holder and family total
 - [x] **PERF-02**: User can see XIRR (time-weighted return) for the overall portfolio, per holding, and per holder — calculated from full transaction cashflow series
 - [x] **PERF-03**: User can compare portfolio returns against Nifty 50 and fund category average benchmark
-- [ ] **PERF-04**: User can switch between XIRR, absolute return, and benchmark comparison views
+- [x] **PERF-04**: User can switch between XIRR, absolute return, and benchmark comparison views
 - [x] **PERF-05**: User can see portfolio performance over selectable time periods (1M, 3M, 6M, 1Y, 3Y, all-time)
 - [x] **PERF-06**: All analytics are segmented by Indian financial year (April–March), not calendar year
 
@@ -151,7 +151,7 @@ Planners and executors for Phases 3, 4, and 5 must read `frontend.html` before b
 | PERF-01 | Phase 2 | Complete |
 | PERF-02 | Phase 2 | Complete |
 | PERF-03 | Phase 2 | Complete |
-| PERF-04 | Phase 2 | Pending |
+| PERF-04 | Phase 2 | Complete |
 | PERF-05 | Phase 2 | Complete |
 | PERF-06 | Phase 2 | Complete |
 | SIP-01 | Phase 2 | Complete |
