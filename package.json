@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "seed:grandfathering": "npx tsx scripts/seed-grandfathering-nav.ts"
+    "seed:grandfathering": "npx tsx scripts/seed-grandfathering-nav.ts",
+    "seed:nifty50": "npx tsx scripts/seed-nifty50.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
