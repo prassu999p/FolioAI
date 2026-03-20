@@ -101,6 +101,82 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
     return { ...h, gain_loss: gainLoss, gain_loss_pct: gainLossPct, xirr }
   })
 
+  // --- Nifty 50 benchmark XIRR (PERF-03) ---
+  // Build synthetic benchmark cashflows: for each portfolio purchase (outflow),
+  // buy equivalent "units" of Nifty 50 at its close price on that date.
+  // Terminal value: sell those units at the most recent Nifty 50 close.
+  // This produces the XIRR you would have earned investing the same amounts in Nifty 50.
+
+  let benchmarkXirr: number | null = null
+
+  const purchaseTxs = transactions.filter(t => outflowTypes.has(t.transaction_type))
+
+  if (purchaseTxs.length > 0) {
+    // Find the earliest purchase date to bound the Nifty 50 query
+    const sortedDates = [...purchaseTxs].sort((a, b) =>
+      a.transaction_date.localeCompare(b.transaction_date)
+    )
+    const earliestDate = sortedDates[0].transaction_date  // 'YYYY-MM-DD'
+
+    // Fetch Nifty 50 close prices from earliest purchase date onwards
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: niftyData } = await (supabase as any)
+      .from('nifty50_daily')
+      .select('nav_date, close')
+      .gte('nav_date', earliestDate)
+      .order('nav_date', { ascending: true })
+
+    const niftyRows: Array<{ nav_date: string; close: number }> = niftyData ?? []
+
+    if (niftyRows.length >= 2) {
+      // Build a date → close lookup for quick access
+      const niftyMap = new Map<string, number>()
+      for (const row of niftyRows) {
+        niftyMap.set(row.nav_date, Number(row.close))
+      }
+
+      // Helper: find the nearest available Nifty 50 close for a given date string
+      // Searches forward up to 5 trading days to skip weekends/holidays
+      const getNearestClose = (dateStr: string): number | null => {
+        for (let offset = 0; offset <= 5; offset++) {
+          const d = new Date(dateStr)
+          d.setDate(d.getDate() + offset)
+          const key = d.toISOString().split('T')[0]
+          if (niftyMap.has(key)) return niftyMap.get(key)!
+        }
+        return null
+      }
+
+      // For each purchase, compute how many Nifty "units" that amount buys
+      let totalUnits = 0
+      const validPurchaseTxs: AnalyticsTransaction[] = []
+
+      for (const tx of purchaseTxs) {
+        const close = getNearestClose(tx.transaction_date)
+        if (close === null || close <= 0) continue
+        const units = tx.amount / close
+        totalUnits += units
+        validPurchaseTxs.push(tx)
+      }
+
+      // Terminal value: total units × most recent Nifty close
+      const latestClose = Number(niftyRows[niftyRows.length - 1].close)
+      const terminalValue = totalUnits * latestClose
+      const terminalDate = new Date(niftyRows[niftyRows.length - 1].nav_date)
+
+      if (validPurchaseTxs.length > 0 && terminalValue > 0) {
+        const benchmarkCashflows = [
+          // Outflows: original investment amounts (negative)
+          ...validPurchaseTxs.map(tx => ({ amount: -tx.amount, date: new Date(tx.transaction_date) })),
+          // Terminal inflow: current value of benchmark portfolio
+          { amount: terminalValue, date: terminalDate },
+        ]
+
+        benchmarkXirr = computeXIRR(benchmarkCashflows)
+      }
+    }
+  }
+
   // Fetch fund categories for AllocationSection
   const schemeCodes = rawHoldings.map(h => h.scheme_code)
   let fundCategories: Record<number, string> = {}
@@ -185,6 +261,7 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
             period={period}
             transactions={transactions}
             holdings={holdingsWithAnalytics}
+            nifty50Xirr={benchmarkXirr}
           />
         </div>
 
