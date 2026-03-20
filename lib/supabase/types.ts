@@ -15,6 +15,36 @@ export interface HoldingRow {
   current_value: number | null     // units * current_nav
 }
 
+// Phase 2: Extended HoldingRow with computed analytics fields (not from DB)
+export interface HoldingRowWithAnalytics extends HoldingRow {
+  gain_loss: number | null
+  gain_loss_pct: number | null
+  xirr: number | null
+}
+
+// Raw transaction row from get_holder_analytics_transactions RPC
+export interface AnalyticsTransaction {
+  folio_id: string
+  scheme_code: number
+  scheme_name: string
+  transaction_date: string   // ISO date string
+  transaction_type: string
+  amount: number
+  units: number
+  nav: number
+}
+
+// Holder-level analytics summary (computed in TypeScript from transactions + holdings)
+export interface HolderAnalyticsSummary {
+  total_aum: number
+  total_invested: number
+  gain_loss: number
+  gain_loss_pct: number
+  xirr: number | null
+  nifty50_xirr: number | null  // benchmark synthetic XIRR; null if no nifty50_daily data
+  period: string               // '1M' | '3M' | '6M' | '1Y' | '3Y' | 'all'
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -66,6 +96,10 @@ export interface Database {
       get_holder_holdings: {
         Args: { p_holder_id: string }
         Returns: HoldingRow[]
+      }
+      get_holder_analytics_transactions: {
+        Args: { p_holder_id: string; p_start_date?: string | null; p_end_date?: string }
+        Returns: AnalyticsTransaction[]
       }
     }
   }
@@ -152,3 +186,4 @@ export type TablesInsert<T extends keyof Database['public']['Tables']> =
   Database['public']['Tables'][T]['Insert']
 export type TablesRow<T extends keyof Database['public']['Tables']> =
   Database['public']['Tables'][T]['Row']
+
