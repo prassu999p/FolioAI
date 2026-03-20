@@ -41,7 +41,7 @@ export async function FamilyDashboard({ familyId }: FamilyDashboardProps) {
     }
 
   if (!family) {
-    return <p className="text-muted-foreground">Family not found.</p>
+    return <p className="text-on-surface-variant">Family not found.</p>
   }
 
   // For each holder, get their holdings via RPC to compute AUM
@@ -111,9 +111,9 @@ export async function FamilyDashboard({ familyId }: FamilyDashboardProps) {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">{family.name}</h1>
+          <h1 className="text-2xl font-extrabold font-headline text-primary">{family.name}</h1>
           {oldestNavDate && (
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-sm text-on-surface-variant mt-1">
               NAV as of {oldestNavDate}
             </p>
           )}
@@ -125,28 +125,28 @@ export async function FamilyDashboard({ familyId }: FamilyDashboardProps) {
       </div>
 
       {/* Family Total Analytics Row */}
-      <div className="rounded-lg border bg-card p-6">
-        <p className="text-sm text-muted-foreground mb-4">Family Total</p>
+      <div className="rounded-2xl shadow-sm bg-surface-container-lowest border-l-4 border-primary p-6">
+        <p className="text-sm text-on-surface-variant mb-4">Family Total</p>
         <div className="flex gap-8 flex-wrap">
           <div>
-            <p className="text-xs text-muted-foreground">AUM</p>
-            <p className="font-mono font-semibold text-lg">
+            <p className="text-xs text-on-surface-variant">AUM</p>
+            <p className="tabular-nums font-body font-semibold text-lg">
               {totalAUM !== null ? formatINR(totalAUM) : '—'}
             </p>
             {totalAUM === null && (
-              <p className="text-xs text-muted-foreground mt-0.5">Sync NAV to calculate</p>
+              <p className="text-xs text-on-surface-variant mt-0.5">Sync NAV to calculate</p>
             )}
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Invested</p>
-            <p className="font-mono text-lg">
+            <p className="text-xs text-on-surface-variant">Invested</p>
+            <p className="tabular-nums font-body text-lg">
               {familyTotalInvested > 0 ? formatINR(familyTotalInvested) : '—'}
             </p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Gain / Loss</p>
+            <p className="text-xs text-on-surface-variant">Gain / Loss</p>
             {familyGainLoss !== null ? (
-              <p className={`font-mono font-semibold text-lg ${familyGainLoss >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <p className={`tabular-nums font-body font-semibold text-lg ${familyGainLoss >= 0 ? 'text-secondary' : 'text-error'}`}>
                 {formatINR(familyGainLoss)}
                 {familyGainLossPct !== null && (
                   <span className="text-sm font-normal ml-1">
@@ -155,7 +155,7 @@ export async function FamilyDashboard({ familyId }: FamilyDashboardProps) {
                 )}
               </p>
             ) : (
-              <p className="font-mono text-lg text-muted-foreground">—</p>
+              <p className="tabular-nums font-body text-lg text-on-surface-variant">—</p>
             )}
           </div>
         </div>
@@ -163,12 +163,12 @@ export async function FamilyDashboard({ familyId }: FamilyDashboardProps) {
 
       {/* Holder Cards */}
       {holdersWithAUM.length === 0 ? (
-        <p className="text-muted-foreground">
+        <p className="text-on-surface-variant">
           No holders yet. Use &ldquo;Add Holder&rdquo; to get started.
         </p>
       ) : (
         <div>
-          <h2 className="text-lg font-semibold mb-4">Holders</h2>
+          <h2 className="text-lg font-bold font-headline text-primary mb-4">Holders</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {holdersWithAUM.map((holder) => (
               <Link
@@ -176,18 +176,18 @@ export async function FamilyDashboard({ familyId }: FamilyDashboardProps) {
                 href={`/families/${familyId}/holders/${holder.id}`}
                 className="block"
               >
-                <div className="rounded-lg border bg-card p-4 hover:bg-accent transition-colors cursor-pointer">
-                  <p className="font-medium">{holder.name}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5 font-mono">
+                <div className="rounded-2xl shadow-sm bg-surface-container-lowest p-6 hover:bg-surface-container transition-colors cursor-pointer">
+                  <p className="font-medium text-on-surface">{holder.name}</p>
+                  <p className="text-xs text-on-surface-variant mt-0.5 tabular-nums font-body">
                     {maskPAN(holder.pan)}
                   </p>
-                  <p className="text-xl font-bold font-mono mt-3">
+                  <p className="text-xl font-bold tabular-nums font-body mt-3 text-on-surface">
                     {holder.totalCurrentValue !== null
                       ? formatINR(holder.totalCurrentValue)
                       : '—'}
                   </p>
                   {holder.oldestNavDate && (
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="text-xs text-on-surface-variant mt-1">
                       NAV as of {holder.oldestNavDate}
                     </p>
                   )}
