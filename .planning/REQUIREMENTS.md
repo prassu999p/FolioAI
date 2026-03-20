@@ -41,22 +41,22 @@ Planners and executors for Phases 3, 4, and 5 must read `frontend.html` before b
 
 ### Performance Analytics
 
-- [ ] **PERF-01**: User can see total portfolio value, total invested amount, and absolute gain/loss (₹ and %) per holder and family total
-- [ ] **PERF-02**: User can see XIRR (time-weighted return) for the overall portfolio, per holding, and per holder — calculated from full transaction cashflow series
-- [ ] **PERF-03**: User can compare portfolio returns against Nifty 50 and fund category average benchmark
+- [x] **PERF-01**: User can see total portfolio value, total invested amount, and absolute gain/loss (₹ and %) per holder and family total
+- [x] **PERF-02**: User can see XIRR (time-weighted return) for the overall portfolio, per holding, and per holder — calculated from full transaction cashflow series
+- [x] **PERF-03**: User can compare portfolio returns against Nifty 50 and fund category average benchmark
 - [ ] **PERF-04**: User can switch between XIRR, absolute return, and benchmark comparison views
-- [ ] **PERF-05**: User can see portfolio performance over selectable time periods (1M, 3M, 6M, 1Y, 3Y, all-time)
-- [ ] **PERF-06**: All analytics are segmented by Indian financial year (April–March), not calendar year
+- [x] **PERF-05**: User can see portfolio performance over selectable time periods (1M, 3M, 6M, 1Y, 3Y, all-time)
+- [x] **PERF-06**: All analytics are segmented by Indian financial year (April–March), not calendar year
 
 ### SIP Tracking
 
-- [ ] **SIP-01**: User can view all active SIPs with monthly debit amount, fund name, and next scheduled date
-- [ ] **SIP-02**: User can see SIP portfolio XIRR (cost-averaging adjusted) separately from lumpsum holdings
+- [x] **SIP-01**: User can view all active SIPs with monthly debit amount, fund name, and next scheduled date
+- [x] **SIP-02**: User can see SIP portfolio XIRR (cost-averaging adjusted) separately from lumpsum holdings
 
 ### Asset Allocation & Rebalancing
 
-- [ ] **ALLOC-01**: User can define a target asset allocation (equity / debt / gold / international %) per holder or family
-- [ ] **ALLOC-02**: User can see current allocation vs target allocation with deviation highlighted
+- [x] **ALLOC-01**: User can define a target asset allocation (equity / debt / gold / international %) per holder or family
+- [x] **ALLOC-02**: User can see current allocation vs target allocation with deviation highlighted
 - [ ] **ALLOC-03**: User receives an alert when any asset class drifts beyond a user-defined threshold from target
 
 ### Goal-Based Investing
@@ -148,16 +148,16 @@ Planners and executors for Phases 3, 4, and 5 must read `frontend.html` before b
 | DATA-04 | Phase 1 | Complete |
 | DATA-05 | Phase 1 | Complete |
 | DATA-06 | Phase 1 | Complete |
-| PERF-01 | Phase 2 | Pending |
-| PERF-02 | Phase 2 | Pending |
-| PERF-03 | Phase 2 | Pending |
+| PERF-01 | Phase 2 | Complete |
+| PERF-02 | Phase 2 | Complete |
+| PERF-03 | Phase 2 | Complete |
 | PERF-04 | Phase 2 | Pending |
-| PERF-05 | Phase 2 | Pending |
-| PERF-06 | Phase 2 | Pending |
-| SIP-01 | Phase 2 | Pending |
-| SIP-02 | Phase 2 | Pending |
-| ALLOC-01 | Phase 2 | Pending |
-| ALLOC-02 | Phase 2 | Pending |
+| PERF-05 | Phase 2 | Complete |
+| PERF-06 | Phase 2 | Complete |
+| SIP-01 | Phase 2 | Complete |
+| SIP-02 | Phase 2 | Complete |
+| ALLOC-01 | Phase 2 | Complete |
+| ALLOC-02 | Phase 2 | Complete |
 | ALLOC-03 | Phase 5 | Pending |
 | GOAL-01 | Phase 5 | Pending |
 | GOAL-02 | Phase 5 | Pending |
