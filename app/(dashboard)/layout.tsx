@@ -1,7 +1,15 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { SyncButton } from '@/components/nav/sync-button'
+
+const NAV_ITEMS = [
+  { label: 'Family Dashboard', icon: 'dashboard', href: '/families' },
+  { label: 'Individual Holders', icon: 'group', href: '#' },
+  { label: 'Asset Allocation', icon: 'pie_chart', href: '#' },
+  { label: 'Goals', icon: 'track_changes', href: '#' },
+  { label: 'Tax Intelligence', icon: 'receipt_long', href: '#' },
+  { label: 'AI Insights', icon: 'auto_awesome', href: '#' },
+]
 
 export default async function DashboardLayout({
   children,
@@ -17,65 +25,69 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       {/* Fixed Left Sidebar */}
-      <aside className="flex flex-col fixed left-0 top-0 h-screen z-40 bg-surface-container-low w-64">
+      <aside className="flex flex-col fixed left-0 top-0 h-screen z-40 w-64 transition-all duration-300 ease-in-out" style={{ backgroundColor: '#e6f6ff' }}>
         {/* Logo */}
-        <div className="p-8">
-          <h1 className="text-2xl font-black font-headline text-primary">FolioAI</h1>
-          <p className="text-xs font-medium text-on-surface-variant/70 uppercase tracking-widest mt-1">
+        <div className="px-8 py-10">
+          <h1 className="text-2xl font-black font-headline tracking-tight" style={{ color: '#002B5B' }}>FolioAI</h1>
+          <p className="text-xs uppercase tracking-widest font-medium mt-1" style={{ color: 'rgba(0,31,42,0.6)' }}>
             The Digital Fiduciary
           </p>
         </div>
 
         {/* Nav Links */}
-        <nav className="flex-1 px-4 space-y-2">
-          <Link
-            href="/families"
-            className="flex items-center gap-3 px-4 py-3 text-on-surface/70 hover:text-primary hover:bg-surface-container/50 transition-all rounded-lg"
-          >
-            <span className="material-symbols-outlined text-[20px]">dashboard</span>
-            <span className="text-sm font-medium">Family Dashboard</span>
-          </Link>
-          <Link
-            href="#"
-            className="flex items-center gap-3 px-4 py-3 text-on-surface/70 hover:text-primary hover:bg-surface-container/50 transition-all rounded-lg"
-          >
-            <span className="material-symbols-outlined text-[20px]">auto_awesome</span>
-            <span className="text-sm font-medium">AI Insights</span>
-          </Link>
-          <Link
-            href="#"
-            className="flex items-center gap-3 px-4 py-3 text-on-surface/70 hover:text-primary hover:bg-surface-container/50 transition-all rounded-lg"
-          >
-            <span className="material-symbols-outlined text-[20px]">receipt_long</span>
-            <span className="text-sm font-medium">Tax Intelligence</span>
-          </Link>
-          <Link
-            href="#"
-            className="flex items-center gap-3 px-4 py-3 text-on-surface/70 hover:text-primary hover:bg-surface-container/50 transition-all rounded-lg"
-          >
-            <span className="material-symbols-outlined text-[20px]">track_changes</span>
-            <span className="text-sm font-medium">Goals</span>
-          </Link>
+        <nav className="flex-1 space-y-1">
+          {NAV_ITEMS.map(({ label, icon, href }) => {
+            const isActive = label === 'Family Dashboard'
+            return (
+              <Link
+                key={label}
+                href={href}
+                className={
+                  isActive
+                    ? 'flex items-center px-8 py-4 bg-white rounded-r-full font-bold shadow-sm transition-all duration-300'
+                    : 'flex items-center px-8 py-4 transition-all duration-300 hover:bg-[#c9e7f7]/50'
+                }
+                style={
+                  isActive
+                    ? { color: '#002B5B' }
+                    : { color: 'rgba(0,31,42,0.7)' }
+                }
+              >
+                <span className="material-symbols-outlined mr-4">{icon}</span>
+                <span className="font-label text-sm">{label}</span>
+              </Link>
+            )
+          })}
         </nav>
 
-        {/* Bottom Section */}
-        <div className="p-4 mt-auto space-y-2">
-          <SyncButton />
-          <div className="flex gap-4 px-4 pt-2">
-            <Link href="#" className="text-xs text-on-surface-variant/60 hover:text-primary transition-colors">
-              Settings
-            </Link>
-            <Link href="#" className="text-xs text-on-surface-variant/60 hover:text-primary transition-colors">
-              Support
-            </Link>
-          </div>
+        {/* Ask AI CTA */}
+        <div className="p-6">
+          <button
+            className="w-full py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-all active:scale-95 text-white"
+            style={{ backgroundColor: '#001736' }}
+          >
+            <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+            Ask AI Intelligence
+          </button>
+        </div>
+
+        {/* Support + Settings */}
+        <div className="px-6 pb-6 space-y-2 border-t border-black/5 pt-4">
+          <Link href="#" className="flex items-center text-sm transition-colors" style={{ color: 'rgba(0,31,42,0.7)' }}>
+            <span className="material-symbols-outlined mr-3 text-[18px]">help</span>
+            Support
+          </Link>
+          <Link href="#" className="flex items-center text-sm transition-colors" style={{ color: 'rgba(0,31,42,0.7)' }}>
+            <span className="material-symbols-outlined mr-3 text-[18px]">settings</span>
+            Settings
+          </Link>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="ml-64 min-h-screen bg-surface">
+      <main className="ml-64 min-h-screen" style={{ backgroundColor: '#f4faff' }}>
         {children}
       </main>
     </div>

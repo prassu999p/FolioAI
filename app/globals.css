@@ -4,10 +4,13 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: "Work Sans", sans-serif;
   --font-mono: var(--font-geist-mono);
+
+  /* shadcn compatibility tokens */
+  --color-border: #c4c6d0;
+  --color-ring: #c4c6d0;
+  --color-foreground: #001f2a;
 
   /* MD3 Color Tokens */
   --color-surface-variant: #c9e7f7;
@@ -135,10 +138,11 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: #f4faff;
+    color: #001f2a;
     font-family: 'Work Sans', sans-serif;
   }
 

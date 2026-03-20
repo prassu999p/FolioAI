@@ -1,7 +1,5 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { SyncButton } from '@/components/nav/sync-button'
-import { AddHolderForm } from '@/components/family/add-holder-form'
 import { computeXIRR } from '@/lib/analytics/xirr'
 import { mapCategoryToAssetClass } from '@/lib/analytics/asset-class-mapper'
 import type { HoldingRow, AnalyticsTransaction, Transaction } from '@/lib/supabase/types'
@@ -319,22 +317,6 @@ export async function FamilyDashboard({ familyId }: FamilyDashboardProps) {
 
   return (
     <div className="space-y-8">
-      {/* Header — family name + controls */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-extrabold font-headline text-primary">{family.name}</h1>
-          {oldestNavDate && (
-            <p className="text-sm text-on-surface-variant mt-1">
-              NAV as of {oldestNavDate}
-            </p>
-          )}
-        </div>
-        <div className="flex gap-2">
-          <AddHolderForm familyId={familyId} />
-          <SyncButton />
-        </div>
-      </div>
-
       {/* Section 1 — AI Morning Insight banner (glassmorphism) */}
       <section
         style={{ background: 'rgba(255,255,255,0.4)', backdropFilter: 'blur(20px)', border: '1px solid rgba(0,109,67,0.1)' }}
