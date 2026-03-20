@@ -86,10 +86,29 @@ Give a long-term Indian investor complete clarity over their family's wealth: wh
 - **India regulations**: No execution of trades — platform is advisory only (SEBI RIA regulations)
 - **Web only (v1)**: No mobile app, no native notifications — web app with email alerts
 
+## Design System
+
+**Reference:** `.planning/frontend.html` (locked 2026-03-20)
+
+All UI across every phase must follow this design system — no exceptions:
+
+| Token | Value |
+|-------|-------|
+| **Typography** | Manrope (headings h1–h4) + Work Sans (body/labels) via Google Fonts |
+| **Icons** | Material Symbols Outlined (Google Fonts web font) — NOT Lucide |
+| **Colors** | MD3 semantic token set (`primary: #001736`, `secondary: #006d43`, `surface: #f4faff`) — full token list in `.planning/phases/02-portfolio-analytics/02-CONTEXT.md` `<design_reference>` |
+| **Numbers** | `tabular-nums` class on all financial figures |
+| **Cards** | `bg-surface-container-lowest rounded-2xl/3xl shadow-sm` |
+| **Layout** | Fixed sidebar (w-64) + main `ml-64`; sticky header `px-12 py-6` |
+| **Page pattern** | Hero section → bento metric grid → 2/3 content + 1/3 sidebar → full-width sections |
+
+When building UI for any phase: read `.planning/frontend.html` for the reference implementation.
+
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|----------|
+| MD3 design system across all phases | Consistent visual language; reference in frontend.html | Locked 2026-03-20 |
 | Rule-based tax engine (not LLM) | Tax errors have real financial consequences; LLMs hallucinate numbers | — Pending |
 | EOD prices, not real-time | Long-term investing doesn't need tick data; reduces infra cost significantly | — Pending |
 | Advisory only, no trade execution | SEBI RIA compliance; keeps scope manageable for v1 | — Pending |
@@ -97,4 +116,4 @@ Give a long-term Indian investor complete clarity over their family's wealth: wh
 | CAMS + broker API + manual entry | Different users are at different stages; all 3 paths needed for adoption | — Pending |
 
 ---
-*Last updated: 2026-03-18 after initialization*
+*Last updated: 2026-03-20 — design system locked from frontend.html*

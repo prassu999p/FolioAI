@@ -5,22 +5,39 @@
 
 ---
 
+## Cross-Cutting Constraints
+
+### UI Design System (applies to ALL phases)
+
+All user-facing UI must follow the design system defined in `.planning/frontend.html`:
+- **Typography:** Manrope (headings) + Work Sans (body) — Google Fonts
+- **Icons:** Material Symbols Outlined — NOT Lucide or any other icon library
+- **Colors:** MD3 token set (primary navy `#001736`, secondary green `#006d43`, surface `#f4faff`) configured in `tailwind.config.ts`
+- **Numbers:** `tabular-nums` CSS class on all financial values
+- **Cards:** `bg-surface-container-lowest rounded-2xl shadow-sm` (or `rounded-3xl` for table containers)
+- **Page structure:** Hero → bento metric cards → 2/3 main + 1/3 sidebar → full-width sections below
+- **Full spec:** `.planning/phases/02-portfolio-analytics/02-CONTEXT.md` `<design_reference>` section
+
+Planners and executors for Phases 3, 4, and 5 must read `frontend.html` before building any UI components.
+
+---
+
 ## v1 Requirements
 
 ### Multi-Holder / Family
 
-- [ ] **FAM-01**: User can create a family and add multiple holders (family members) with names and PAN
-- [ ] **FAM-02**: User can view a consolidated family dashboard showing total AUM, asset allocation, and XIRR across all holders
-- [ ] **FAM-03**: User can drill down from family view to individual holder's portfolio
+- [x] **FAM-01**: User can create a family and add multiple holders (family members) with names and PAN
+- [x] **FAM-02**: User can view a consolidated family dashboard showing total AUM, asset allocation, and XIRR across all holders
+- [x] **FAM-03**: User can drill down from family view to individual holder's portfolio
 
 ### Data Import & Holdings
 
-- [ ] **DATA-01**: User can import mutual fund holdings by uploading a CAMS Consolidated Account Statement (CAS) PDF
-- [ ] **DATA-02**: User can import mutual fund holdings by uploading a KFintech CAS PDF
+- [x] **DATA-01**: User can import mutual fund holdings by uploading a CAMS Consolidated Account Statement (CAS) PDF
+- [x] **DATA-02**: User can import mutual fund holdings by uploading a KFintech CAS PDF
 - [ ] **DATA-03**: User can connect a Zerodha account via Kite Connect API to import stock holdings and transactions
-- [ ] **DATA-04**: User can manually add a holding (fund/stock name, units, purchase date, cost price)
-- [ ] **DATA-05**: User can view all holdings for a holder in a single unified list (mutual funds + stocks)
-- [ ] **DATA-06**: System syncs end-of-day NAV from AMFI daily (automated, no user action)
+- [x] **DATA-04**: User can manually add a holding (fund/stock name, units, purchase date, cost price)
+- [x] **DATA-05**: User can view all holdings for a holder in a single unified list (mutual funds + stocks)
+- [x] **DATA-06**: System syncs end-of-day NAV from AMFI daily (automated, no user action)
 
 ### Performance Analytics
 
@@ -122,15 +139,15 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FAM-01 | Phase 1 | Pending |
-| FAM-02 | Phase 1 | Pending |
-| FAM-03 | Phase 1 | Pending |
-| DATA-01 | Phase 1 | Pending |
-| DATA-02 | Phase 1 | Pending |
+| FAM-01 | Phase 1 | Complete |
+| FAM-02 | Phase 1 | Complete |
+| FAM-03 | Phase 1 | Complete |
+| DATA-01 | Phase 1 | Complete |
+| DATA-02 | Phase 1 | Complete |
 | DATA-03 | Phase 5 | Pending |
-| DATA-04 | Phase 1 | Pending |
-| DATA-05 | Phase 1 | Pending |
-| DATA-06 | Phase 1 | Pending |
+| DATA-04 | Phase 1 | Complete |
+| DATA-05 | Phase 1 | Complete |
+| DATA-06 | Phase 1 | Complete |
 | PERF-01 | Phase 2 | Pending |
 | PERF-02 | Phase 2 | Pending |
 | PERF-03 | Phase 2 | Pending |
