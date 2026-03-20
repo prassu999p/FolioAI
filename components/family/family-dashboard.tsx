@@ -16,6 +16,7 @@ interface HolderWithAUM {
   name: string
   pan: string
   totalCurrentValue: number | null
+  totalInvested: number
   oldestNavDate: string | null
 }
 
@@ -58,6 +59,8 @@ export async function FamilyDashboard({ familyId }: FamilyDashboardProps) {
         ? holdingsList.reduce((sum, h) => sum + (h.current_value ?? 0), 0)
         : null
 
+      const totalInvested = holdingsList.reduce((sum, h) => sum + h.total_invested, 0)
+
       // Find oldest nav_date (least recently updated fund)
       const navDates = holdingsList
         .map(h => h.current_nav_date)
@@ -72,6 +75,7 @@ export async function FamilyDashboard({ familyId }: FamilyDashboardProps) {
         name: holder.name,
         pan: holder.pan,
         totalCurrentValue,
+        totalInvested,
         oldestNavDate,
       }
     })
@@ -82,6 +86,14 @@ export async function FamilyDashboard({ familyId }: FamilyDashboardProps) {
   const totalAUM = allHaveNav
     ? holdersWithAUM.reduce((sum, h) => sum + (h.totalCurrentValue ?? 0), 0)
     : null
+
+  // Family-total aggregates (PERF-01: family total alongside per-holder)
+  const familyTotalInvested = holdersWithAUM.reduce((sum, h) => sum + h.totalInvested, 0)
+  const familyGainLoss = totalAUM !== null ? totalAUM - familyTotalInvested : null
+  const familyGainLossPct =
+    familyGainLoss !== null && familyTotalInvested > 0
+      ? (familyGainLoss / familyTotalInvested) * 100
+      : null
 
   // Oldest nav date across all holders
   const allNavDates = holdersWithAUM
@@ -112,17 +124,41 @@ export async function FamilyDashboard({ familyId }: FamilyDashboardProps) {
         </div>
       </div>
 
-      {/* Total AUM Card */}
+      {/* Family Total Analytics Row */}
       <div className="rounded-lg border bg-card p-6">
-        <p className="text-sm text-muted-foreground mb-1">Total Family AUM</p>
-        <p className="text-3xl font-bold font-mono">
-          {totalAUM !== null ? formatINR(totalAUM) : '—'}
-        </p>
-        {totalAUM === null && (
-          <p className="text-xs text-muted-foreground mt-1">
-            Sync NAV to calculate current portfolio value
-          </p>
-        )}
+        <p className="text-sm text-muted-foreground mb-4">Family Total</p>
+        <div className="flex gap-8 flex-wrap">
+          <div>
+            <p className="text-xs text-muted-foreground">AUM</p>
+            <p className="font-mono font-semibold text-lg">
+              {totalAUM !== null ? formatINR(totalAUM) : '—'}
+            </p>
+            {totalAUM === null && (
+              <p className="text-xs text-muted-foreground mt-0.5">Sync NAV to calculate</p>
+            )}
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Invested</p>
+            <p className="font-mono text-lg">
+              {familyTotalInvested > 0 ? formatINR(familyTotalInvested) : '—'}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Gain / Loss</p>
+            {familyGainLoss !== null ? (
+              <p className={`font-mono font-semibold text-lg ${familyGainLoss >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {formatINR(familyGainLoss)}
+                {familyGainLossPct !== null && (
+                  <span className="text-sm font-normal ml-1">
+                    ({familyGainLossPct >= 0 ? '+' : ''}{familyGainLossPct.toFixed(2)}%)
+                  </span>
+                )}
+              </p>
+            ) : (
+              <p className="font-mono text-lg text-muted-foreground">—</p>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Holder Cards */}
