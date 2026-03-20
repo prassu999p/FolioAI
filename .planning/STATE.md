@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 02-portfolio-analytics-06-PLAN.md
-last_updated: "2026-03-20T03:59:15.056Z"
+stopped_at: Completed 02-portfolio-analytics-09-PLAN.md
+last_updated: "2026-03-20T05:24:28.632Z"
 last_activity: 2026-03-19 — Roadmap created
 progress:
   total_phases: 5
-  completed_phases: 2
-  total_plans: 12
-  completed_plans: 12
+  completed_phases: 1
+  total_plans: 15
+  completed_plans: 14
   percent: 0
 ---
 
@@ -62,6 +62,8 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02-portfolio-analytics P05 | 4min | 2 tasks | 5 files |
 | Phase 02-portfolio-analytics P04 | 6min | 2 tasks | 7 files |
 | Phase 02-portfolio-analytics P06 | 3 | 2 tasks | 2 files |
+| Phase 02-portfolio-analytics P09 | 2min | 1 tasks | 1 files |
+| Phase 02-portfolio-analytics P08 | 2min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -105,6 +107,9 @@ Recent decisions affecting current work:
 - [Phase 02-portfolio-analytics]: HoldingsTable uses HoldingRowWithAnalytics instead of HoldingRow — holder page maps null for analytics fields until XIRR computation is wired
 - [Phase 02-portfolio-analytics]: Auth check delegated to dashboard layout — holder page does not repeat getClaims()
 - [Phase 02-portfolio-analytics]: Holder page as pure assembly: business logic in analytics lib modules; page only fetches data and composes components
+- [Phase 02-portfolio-analytics]: SetTargetModal uses uncontrolled Dialog (no open/onOpenChange) — eliminates hydration failure surface where controlled open=false interferes with Radix internal state machine
+- [Phase 02-portfolio-analytics]: CASFolioSchema accepts both flat folio and nested schemes formats via optional fields with defaults — avoids breaking nested-format callers while supporting real-world CAMS output
+- [Phase 02-portfolio-analytics]: Import route normalises folio input into NormalisedScheme schemeList before loop — handles both casparser output shapes without duplicating inner loop body
 
 ### Pending Todos
 
@@ -121,6 +126,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T03:59:15.053Z
-Stopped at: Completed 02-portfolio-analytics-06-PLAN.md
+Last session: 2026-03-20T05:24:11.580Z
+Stopped at: Completed 02-portfolio-analytics-09-PLAN.md
 Resume file: None
