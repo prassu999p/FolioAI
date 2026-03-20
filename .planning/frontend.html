@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Individual Holder View - Rajesh Sharma | FolioAI</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Work+Sans:wght@300;400;500;600&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-variant": "#c9e7f7",
+            "on-primary-container": "#7594ca",
+            "on-primary": "#ffffff",
+            "secondary-container": "#88f5b7",
+            "surface-container-low": "#e6f6ff",
+            "on-tertiary": "#ffffff",
+            "on-primary-fixed": "#001b3d",
+            "inverse-surface": "#163440",
+            "outline-variant": "#c4c6d0",
+            "outline": "#747780",
+            "background": "#f4faff",
+            "on-secondary-fixed": "#002111",
+            "on-surface": "#001f2a",
+            "on-error-container": "#93000a",
+            "surface-dim": "#c0dfee",
+            "surface-container": "#d9f2ff",
+            "inverse-primary": "#a9c7ff",
+            "tertiary-container": "#0e2f3b",
+            "surface": "#f4faff",
+            "error": "#ba1a1a",
+            "primary-container": "#002b5b",
+            "tertiary": "#001a23",
+            "on-secondary": "#ffffff",
+            "secondary": "#006d43",
+            "surface-tint": "#405f91",
+            "on-background": "#001f2a",
+            "tertiary-fixed": "#c8e7f7",
+            "surface-container-highest": "#c9e7f7",
+            "on-surface-variant": "#43474f",
+            "on-secondary-container": "#007146",
+            "surface-container-lowest": "#ffffff",
+            "primary-fixed-dim": "#a9c7ff",
+            "surface-container-high": "#ceedfd",
+            "inverse-on-surface": "#e0f4ff",
+            "surface-bright": "#f4faff",
+            "on-error": "#ffffff",
+            "primary-fixed": "#d6e3ff",
+            "tertiary-fixed-dim": "#accbda",
+            "secondary-fixed": "#8af8ba",
+            "secondary-fixed-dim": "#6edba0",
+            "on-tertiary-fixed-variant": "#2d4b57",
+            "on-primary-fixed-variant": "#264778",
+            "on-tertiary-fixed": "#001f29",
+            "on-tertiary-container": "#7997a5",
+            "error-container": "#ffdad6",
+            "primary": "#001736",
+            "on-secondary-fixed-variant": "#005231"
+          },
+          fontFamily: {
+            "headline": ["Manrope"],
+            "body": ["Work Sans"],
+            "label": ["Work Sans"]
+          },
+          borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+        },
+      },
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Work Sans', sans-serif;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-family: 'Manrope', sans-serif;
+    }
+
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+</head>
+
+<body class="bg-surface text-on-surface">
+  <!-- Sidebar Navigation -->
+  <aside class="flex flex-col fixed left-0 top-0 h-screen z-40 bg-[#e6f6ff] dark:bg-[#001736] h-full w-64">
+    <div class="p-8">
+      <h1 class="text-2xl font-black text-[#002B5B] dark:text-[#ffffff]">FolioAI</h1>
+      <p class="text-xs font-medium text-on-surface-variant/70 uppercase tracking-widest mt-1">The Digital Fiduciary</p>
+    </div>
+    <nav class="flex-1 px-4 space-y-2">
+      <a class="flex items-center px-4 py-3 text-[#001f2a]/70 hover:text-[#002B5B] hover:bg-[#c9e7f7]/50 transition-all rounded-lg group"
+        href="#">
+        <span class="material-symbols-outlined mr-3" data-icon="dashboard">dashboard</span>
+        <span class="font-medium">Family Dashboard</span>
+      </a>
+      <a class="flex items-center px-4 py-3 bg-[#ffffff] text-[#002B5B] rounded-r-full font-bold shadow-sm transition-all group"
+        href="#">
+        <span class="material-symbols-outlined mr-3" data-icon="group"
+          style="font-variation-settings: 'FILL' 1;">group</span>
+        <span class="font-medium">Individual Holders</span>
+      </a>
+      <a class="flex items-center px-4 py-3 text-[#001f2a]/70 hover:text-[#002B5B] hover:bg-[#c9e7f7]/50 transition-all rounded-lg group"
+        href="#">
+        <span class="material-symbols-outlined mr-3" data-icon="pie_chart">pie_chart</span>
+        <span class="font-medium">Asset Allocation</span>
+      </a>
+      <a class="flex items-center px-4 py-3 text-[#001f2a]/70 hover:text-[#002B5B] hover:bg-[#c9e7f7]/50 transition-all rounded-lg group"
+        href="#">
+        <span class="material-symbols-outlined mr-3" data-icon="track_changes">track_changes</span>
+        <span class="font-medium">Goals</span>
+      </a>
+      <a class="flex items-center px-4 py-3 text-[#001f2a]/70 hover:text-[#002B5B] hover:bg-[#c9e7f7]/50 transition-all rounded-lg group"
+        href="#">
+        <span class="material-symbols-outlined mr-3" data-icon="receipt_long">receipt_long</span>
+        <span class="font-medium">Tax Intelligence</span>
+      </a>
+      <a class="flex items-center px-4 py-3 text-[#001f2a]/70 hover:text-[#002B5B] hover:bg-[#c9e7f7]/50 transition-all rounded-lg group"
+        href="#">
+        <span class="material-symbols-outlined mr-3" data-icon="auto_awesome">auto_awesome</span>
+        <span class="font-medium">AI Insights</span>
+      </a>
+    </nav>
+    <div class="p-4 mt-auto">
+      <button
+        class="w-full py-4 px-4 bg-primary text-on-primary rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg hover:opacity-90 transition-all active:scale-95">
+        <span class="material-symbols-outlined text-secondary-fixed" data-icon="auto_awesome">auto_awesome</span>
+        Ask AI Intelligence
+      </button>
+      <div class="mt-6 space-y-1">
+        <a class="flex items-center px-4 py-2 text-xs font-medium text-[#001f2a]/70 hover:text-[#002B5B]" href="#">
+          <span class="material-symbols-outlined mr-2 text-sm" data-icon="help">help</span> Support
+        </a>
+        <a class="flex items-center px-4 py-2 text-xs font-medium text-[#001f2a]/70 hover:text-[#002B5B]" href="#">
+          <span class="material-symbols-outlined mr-2 text-sm" data-icon="settings">settings</span> Settings
+        </a>
+      </div>
+    </div>
+  </aside>
+  <!-- Main Canvas -->
+  <main class="ml-64 min-h-screen">
+    <!-- Top App Bar -->
+    <header class="flex justify-between items-center w-full px-12 py-6 bg-[#f4faff] sticky top-0 z-30">
+      <div class="flex items-center gap-4">
+        <nav class="flex items-center text-sm font-medium text-on-surface-variant">
+          <span class="hover:text-primary cursor-pointer">Family Dashboard</span>
+          <span class="material-symbols-outlined text-xs mx-2" data-icon="chevron_right">chevron_right</span>
+          <span class="text-primary font-bold">Rajesh Sharma</span>
+        </nav>
+      </div>
+      <div class="flex items-center gap-6">
+        <div class="flex gap-4">
+          <button
+            class="flex items-center gap-2 px-4 py-2 bg-surface-container-highest/30 text-primary font-bold rounded-lg border border-outline-variant/20 hover:bg-surface-container-high transition-colors">
+            <span class="material-symbols-outlined" data-icon="add">add</span>
+            Add Manual Holding
+          </button>
+          <button
+            class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary font-bold rounded-lg hover:opacity-90 transition-all active:scale-95">
+            <span class="material-symbols-outlined" data-icon="download">download</span>
+            Export Statement
+          </button>
+        </div>
+        <div class="h-8 w-px bg-outline-variant/30"></div>
+        <div class="flex items-center gap-4">
+          <span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer"
+            data-icon="notifications">notifications</span>
+          <span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer"
+            data-icon="settings">settings</span>
+          <img alt="User profile" class="w-10 h-10 rounded-full object-cover"
+            data-alt="User profile avatar of the account holder"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaDXqCiHT8z-8d078PjCMetSFrYA3IyPX9BGyLnYwq-KtQ2dTXZzm5VChgzgHgVhUxLibzNu2mORQv-bIqtD0IMTrSoPYewDAHdUjxeeqCcbjFmSlhO8S8T8VbRErQ0nyGTk0uCghBxFE7SQ5m1HzHX2ungdjC8ejNEFg3f-PSVTBiwQD37L32UNg9WXJfY3EhQKFEsopcpT2A9zgaOVUUEa0UwXXYvchMpNZiNM_AEw-oD1vM2yqBf8qYvhHVWX1t9i2LTsLtbPs" />
+        </div>
+      </div>
+    </header>
+    <div class="px-12 pb-12">
+      <!-- Hero Title Section -->
+      <div class="mb-12 flex items-end justify-between">
+        <div>
+          <h2 class="text-4xl font-extrabold text-primary tracking-tight">Rajesh Sharma</h2>
+          <p class="text-on-surface-variant mt-2 max-w-lg">Primary portfolio holder with diversified exposure across
+            Indian equity markets and debt funds. Managed by WealthDesk.</p>
+        </div>
+        <div class="text-right">
+          <span class="label-sm text-on-surface-variant block uppercase tracking-tighter">Last Synced</span>
+          <span class="font-bold text-primary">Today, 09:45 AM</span>
+        </div>
+      </div>
+      <!-- Summary Bento Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+        <div
+          class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border-l-4 border-primary group hover:bg-surface-container transition-colors">
+          <p class="text-on-surface-variant text-sm font-medium mb-1">Total AUM</p>
+          <h3 class="text-3xl font-extrabold tabular-nums text-primary tracking-tight">₹1,42,85,900</h3>
+          <div class="mt-4 flex items-center text-secondary font-bold text-sm">
+            <span class="material-symbols-outlined text-sm mr-1" data-icon="trending_up">trending_up</span>
+            +12.4% vs last year
+          </div>
+        </div>
+        <div
+          class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm group hover:bg-surface-container transition-colors">
+          <p class="text-on-surface-variant text-sm font-medium mb-1">Total Invested</p>
+          <h3 class="text-3xl font-extrabold tabular-nums text-primary tracking-tight">₹92,50,000</h3>
+        </div>
+        <div
+          class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm group hover:bg-surface-container transition-colors">
+          <p class="text-on-surface-variant text-sm font-medium mb-1">Absolute Gain</p>
+          <h3 class="text-3xl font-extrabold tabular-nums text-secondary tracking-tight">₹50,35,900</h3>
+          <div
+            class="mt-4 flex items-center bg-secondary-container/30 text-on-secondary-container px-2 py-1 rounded text-xs font-bold w-fit">
+            Lifetime High
+          </div>
+        </div>
+        <div
+          class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border-r-4 border-secondary-fixed group hover:bg-surface-container transition-colors">
+          <p class="text-on-surface-variant text-sm font-medium mb-1">XIRR (Realized)</p>
+          <h3 class="text-3xl font-extrabold tabular-nums text-primary tracking-tight">18.42%</h3>
+          <div class="mt-4 h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+            <div class="h-full bg-secondary w-[85%] rounded-full"></div>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+        <!-- Holdings Table Section -->
+        <div class="lg:col-span-2">
+          <div class="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-sm">
+            <div class="p-8 flex justify-between items-center bg-surface-container-low/50">
+              <h3 class="text-xl font-bold text-primary">Portfolio Holdings</h3>
+              <div class="flex gap-4">
+                <span
+                  class="text-xs font-bold text-on-surface-variant uppercase tracking-widest cursor-pointer hover:text-primary">Mutual
+                  Funds</span>
+                <span
+                  class="text-xs font-bold text-on-surface-variant/40 uppercase tracking-widest cursor-pointer hover:text-primary">Stocks</span>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="text-xs uppercase text-on-surface-variant/70 font-bold bg-surface-container-low/30">
+                    <th class="py-4 px-8">Asset Name</th>
+                    <th class="py-4 px-4 text-center">Units</th>
+                    <th class="py-4 px-4 text-right">Current NAV</th>
+                    <th class="py-4 px-4 text-right">Value (₹)</th>
+                    <th class="py-4 px-8 text-right">XIRR</th>
+                  </tr>
+                </thead>
+                <tbody class="text-sm">
+                  <tr class="hover:bg-surface-container-low transition-colors group">
+                    <td class="py-5 px-8">
+                      <div class="font-bold text-primary">Parag Parikh Flexi Cap Fund</div>
+                      <div class="text-xs text-on-surface-variant">Equity: Flexi Cap</div>
+                    </td>
+                    <td class="py-5 px-4 text-center tabular-nums font-medium">14,250.4</td>
+                    <td class="py-5 px-4 text-right tabular-nums">72.18</td>
+                    <td class="py-5 px-4 text-right tabular-nums font-bold">10,28,450</td>
+                    <td class="py-5 px-8 text-right tabular-nums text-secondary font-bold">21.4%</td>
+                  </tr>
+                  <tr class="bg-surface-container-low/20 hover:bg-surface-container-low transition-colors">
+                    <td class="py-5 px-8">
+                      <div class="font-bold text-primary">HDFC Top 100 Fund - Growth</div>
+                      <div class="text-xs text-on-surface-variant">Equity: Large Cap</div>
+                    </td>
+                    <td class="py-5 px-4 text-center tabular-nums font-medium">8,102.1</td>
+                    <td class="py-5 px-4 text-right tabular-nums">912.45</td>
+                    <td class="py-5 px-4 text-right tabular-nums font-bold">73,92,450</td>
+                    <td class="py-5 px-8 text-right tabular-nums text-secondary font-bold">16.8%</td>
+                  </tr>
+                  <tr class="hover:bg-surface-container-low transition-colors">
+                    <td class="py-5 px-8">
+                      <div class="font-bold text-primary">Axis Small Cap Fund</div>
+                      <div class="text-xs text-on-surface-variant">Equity: Small Cap</div>
+                    </td>
+                    <td class="py-5 px-4 text-center tabular-nums font-medium">12,500.0</td>
+                    <td class="py-5 px-4 text-right tabular-nums">84.20</td>
+                    <td class="py-5 px-4 text-right tabular-nums font-bold">10,52,500</td>
+                    <td class="py-5 px-8 text-right tabular-nums text-secondary font-bold">24.1%</td>
+                  </tr>
+                  <tr class="bg-surface-container-low/20 hover:bg-surface-container-low transition-colors">
+                    <td class="py-5 px-8">
+                      <div class="font-bold text-primary">ICICI Bluechip Fund</div>
+                      <div class="text-xs text-on-surface-variant">Equity: Large Cap</div>
+                    </td>
+                    <td class="py-5 px-4 text-center tabular-nums font-medium">45,000.0</td>
+                    <td class="py-5 px-4 text-right tabular-nums">107.50</td>
+                    <td class="py-5 px-4 text-right tabular-nums font-bold">48,37,500</td>
+                    <td class="py-5 px-8 text-right tabular-nums text-secondary font-bold">14.2%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- Right Sidebar Contextual Info -->
+        <div class="space-y-8">
+          <!-- AI Portfolio Health -->
+          <div class="p-8 rounded-3xl bg-primary text-on-primary relative overflow-hidden">
+            <div class="absolute -right-8 -top-8 w-32 h-32 bg-secondary-fixed/10 rounded-full blur-3xl"></div>
+            <div class="flex items-center justify-between mb-8">
+              <h3 class="text-lg font-bold">AI Portfolio Health</h3>
+              <span class="material-symbols-outlined text-secondary-fixed" data-icon="auto_awesome"
+                style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+            </div>
+            <div class="flex items-center gap-6 mb-8">
+              <div class="relative w-20 h-20 flex items-center justify-center">
+                <svg class="w-full h-full -rotate-90">
+                  <circle class="text-surface-variant/20" cx="40" cy="40" fill="transparent" r="34"
+                    stroke="currentColor" stroke-width="6"></circle>
+                  <circle class="text-secondary-fixed" cx="40" cy="40" fill="transparent" r="34" stroke="currentColor"
+                    stroke-dasharray="213.6" stroke-dashoffset="25" stroke-width="6"></circle>
+                </svg>
+                <span class="absolute text-xl font-bold">88</span>
+              </div>
+              <div>
+                <p class="text-sm text-surface-variant/80">Quality Score</p>
+                <p class="text-xs font-medium text-secondary-fixed">Strong Diversification</p>
+              </div>
+            </div>
+            <div class="space-y-4">
+              <div class="p-4 bg-surface-container-low/10 rounded-xl">
+                <div class="flex justify-between text-xs font-bold uppercase mb-2">
+                  <span>HDFC Top 100</span>
+                  <span class="text-secondary-fixed tabular-nums">+4.2% Alpha</span>
+                </div>
+                <div class="h-1 bg-surface-container-low/20 rounded-full">
+                  <div class="h-full bg-secondary-fixed w-[90%]"></div>
+                </div>
+                <p class="text-[10px] mt-2 text-surface-variant/60">Low Expense Ratio: 0.85%</p>
+              </div>
+              <div class="p-4 bg-surface-container-low/10 rounded-xl">
+                <div class="flex justify-between text-xs font-bold uppercase mb-2">
+                  <span>Axis Small Cap</span>
+                  <span class="text-secondary-fixed tabular-nums">+6.8% Alpha</span>
+                </div>
+                <div class="h-1 bg-surface-container-low/20 rounded-full">
+                  <div class="h-full bg-secondary-fixed w-[75%]"></div>
+                </div>
+                <p class="text-[10px] mt-2 text-surface-variant/60">Expense Ratio: 1.15%</p>
+              </div>
+            </div>
+          </div>
+          <!-- SIP Tracker -->
+          <div class="bg-surface-container-lowest p-8 rounded-3xl shadow-sm">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-lg font-bold text-primary">Active SIPs</h3>
+              <span class="text-xs bg-surface-container-high px-3 py-1 rounded-full font-bold text-primary">5
+                Total</span>
+            </div>
+            <div class="space-y-6">
+              <div class="flex justify-between items-center group">
+                <div class="flex gap-4">
+                  <div
+                    class="w-10 h-10 rounded-lg bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-secondary-container transition-colors">
+                    <span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+                  </div>
+                  <div>
+                    <p class="text-sm font-bold text-primary">₹25,000</p>
+                    <p class="text-xs text-on-surface-variant">Parag Parikh Flexi</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="text-[10px] font-bold text-on-surface-variant uppercase">Next Debit</p>
+                  <p class="text-xs font-bold text-primary">05 Oct</p>
+                </div>
+              </div>
+              <div class="flex justify-between items-center group">
+                <div class="flex gap-4">
+                  <div
+                    class="w-10 h-10 rounded-lg bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-secondary-container transition-colors">
+                    <span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+                  </div>
+                  <div>
+                    <p class="text-sm font-bold text-primary">₹15,000</p>
+                    <p class="text-xs text-on-surface-variant">Axis Small Cap</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="text-[10px] font-bold text-on-surface-variant uppercase">Next Debit</p>
+                  <p class="text-xs font-bold text-primary">12 Oct</p>
+                </div>
+              </div>
+              <div class="flex justify-between items-center group">
+                <div class="flex gap-4">
+                  <div
+                    class="w-10 h-10 rounded-lg bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-secondary-container transition-colors">
+                    <span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+                  </div>
+                  <div>
+                    <p class="text-sm font-bold text-primary">₹10,000</p>
+                    <p class="text-xs text-on-surface-variant">HDFC Balanced</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="text-[10px] font-bold text-on-surface-variant uppercase">Next Debit</p>
+                  <p class="text-xs font-bold text-primary">15 Oct</p>
+                </div>
+              </div>
+            </div>
+            <button
+              class="w-full mt-8 py-3 bg-surface text-primary border border-outline-variant/30 rounded-xl text-sm font-bold hover:bg-surface-container transition-all">
+              View All SIPs
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Visual Asset Allocation Background Hint -->
+      <div class="relative w-full h-48 rounded-[2rem] overflow-hidden group">
+        <img alt="Market backdrop" class="w-full h-full object-cover opacity-20 filter grayscale"
+          data-alt="Abstract financial market chart background"
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkatMLntfjnxPN7mXp1jrbJ_r2GMjAoxzkTWeSonJJRsihJffJrcF0eQXMEgZRgtKifJAdarR87JWQXrAAJXDbs7HOlXGKcebSFE_6ShDeLK9I-dHi65xuUCyM_dpNSyLotl9aAesFoBL7TQm2-5wSH7M_46lvZ13IKEWmm19O7mTCzjDzTRoHg3wPtVHOKcGD-R-VvO9_uWP3fNyXNQ44y8Vckf_wmfXPg7vRRAKihjoD061WvBPbOD5A1yXM8Fm-h7_QCCZnCF0" />
+        <div class="absolute inset-0 bg-gradient-to-r from-surface to-transparent flex items-center p-12">
+          <div class="max-w-md">
+            <h4 class="text-2xl font-bold text-primary mb-2">Portfolio Insights</h4>
+            <p class="text-on-surface-variant text-sm">Rajesh, your portfolio currently has a 12% overweight position in
+              Small-cap equities. AI suggests rebalancing into Liquid Funds to hedge against near-term volatility.</p>
+            <button class="mt-4 text-secondary font-bold text-sm flex items-center gap-1 hover:underline">
+              Explore AI Rebalancing <span class="material-symbols-outlined text-sm"
+                data-icon="arrow_forward">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+
+</html>
