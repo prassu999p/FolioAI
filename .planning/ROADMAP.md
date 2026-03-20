@@ -52,7 +52,18 @@ Plans:
   3. User can compare portfolio returns against Nifty 50 and fund category average, and switch between XIRR, absolute, and benchmark views
   4. User can view all active SIPs with next debit date and see SIP XIRR separately from lumpsum holdings
   5. User can define a target asset allocation and see current allocation vs target deviation, segmented by Indian financial year
-**Plans**: TBD
+**Plans**: 9 plans (6 feature + 3 gap closure)
+
+Plans:
+- [ ] 02-01-PLAN.md — Analytics lib: XIRR cashflow engine, SIP detection, benchmark comparison modules
+- [ ] 02-02-PLAN.md — Holder analytics page: period selector, summary bento cards, holdings table with XIRR
+- [ ] 02-03-PLAN.md — SIP section: active SIP cards with fund name, amount, detection from transactions
+- [ ] 02-04-PLAN.md — Asset allocation section: bars, target deviation markers, Set Target modal
+- [ ] 02-05-PLAN.md — Nifty 50 benchmark sync, benchmark comparison view on holder page
+- [ ] 02-06-PLAN.md — Holder page assembly: wire all components, breadcrumb nav, family dashboard total row
+- [ ] 02-07-PLAN.md — Gap closure: fix MD3 design system (globals.css shadcn alias overwrite, layout sidebar, component tokens)
+- [ ] 02-08-PLAN.md — Gap closure: fix CAS import route to read flat casparser folio.transactions structure
+- [ ] 02-09-PLAN.md — Gap closure: fix Set Target button (uncontrolled Dialog, DialogClose pattern)
 
 ### Phase 3: Tax Engine
 **UI:** Follow `.planning/frontend.html` design system — MD3 tokens, Manrope headings, Material Symbols icons, bento card pattern for tax summary metrics.
@@ -100,7 +111,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Data Foundation | 6/6 | Complete   | 2026-03-19 |
-| 2. Portfolio Analytics | 5/6 | In Progress|  |
+| 2. Portfolio Analytics | 6/9 | In Progress (gap closure)|  |
 | 3. Tax Engine | 0/TBD | Not started | - |
 | 4. AI Intelligence | 0/TBD | Not started | - |
 | 5. Goals, Alerts and Broker Integration | 0/TBD | Not started | - |
