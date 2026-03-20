@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation'
 
-const PERIODS = ['1M', '3M', '6M', '1Y', '3Y', 'all'] as const
+const PERIODS = ['1M', '3M', '6M', '1Y', '3Y', 'FY', 'all'] as const
 type PeriodValue = typeof PERIODS[number]
 
 const PERIOD_LABELS: Record<PeriodValue, string> = {
@@ -11,6 +11,7 @@ const PERIOD_LABELS: Record<PeriodValue, string> = {
   '6M': '6M',
   '1Y': '1Y',
   '3Y': '3Y',
+  'FY': 'This FY',
   'all': 'All Time',
 }
 

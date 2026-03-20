@@ -4,16 +4,17 @@
  * standard time period bounds (1M, 3M, 6M, 1Y, 3Y, all).
  */
 
-export type Period = '1M' | '3M' | '6M' | '1Y' | '3Y' | 'all'
+export type Period = '1M' | '3M' | '6M' | '1Y' | '3Y' | 'all' | 'FY'
 
 /**
  * Get start/end date bounds for a given period string.
  *
- * @param period - '1M', '3M', '6M', '1Y', '3Y', or 'all'
+ * @param period - '1M', '3M', '6M', '1Y', '3Y', 'all', or 'FY'
  * @returns { start: Date, end: Date } or null for 'all' (no date filter)
  */
 export function getPeriodBounds(period: string): { start: Date; end: Date } | null {
   if (period === 'all') return null
+  if (period === 'FY') return getCurrentFY()
 
   const msMap: Record<string, number> = {
     '1M':  30,
