@@ -58,7 +58,21 @@ export const CASFolioSchema = z.object({
   amc: z.string().optional(),
   KYC: z.string().optional(),
   PANKYC: z.string().optional(),
-  schemes: z.array(CASSchemeSchema),
+  // nested schemes format (some CAS parsers)
+  schemes: z.array(CASSchemeSchema).optional().default([]),
+  // flat format (real-world casparser CAMS output)
+  scheme: z.string().optional(),
+  amfi: z.string().nullable().optional(),
+  registrar: z.string().nullable().optional(),
+  transactions: z.array(CASTransactionSchema).optional().default([]),
+  close: z.union([z.number(), z.string()]).nullable().optional(),
+  close_calculated: z.union([z.number(), z.string()]).nullable().optional(),
+  valuation: z.object({
+    date: z.union([z.string(), z.date()]).nullable().optional(),
+    nav: z.union([z.number(), z.string()]).nullable().optional(),
+    cost: z.union([z.number(), z.string()]).nullable().optional(),
+    value: z.union([z.number(), z.string()]).nullable().optional(),
+  }).nullable().optional(),
 })
 
 export const CASOutputSchema = z.object({
