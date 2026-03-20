@@ -1,5 +1,5 @@
 ---
-status: complete
+status: diagnosed
 phase: 02-portfolio-analytics
 source: [02-01-SUMMARY.md, 02-02-SUMMARY.md, 02-03-SUMMARY.md, 02-04-SUMMARY.md, 02-05-SUMMARY.md, 02-06-SUMMARY.md]
 started: 2026-03-20T04:14:09Z
@@ -65,22 +65,50 @@ skipped: 0
   reason: "User reported: page loaded but UI is not according to the plan which I shared earlier — page looks unstyled, no MD3 design system, no proper card layout, plain text rendering"
   severity: major
   test: 8
-  artifacts: []
-  missing: []
+  root_cause: |
+    4 compounding issues:
+    RC-4 (critical): app/globals.css @theme inline block has duplicate declarations — shadcn alias block at lines 85-93 overwrites the MD3 hex values from lines 13-59. --color-primary ends up as oklch(0.205 0 0) (near-black) not #001736.
+    RC-2 (critical): app/(dashboard)/layout.tsx uses a top navbar + max-w-7xl, not the fixed sidebar (w-64 fixed) + ml-64 main layout from frontend.html.
+    RC-3 (moderate): family-dashboard.tsx and other existing components use shadcn class names (bg-card, text-muted-foreground) instead of MD3 tokens.
+    RC-1 (minor): --font-sans in globals.css maps to Geist, not Work Sans.
+  artifacts:
+    - path: "app/globals.css"
+      issue: "shadcn alias block overwrites MD3 color tokens; --font-sans maps to Geist"
+    - path: "app/(dashboard)/layout.tsx"
+      issue: "missing fixed sidebar layout; top navbar instead"
+    - path: "components/family/family-dashboard.tsx"
+      issue: "uses shadcn token names instead of MD3 tokens"
+  missing:
+    - "Remove shadcn alias block from @theme inline in globals.css"
+    - "Rewrite dashboard layout.tsx with fixed sidebar + ml-64 main"
+    - "Update family-dashboard.tsx component classes to MD3 tokens"
+    - "Fix --font-sans to point to Work Sans"
 
 - truth: "SIP section shows active SIPs detected from imported CAMS transactions"
   status: failed
   reason: "User reported: even though I have uploaded CAMS with SIP its not not showing up"
   severity: major
   test: 5
-  artifacts: []
-  missing: []
+  root_cause: |
+    CAS import route (app/api/cas/import/route.ts) iterates `for (const scheme of folio.schemes)`, but real-world casparser output places transactions directly on the folio object (folio.transactions, folio.scheme, etc.) — NOT in a nested `schemes` sub-array. When `folio.schemes` is undefined, the loop body never executes and all transactions are silently dropped. The transactions table is likely empty, so get_holder_analytics_transactions returns [], detectActiveSIPs([]) returns [], and SipSection returns null.
+  artifacts:
+    - path: "app/api/cas/import/route.ts"
+      issue: "iterates folio.schemes but casparser returns transactions on folio directly"
+  missing:
+    - "Fix import route to read folio.transactions directly (casparser flat structure) instead of folio.schemes[].transactions"
+    - "Verify transactions table has rows after fix"
 
 - truth: "Set Target button opens modal for editing allocation targets"
   status: failed
   reason: "User reported: button is not responsive"
   severity: major
   test: 7
-  artifacts: []
-  missing: []
+  root_cause: |
+    All static causes eliminated (resolver compatibility verified, radix-ui Dialog exports verified, hydration mismatch ruled out). Most likely: JS bundle chunk not loading before hydration (script fetch fails), leaving button as inert server-rendered HTML with no React event handlers. Needs browser Network/Console tab inspection to confirm. Fast verification: add onClick console.log to trigger button — if log fires, dialog state flow is broken; if not, bundle not loaded.
+  artifacts:
+    - path: "components/analytics/set-target-modal.tsx"
+      issue: "button renders but click handler may not be hydrated"
+  missing:
+    - "Check browser Network tab for failed .js chunk loads"
+    - "Add debug onClick log to confirm hydration; test uncontrolled Dialog mode if click fires"
 
