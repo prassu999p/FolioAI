@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 02-portfolio-analytics-08-PLAN.md
-last_updated: "2026-03-20T05:24:33.673Z"
+stopped_at: Completed 02-portfolio-analytics-07-PLAN.md
+last_updated: "2026-03-20T05:25:58.781Z"
 last_activity: 2026-03-19 — Roadmap created
 progress:
   total_phases: 5
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 15
-  completed_plans: 14
+  completed_plans: 15
   percent: 0
 ---
 
@@ -64,6 +64,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02-portfolio-analytics P06 | 3 | 2 tasks | 2 files |
 | Phase 02-portfolio-analytics P09 | 2min | 1 tasks | 1 files |
 | Phase 02-portfolio-analytics P08 | 2min | 2 tasks | 2 files |
+| Phase 02-portfolio-analytics P07 | 3min | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -110,6 +111,8 @@ Recent decisions affecting current work:
 - [Phase 02-portfolio-analytics]: SetTargetModal uses uncontrolled Dialog (no open/onOpenChange) — eliminates hydration failure surface where controlled open=false interferes with Radix internal state machine
 - [Phase 02-portfolio-analytics]: CASFolioSchema accepts both flat folio and nested schemes formats via optional fields with defaults — avoids breaking nested-format callers while supporting real-world CAMS output
 - [Phase 02-portfolio-analytics]: Import route normalises folio input into NormalisedScheme schemeList before loop — handles both casparser output shapes without duplicating inner loop body
+- [Phase 02-portfolio-analytics]: Shadcn var() aliases removed from @theme inline — Tailwind v4 reads --color-* as hex directly; :root retains shadcn vars for shadcn components
+- [Phase 02-portfolio-analytics]: Dashboard layout uses fixed w-64 sidebar + ml-64 main (no top navbar) — matches frontend.html design
 
 ### Pending Todos
 
@@ -126,6 +129,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T05:24:33.670Z
-Stopped at: Completed 02-portfolio-analytics-08-PLAN.md
+Last session: 2026-03-20T05:25:58.778Z
+Stopped at: Completed 02-portfolio-analytics-07-PLAN.md
 Resume file: None
