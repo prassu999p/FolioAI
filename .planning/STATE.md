@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 02-portfolio-analytics-07-PLAN.md
-last_updated: "2026-03-20T05:25:58.781Z"
+stopped_at: Completed 02-portfolio-analytics-10-PLAN.md
+last_updated: "2026-03-20T05:53:37.066Z"
 last_activity: 2026-03-19 — Roadmap created
 progress:
   total_phases: 5
-  completed_phases: 2
-  total_plans: 15
-  completed_plans: 15
+  completed_phases: 1
+  total_plans: 20
+  completed_plans: 17
   percent: 0
 ---
 
@@ -65,6 +65,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02-portfolio-analytics P09 | 2min | 1 tasks | 1 files |
 | Phase 02-portfolio-analytics P08 | 2min | 2 tasks | 2 files |
 | Phase 02-portfolio-analytics P07 | 3min | 3 tasks | 3 files |
+| Phase 02-portfolio-analytics P10 | 3min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -113,6 +114,7 @@ Recent decisions affecting current work:
 - [Phase 02-portfolio-analytics]: Import route normalises folio input into NormalisedScheme schemeList before loop — handles both casparser output shapes without duplicating inner loop body
 - [Phase 02-portfolio-analytics]: Shadcn var() aliases removed from @theme inline — Tailwind v4 reads --color-* as hex directly; :root retains shadcn vars for shadcn components
 - [Phase 02-portfolio-analytics]: Dashboard layout uses fixed w-64 sidebar + ml-64 main (no top navbar) — matches frontend.html design
+- [Phase 02-portfolio-analytics]: Per-holding XIRR uses single folio's current_value as terminal cashflow, not buildPortfolioCashflows which sums all holdings
 
 ### Pending Todos
 
@@ -129,6 +131,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T05:25:58.778Z
-Stopped at: Completed 02-portfolio-analytics-07-PLAN.md
+Last session: 2026-03-20T05:53:37.063Z
+Stopped at: Completed 02-portfolio-analytics-10-PLAN.md
 Resume file: None
