@@ -95,8 +95,41 @@ export async function POST(request: Request) {
       continue
     }
 
-    // 2. Process each scheme within the folio
-    for (const scheme of folio.schemes) {
+    // 2. Build normalised scheme list covering both casparser output shapes.
+    // Shape A (nested): folio.schemes[] — each element has .scheme, .amfi, .transactions, etc.
+    // Shape B (flat): folio has .scheme, .amfi, .transactions directly (real-world CAMS output).
+    type NormalisedScheme = {
+      scheme: string
+      amfi: string | null | undefined
+      registrar: string | null | undefined
+      transactions: typeof folio.transactions
+      close: typeof folio.close
+      close_calculated: typeof folio.close_calculated
+      valuation: typeof folio.valuation
+    }
+    const schemeList: NormalisedScheme[] = folio.schemes && folio.schemes.length > 0
+      ? folio.schemes.map(s => ({
+          scheme: s.scheme,
+          amfi: s.amfi,
+          registrar: s.registrar,
+          transactions: s.transactions,
+          close: s.close,
+          close_calculated: s.close_calculated,
+          valuation: s.valuation,
+        }))
+      : folio.scheme
+        ? [{
+            scheme: folio.scheme,
+            amfi: folio.amfi,
+            registrar: folio.registrar,
+            transactions: folio.transactions ?? [],
+            close: folio.close,
+            close_calculated: folio.close_calculated,
+            valuation: folio.valuation,
+          }]
+        : []
+
+    for (const scheme of schemeList) {
       try {
         const schemeCode = scheme.amfi ? parseInt(scheme.amfi, 10) : null
         if (!schemeCode) {
