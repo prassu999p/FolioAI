@@ -11,13 +11,14 @@ import { computeXIRR, computeGainLoss } from '@/lib/analytics/xirr'
 
 interface HolderHoldingsPageProps {
   params: Promise<{ familyId: string; holderId: string }>
-  searchParams: Promise<{ period?: string }>
+  searchParams: Promise<{ period?: string; view?: string }>
 }
 
 export default async function HolderHoldingsPage({ params, searchParams }: HolderHoldingsPageProps) {
   const { familyId, holderId } = await params
-  const { period: periodParam } = await searchParams
+  const { period: periodParam, view: viewParam } = await searchParams
   const period = periodParam ?? 'all'
+  const view = (viewParam ?? null) as 'xirr' | 'absolute' | 'benchmark' | null
 
   const supabase = await createClient()
 
@@ -262,6 +263,7 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
             transactions={transactions}
             holdings={holdingsWithAnalytics}
             nifty50Xirr={benchmarkXirr}
+            viewMode={view}
           />
         </div>
 

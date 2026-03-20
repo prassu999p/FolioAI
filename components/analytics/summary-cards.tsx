@@ -20,6 +20,7 @@ interface SummaryCardsProps {
   transactions: AnalyticsTransaction[]
   holdings: HoldingRowWithAnalytics[]
   nifty50Xirr?: number | null
+  viewMode?: 'xirr' | 'absolute' | 'benchmark' | null
 }
 
 /**
@@ -52,6 +53,7 @@ export function SummaryCards({
   transactions,
   holdings,
   nifty50Xirr = null,
+  viewMode = null,
 }: SummaryCardsProps) {
   const today = new Date()
 
@@ -73,10 +75,20 @@ export function SummaryCards({
   const cashflows: Cashflow[] = buildPortfolioCashflows(txRows, holdings, today)
   const xirr = computeXIRR(cashflows)
 
+  // Helper to get card prominence classes based on viewMode
+  const cardActive = (card: 'aum' | 'invested' | 'absolute' | 'xirr') => {
+    if (!viewMode) return '' // no mode selected — all cards at normal prominence
+    const match =
+      (card === 'xirr' && viewMode === 'xirr') ||
+      (card === 'absolute' && viewMode === 'absolute') ||
+      ((card === 'aum' || card === 'xirr') && viewMode === 'benchmark')
+    return match ? 'ring-2 ring-secondary' : 'opacity-60'
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
       {/* Card 1: Total AUM — left accent border */}
-      <div className="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border-l-4 border-primary hover:bg-surface-container transition-colors">
+      <div className={`bg-surface-container-lowest p-8 rounded-2xl shadow-sm border-l-4 border-primary hover:bg-surface-container transition-colors ${cardActive('aum')}`}>
         <p className="text-on-surface-variant text-sm font-medium mb-1">Total AUM</p>
         <h3 className="text-3xl font-extrabold tabular-nums text-primary tracking-tight font-headline">
           {formatINR(total_aum)}
@@ -88,7 +100,7 @@ export function SummaryCards({
       </div>
 
       {/* Card 2: Total Invested */}
-      <div className="bg-surface-container-lowest p-8 rounded-2xl shadow-sm hover:bg-surface-container transition-colors">
+      <div className={`bg-surface-container-lowest p-8 rounded-2xl shadow-sm hover:bg-surface-container transition-colors ${cardActive('invested')}`}>
         <p className="text-on-surface-variant text-sm font-medium mb-1">Total Invested</p>
         <h3 className="text-3xl font-extrabold tabular-nums text-primary tracking-tight font-headline">
           {formatINR(total_invested)}
@@ -96,7 +108,7 @@ export function SummaryCards({
       </div>
 
       {/* Card 3: Absolute Gain */}
-      <div className="bg-surface-container-lowest p-8 rounded-2xl shadow-sm hover:bg-surface-container transition-colors">
+      <div className={`bg-surface-container-lowest p-8 rounded-2xl shadow-sm hover:bg-surface-container transition-colors ${cardActive('absolute')}`}>
         <p className="text-on-surface-variant text-sm font-medium mb-1">Absolute Gain</p>
         <h3 className={`text-3xl font-extrabold tabular-nums tracking-tight font-headline ${total_gain_loss >= 0 ? 'text-secondary' : 'text-error'}`}>
           {formatINR(total_gain_loss)}
@@ -107,7 +119,7 @@ export function SummaryCards({
       </div>
 
       {/* Card 4: XIRR — right accent border + mini bar */}
-      <div className="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border-r-4 border-secondary-fixed hover:bg-surface-container transition-colors">
+      <div className={`bg-surface-container-lowest p-8 rounded-2xl shadow-sm border-r-4 border-secondary-fixed hover:bg-surface-container transition-colors ${cardActive('xirr')}`}>
         <p className="text-on-surface-variant text-sm font-medium mb-1">XIRR (Annualized)</p>
         <h3 className="text-3xl font-extrabold tabular-nums text-primary tracking-tight font-headline">
           {xirr !== null ? `${(xirr * 100).toFixed(2)}%` : '—'}
