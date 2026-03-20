@@ -9,16 +9,28 @@
 
 ### UI Design System (applies to ALL phases)
 
-All user-facing UI must follow the design system defined in `.planning/frontend.html`:
-- **Typography:** Manrope (headings) + Work Sans (body) — Google Fonts
-- **Icons:** Material Symbols Outlined — NOT Lucide or any other icon library
-- **Colors:** MD3 token set (primary navy `#001736`, secondary green `#006d43`, surface `#f4faff`) configured in `tailwind.config.ts`
-- **Numbers:** `tabular-nums` CSS class on all financial values
-- **Cards:** `bg-surface-container-lowest rounded-2xl shadow-sm` (or `rounded-3xl` for table containers)
-- **Page structure:** Hero → bento metric cards → 2/3 main + 1/3 sidebar → full-width sections below
-- **Full spec:** `.planning/phases/02-portfolio-analytics/02-CONTEXT.md` `<design_reference>` section
+All user-facing UI must follow the design system and page designs in `.planning/UI-design/`:
 
-Planners and executors for Phases 3, 4, and 5 must read `frontend.html` before building any UI components.
+**Design tokens (consistent across all 4 files):**
+- **Typography:** Manrope (headings `h1–h4`, `.font-headline`) + Work Sans (body, labels) — Google Fonts
+- **Icons:** Material Symbols Outlined — NOT Lucide or any other icon library
+- **Colors:** MD3 token set — primary navy `#001736`, secondary green `#006d43`, surface `#f4faff`, sidebar bg `#e6f6ff` — configured in `tailwind.config.ts`
+- **Border radius:** DEFAULT `2px`, `lg` `4px`, `xl` `8px`, `full` `12px`
+- **Numbers:** `tabular-nums` CSS class on all financial values
+- **Cards:** `bg-surface-container-lowest rounded-2xl shadow-sm` (bento metrics), `rounded-3xl` (table containers), `rounded-xl` (allocation rows, goal cards)
+
+**Navigation sidebar (w-64, bg-[#e6f6ff], all pages):**
+Six nav items in order: Family Dashboard, Individual Holders, Asset Allocation, Goals, Tax Intelligence, AI Insights. Active item: `bg-white rounded-r-full font-bold shadow-sm`. Bottom: "Ask AI Intelligence" CTA button + Support + Settings links.
+
+**Page-specific design references:**
+| Design File | Pages |
+|---|---|
+| `Family_view.html` | Family Dashboard — AI morning insight banner, 4-col AUM/Invested/Gain/XIRR bento, donut allocation + holders table, top performers + activity feed, FAB for CAS import |
+| `Individual_holder_view.html` | Individual Holder page — 4-col bento, holdings table (2/3) + AI Portfolio Health card + Active SIPs (1/3), portfolio insights CTA |
+| `goals_and_allocation.html` | Asset Allocation + Goals — Current vs Target bars with drift badges, 3-col goals grid (on-track/off-track badges, progress bars), fund-goal visual linkage, AI rebalance sidebar |
+| `tax_and_ai.html` | Tax Intelligence + AI Insights — Capital gains FY summary (8/12) + Compliance Vault (4/12), LTCG harvesting hero (full-width dark), AI portfolio narrative, floating chat widget (fixed bottom-right 450px) |
+
+Planners and executors for all phases must read the relevant design file before building any UI components.
 
 ---
 

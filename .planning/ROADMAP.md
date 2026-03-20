@@ -4,7 +4,7 @@
 
 FolioAI is built in a strict dependency order: clean transaction data must exist before analytics can be computed, analytics must be correct before the tax engine can trust holdings, the tax engine must be accurate before AI can reference tax exposure, and goals/alerts/broker integration complete the engagement loop. Five phases, no shortcuts. Every phase delivers a coherent, verifiable capability that the user can see and use.
 
-**UI Design System (ALL phases):** Every phase that ships UI must follow the design system in `.planning/frontend.html` — MD3 color tokens, Manrope/Work Sans typography, Material Symbols Outlined icons, and the established page layout pattern (hero → bento cards → 2/3 content + 1/3 sidebar). The full spec is in `.planning/phases/02-portfolio-analytics/02-CONTEXT.md` `<design_reference>`.
+**UI Design System (ALL phases):** Every phase that ships UI must follow the design files in `.planning/UI-design/` — MD3 color tokens, Manrope/Work Sans typography, Material Symbols Outlined icons. See REQUIREMENTS.md `UI Design System` section for the full token spec and page-to-design-file mapping.
 
 ## Phases
 
@@ -71,7 +71,7 @@ Plans:
 - [ ] 02-14-PLAN.md — Gap closure: SIP XIRR — computeXIRR on sip_cashflows + terminal value in SipSection (SIP-02)
 
 ### Phase 3: Tax Engine
-**UI:** Follow `.planning/frontend.html` design system — MD3 tokens, Manrope headings, Material Symbols icons, bento card pattern for tax summary metrics.
+**UI:** Follow `.planning/UI-design/tax_and_ai.html` — Capital gains FY summary card (8/12 cols) + Compliance Vault (4/12 cols) at top; full-width dark harvesting hero section (`bg-primary`); Strategic Portfolio Narrative below; floating AI chat widget (fixed bottom-right, 450px wide). MD3 tokens, Manrope headings, Material Symbols icons throughout.
 **Goal**: Users can see exactly what their tax liability is on every holding — calculated correctly per Indian rules — and receive actionable LTCG harvesting suggestions before March 31
 **Depends on**: Phase 2
 **Requirements**: TAX-01, TAX-02, TAX-03, TAX-04, TAX-05
@@ -84,7 +84,7 @@ Plans:
 **Plans**: TBD
 
 ### Phase 4: AI Intelligence
-**UI:** Follow `.planning/frontend.html` design system. The "AI Portfolio Health" dark card (`bg-primary text-on-primary`, circular score, fund bars) shown in the right sidebar of frontend.html is the reference for Phase 4 AI components.
+**UI:** Follow `.planning/UI-design/tax_and_ai.html` and `.planning/UI-design/Individual_holder_view.html`. Key components: "AI Portfolio Health" dark card in holder right sidebar (`bg-primary text-on-primary`, circular SVG quality score, per-fund alpha bars); "Strategic Portfolio Narrative" full-width card with `psychology` icon; floating chat widget (fixed bottom-right, `bg-primary` header, message bubbles). MD3 tokens, Manrope headings, Material Symbols icons.
 **Goal**: Users can ask natural language questions about their portfolio and receive AI-generated fund scores, replacement recommendations, and quarterly review reports — all grounded in their actual holdings data, never hallucinated
 **Depends on**: Phase 3
 **Requirements**: AI-01, AI-02, AI-03, AI-04
@@ -96,7 +96,7 @@ Plans:
 **Plans**: TBD
 
 ### Phase 5: Goals, Alerts and Broker Integration
-**UI:** Follow `.planning/frontend.html` design system. Goals and alerts UI uses the same bento card pattern and MD3 tokens.
+**UI:** Follow `.planning/UI-design/goals_and_allocation.html`. Key layout: "Current vs Target" allocation bars with drift badges (`+10% Drift` in `error-container`, `On Track` in `secondary-container`); 3-col goals grid with progress bars and on-track/off-track status badges; Fund-Goal Visual Linkage connector row; AI Rebalance Strategy glassmorphism sidebar with tax impact callout. Separate "Asset Allocation" and "Goals" nav destinations. MD3 tokens, Manrope headings, Material Symbols icons.
 **Goal**: Users receive proactive alerts when their portfolio needs attention and can import stock holdings from Zerodha — completing the engagement loop so the app surfaces actionable next steps without the user having to seek them out
 **Depends on**: Phase 2
 **Requirements**: GOAL-01, GOAL-02, GOAL-03, ALLOC-03, ALRT-01, ALRT-02, DATA-03
