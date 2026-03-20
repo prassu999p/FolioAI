@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 02-portfolio-analytics-14-PLAN.md
-last_updated: "2026-03-20T05:54:13.323Z"
+stopped_at: Completed 02-portfolio-analytics-11-PLAN.md
+last_updated: "2026-03-20T05:57:14.263Z"
 last_activity: 2026-03-19 — Roadmap created
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 20
-  completed_plans: 17
+  completed_plans: 18
   percent: 0
 ---
 
@@ -67,6 +67,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02-portfolio-analytics P07 | 3min | 3 tasks | 3 files |
 | Phase 02-portfolio-analytics P10 | 3min | 1 tasks | 1 files |
 | Phase 02-portfolio-analytics P14 | 2min | 1 tasks | 1 files |
+| Phase 02-portfolio-analytics P11 | 3min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -117,6 +118,7 @@ Recent decisions affecting current work:
 - [Phase 02-portfolio-analytics]: Dashboard layout uses fixed w-64 sidebar + ml-64 main (no top navbar) — matches frontend.html design
 - [Phase 02-portfolio-analytics]: Per-holding XIRR uses single folio's current_value as terminal cashflow, not buildPortfolioCashflows which sums all holdings
 - [Phase 02-portfolio-analytics]: estimateFolioCurrentValue uses net units x most recent transaction NAV as proxy for SIP terminal value — avoids adding holdings prop to SipSection; acceptable approximation for Phase 2
+- [Phase 02-portfolio-analytics]: Nifty 50 benchmark XIRR uses synthetic cashflows (same amounts, index units) — forward-5-day search handles holidays without crashing
 
 ### Pending Todos
 
@@ -133,6 +135,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T05:54:13.319Z
-Stopped at: Completed 02-portfolio-analytics-14-PLAN.md
+Last session: 2026-03-20T05:57:14.260Z
+Stopped at: Completed 02-portfolio-analytics-11-PLAN.md
 Resume file: None
