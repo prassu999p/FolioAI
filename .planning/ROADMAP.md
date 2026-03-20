@@ -15,7 +15,7 @@ FolioAI is built in a strict dependency order: clean transaction data must exist
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Data Foundation** - Schema, multi-holder family structure, CAS import, manual entry, and daily NAV sync (completed 2026-03-19)
-- [ ] **Phase 2: Portfolio Analytics** - Holdings dashboard, XIRR, benchmark comparison, SIP tracking, and asset allocation view
+- [x] **Phase 2: Portfolio Analytics** - Holdings dashboard, XIRR, benchmark comparison, SIP tracking, and asset allocation view (completed 2026-03-20)
 - [ ] **Phase 3: Tax Engine** - LTCG/STCG with grandfathering, TaxLot FIFO, harvesting suggestions, and ITR capital gains export
 - [ ] **Phase 4: AI Intelligence** - Fund scoring, replacement recommendations, portfolio chat, and quarterly review report
 - [ ] **Phase 5: Goals, Alerts and Broker Integration** - Goal tracking, allocation drift alerts, underperformance alerts, and Zerodha stock import
@@ -116,7 +116,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Data Foundation | 6/6 | Complete   | 2026-03-19 |
-| 2. Portfolio Analytics | 9/14 | In Progress (gap closure)|  |
+| 2. Portfolio Analytics | 14/14 | Complete   | 2026-03-20 |
 | 3. Tax Engine | 0/TBD | Not started | - |
 | 4. AI Intelligence | 0/TBD | Not started | - |
 | 5. Goals, Alerts and Broker Integration | 0/TBD | Not started | - |
