@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 02-portfolio-analytics/02-01-PLAN.md
-last_updated: "2026-03-20T03:33:25.480Z"
+stopped_at: Completed 02-portfolio-analytics-03-PLAN.md
+last_updated: "2026-03-20T03:35:02.926Z"
 last_activity: 2026-03-19 — Roadmap created
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 12
-  completed_plans: 7
+  completed_plans: 8
   percent: 0
 ---
 
@@ -57,6 +57,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-data-foundation P05 | 9 | 2 tasks | 15 files |
 | Phase 01-data-foundation P06 | 4min | 2 tasks | 7 files |
 | Phase 02-portfolio-analytics P01 | 2min | 2 tasks | 4 files |
+| Phase 02-portfolio-analytics P03 | 3min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -89,6 +90,9 @@ Recent decisions affecting current work:
 - [Phase 01-data-foundation]: already_current field in NAV sync response — prevents misleading 0 synced when all schemes were already up to date today
 - [Phase 02-portfolio-analytics]: Comment-only imports in test scaffolds — avoids module resolution failure before implementation files exist
 - [Phase 02-portfolio-analytics]: it.todo() with no callback for Wave 0 stubs — Vitest skips without executing, zero test failures before modules implemented
+- [Phase 02-portfolio-analytics]: XIRR computed in TypeScript after RPC call, never in SQL — iterative math unsuitable for SQL
+- [Phase 02-portfolio-analytics]: nifty50_daily has no user-write RLS policy — only service role writes, prevents benchmark manipulation
+- [Phase 02-portfolio-analytics]: holder_allocation_targets uses DB-level CHECK (equity + debt + gold + international <= 100) as backup to Zod
 
 ### Pending Todos
 
@@ -105,6 +109,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T03:33:25.477Z
-Stopped at: Completed 02-portfolio-analytics/02-01-PLAN.md
+Last session: 2026-03-20T03:35:02.923Z
+Stopped at: Completed 02-portfolio-analytics-03-PLAN.md
 Resume file: None
