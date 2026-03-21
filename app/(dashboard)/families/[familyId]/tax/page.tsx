@@ -11,7 +11,9 @@ import { createClient } from '@/lib/supabase/server'
 import { CapitalGainsSummary } from '@/components/tax/capital-gains-summary'
 import { ComplianceVault } from '@/components/tax/compliance-vault'
 import { FYToggle } from '@/components/tax/fy-toggle'
+import { HarvestingHero } from '@/components/tax/harvesting-hero'
 import { computeTaxSummary } from '@/lib/tax/engine'
+import type { UnrealizedGain } from '@/lib/tax/types'
 import { getCurrentFYBounds, getPriorFYBounds } from '@/lib/tax/fy-utils'
 import { getTaxAssetClass } from '@/lib/tax/rules'
 import type { AnalyticsTransaction, HoldingRow } from '@/lib/supabase/types'
@@ -86,6 +88,7 @@ export default async function TaxIntelligencePage({ params, searchParams }: TaxP
   let totalLTCG = 0
   let totalSTCG = 0
   let totalSlabGains = 0
+  const allUnrealizedGains = new Map<number, UnrealizedGain[]>()
   
   for (const holder of holders) {
     // Fetch all transactions for FIFO lot building (no date filter)
@@ -108,8 +111,18 @@ export default async function TaxIntelligencePage({ params, searchParams }: TaxP
       totalLTCG += summary.totalRealizedLTCG
       totalSTCG += summary.totalRealizedSTCG
       totalSlabGains += summary.totalSlabGains
+      
+      // Collect unrealized gains for harvesting
+      for (const ug of summary.unrealizedGains) {
+        const existing = allUnrealizedGains.get(ug.schemeCode) || []
+        existing.push(ug)
+        allUnrealizedGains.set(ug.schemeCode, existing)
+      }
     }
   }
+  
+  // Flatten unrealized gains for harvesting
+  const unrealizedGainsArray = Array.from(allUnrealizedGains.values()).flat()
   
   // Calculate exemption and liability
   const exemptionUsed = Math.max(0, totalLTCG)
@@ -152,7 +165,15 @@ export default async function TaxIntelligencePage({ params, searchParams }: TaxP
         </div>
       </div>
       
-      {/* Placeholder for Harvesting Hero - will be added in Plan 03-04 */}
+      {/* Harvesting Hero Section */}
+      <HarvestingHero
+        unrealizedGains={unrealizedGainsArray}
+        ltcgUsedThisFY={exemptionUsed}
+        currentNavs={currentNavs}
+        schemeNames={schemeNames}
+        isPriorFY={isPriorFY}
+      />
+      
       {/* Placeholder for AI Narrative - will be added in Phase 4 */}
     </div>
   )
