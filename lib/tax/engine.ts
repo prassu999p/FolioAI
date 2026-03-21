@@ -23,13 +23,13 @@ import {
 const EPSILON = 0.001
 
 /**
- * Transaction type from the database
+ * Transaction type compatible with database and RPC responses
  */
-interface Transaction {
-  id: string
+interface TaxTransaction {
+  id?: string
   folio_id: string
   scheme_code: number
-  transaction_type: 'PURCHASE' | 'REDEMPTION' | 'SWITCH_IN' | 'SWITCH_OUT' | 'SIP' | 'SWP'
+  transaction_type: string
   transaction_date: string
   units: number
   nav: number
@@ -40,7 +40,7 @@ interface Transaction {
  * Build tax lots from purchase transactions
  * Sorts by date ascending for FIFO order
  */
-export function buildTaxLots(transactions: Transaction[]): TaxLot[] {
+export function buildTaxLots(transactions: TaxTransaction[]): TaxLot[] {
   // Filter to only purchases and sort by date
   const purchases = transactions
     .filter(t => t.transaction_type === 'PURCHASE' || t.transaction_type === 'SIP')
@@ -75,7 +75,7 @@ export function buildTaxLots(transactions: Transaction[]): TaxLot[] {
  */
 export function depleteLots(
   lots: TaxLot[],
-  redemption: Transaction,
+  redemption: TaxTransaction,
   saleNav: number,
   assetClass: TaxAssetClass,
   isPostApr2023: boolean
@@ -192,7 +192,7 @@ export function computeUnrealizedGains(
  * Main entry point: compute complete tax summary
  */
 export function computeTaxSummary(params: {
-  transactions: Transaction[]
+  transactions: TaxTransaction[]
   grandfatheringNavs: Map<number, number>  // schemeCode → Jan 31 2018 NAV
   currentNavs: Map<number, number>         // schemeCode → current NAV
   assetClasses: Map<number, TaxAssetClass> // schemeCode → asset class
