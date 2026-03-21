@@ -1,4 +1,5 @@
 import type { HoldingRowWithAnalytics } from '@/lib/supabase/types'
+import { SellTaxEstimatorModal } from '@/components/tax/sell-tax-estimator-modal'
 
 const formatINR = (value: number) =>
   new Intl.NumberFormat('en-IN', {
@@ -48,7 +49,8 @@ export function HoldingsTable({ holdings }: HoldingsTableProps) {
               <th className="py-4 px-4 text-center">Units</th>
               <th className="py-4 px-4 text-right">Current NAV</th>
               <th className="py-4 px-4 text-right">Value (&#8377;)</th>
-              <th className="py-4 px-8 text-right">XIRR</th>
+              <th className="py-4 px-4 text-right">XIRR</th>
+              <th className="py-4 px-4 text-center">Action</th>
             </tr>
           </thead>
           <tbody className="text-sm">
@@ -79,6 +81,13 @@ export function HoldingsTable({ holdings }: HoldingsTableProps) {
                   }`}
                 >
                   {holding.xirr != null ? `${(holding.xirr * 100).toFixed(1)}%` : '—'}
+                </td>
+                <td className="py-5 px-4 text-center">
+                  <SellTaxEstimatorModal holding={holding}>
+                    <button className="px-3 py-1.5 text-xs font-medium bg-surface-container-high hover:bg-surface-container rounded-lg transition-colors text-primary">
+                      Estimate Tax
+                    </button>
+                  </SellTaxEstimatorModal>
                 </td>
               </tr>
             ))}
