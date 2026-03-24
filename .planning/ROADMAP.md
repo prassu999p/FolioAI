@@ -93,7 +93,15 @@ Plans:
   2. AI identifies underperforming funds and recommends specific alternative funds with written reasoning, using SEBI-compliant advisory language
   3. User can ask natural language questions ("What's my XIRR since January 2022?", "How exposed am I to IT sector?") and receive accurate answers grounded in their actual transaction data
   4. AI generates a quarterly portfolio review narrative — what's performing well, what to review for exit, overall health assessment — available on demand
-**Plans**: TBD
+**Plans**: 6 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Wave 0 foundation: AI SDK install, DB migrations, lib/ai type definitions, test scaffolds
+- [ ] 04-02-PLAN.md — TDD: scoring engine (computeAlpha, computeQualityScore, computeAUMTrend) + prompt builders
+- [ ] 04-03-PLAN.md — Fund score API route + AI Portfolio Health card on holder page sidebar
+- [ ] 04-04-PLAN.md — Streaming chat route + global floating ChatWidget in dashboard layout
+- [ ] 04-05-PLAN.md — Quarterly narrative API + Strategic Portfolio Narrative card on Tax & AI page
+- [ ] 04-06-PLAN.md — Final verification + human checkpoint for all four AI features
 
 ### Phase 5: Goals, Alerts and Broker Integration
 **UI:** Follow `.planning/UI-design/goals_and_allocation.html`. Key layout: "Current vs Target" allocation bars with drift badges (`+10% Drift` in `error-container`, `On Track` in `secondary-container`); 3-col goals grid with progress bars and on-track/off-track status badges; Fund-Goal Visual Linkage connector row; AI Rebalance Strategy glassmorphism sidebar with tax impact callout. Separate "Asset Allocation" and "Goals" nav destinations. MD3 tokens, Manrope headings, Material Symbols icons.
@@ -118,5 +126,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Data Foundation | 6/6 | Complete   | 2026-03-19 |
 | 2. Portfolio Analytics | 14/14 | Complete   | 2026-03-20 |
 | 3. Tax Engine | 4/4 | Complete   | 2026-03-21 |
-| 4. AI Intelligence | 0/TBD | Not started | - |
+| 4. AI Intelligence | 0/6 | Not started | - |
 | 5. Goals, Alerts and Broker Integration | 0/TBD | Not started | - |
