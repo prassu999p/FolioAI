@@ -36,11 +36,14 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
   const endDateStr = bounds ? bounds.end.toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
 
   // Fetch holdings and transactions in parallel
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [holdingsResult, transactionsResult] = await Promise.all([
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase as any).rpc('get_holder_holdings', {
       p_holder_id: holderId,
     }),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase as any).rpc('get_holder_analytics_transactions', {
       p_holder_id: holderId,
       p_start_date: startDateStr,

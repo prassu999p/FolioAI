@@ -142,3 +142,13 @@ None - no external service configuration required.
 ---
 *Phase: 02-portfolio-analytics*
 *Completed: 2026-03-20*
+
+## Self-Check: PASSED
+
+- FOUND: lib/analytics/xirr.ts
+- FOUND: lib/analytics/period-utils.ts
+- FOUND: lib/analytics/sip-detector.ts
+- FOUND: lib/analytics/asset-class-mapper.ts
+- FOUND: .planning/phases/02-portfolio-analytics/02-02-SUMMARY.md
+- FOUND commit: f1e7c8c (Task 1)
+- FOUND commit: d4c6099 (Task 2)

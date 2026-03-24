@@ -16,7 +16,7 @@ import { computeTaxSummary } from '@/lib/tax/engine'
 import type { UnrealizedGain } from '@/lib/tax/types'
 import { getCurrentFYBounds, getPriorFYBounds } from '@/lib/tax/fy-utils'
 import { getTaxAssetClass } from '@/lib/tax/rules'
-import type { AnalyticsTransaction, HoldingRow } from '@/lib/supabase/types'
+import type { AnalyticsTransaction } from '@/lib/supabase/types'
 
 interface TaxPageProps {
   params: Promise<{ familyId: string }>
@@ -87,11 +87,11 @@ export default async function TaxIntelligencePage({ params, searchParams }: TaxP
   // Process each holder
   let totalLTCG = 0
   let totalSTCG = 0
-  let totalSlabGains = 0
   const allUnrealizedGains = new Map<number, UnrealizedGain[]>()
   
   for (const holder of holders) {
     // Fetch all transactions for FIFO lot building (no date filter)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: txData } = await (supabase as any).rpc('get_holder_analytics_transactions', {
       p_holder_id: holder.id,
       p_start_date: null, // Full history for FIFO
@@ -110,7 +110,6 @@ export default async function TaxIntelligencePage({ params, searchParams }: TaxP
       
       totalLTCG += summary.totalRealizedLTCG
       totalSTCG += summary.totalRealizedSTCG
-      totalSlabGains += summary.totalSlabGains
       
       // Collect unrealized gains for harvesting
       for (const ug of summary.unrealizedGains) {

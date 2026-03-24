@@ -222,7 +222,7 @@ export function computeTaxSummary(params: {
     .filter(t => t.transaction_type === 'REDEMPTION' || t.transaction_type === 'SWITCH_OUT')
     .sort((a, b) => new Date(a.transaction_date).getTime() - new Date(b.transaction_date).getTime())
 
-  let allRealizedGains: RealizedGain[] = []
+  const allRealizedGains: RealizedGain[] = []
 
   for (const redemption of redemptions) {
     const saleNav = redemption.nav

@@ -49,3 +49,10 @@ dist/
 build/
 .pytest_cache/
 .ruff_cache/
+
+.playwright-mcp/
+debug/
+.gsd/
+.kilocode/
+.gsd_backup/
+.kilocode_backup/

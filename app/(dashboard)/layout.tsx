@@ -1,15 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-
-const NAV_ITEMS = [
-  { label: 'Family Dashboard', icon: 'dashboard', href: '/families' },
-  { label: 'Individual Holders', icon: 'group', href: '#' },
-  { label: 'Asset Allocation', icon: 'pie_chart', href: '#' },
-  { label: 'Goals', icon: 'track_changes', href: '#' },
-  { label: 'Tax Intelligence', icon: 'receipt_long', href: '#' },
-  { label: 'AI Insights', icon: 'auto_awesome', href: '#' },
-]
+import type { Database } from '@/lib/supabase/types'
 
 export default async function DashboardLayout({
   children,
@@ -23,6 +15,25 @@ export default async function DashboardLayout({
   if (!claims) {
     redirect('/login')
   }
+
+  // Try to get user's first family for nav links
+  const { data: families } = await supabase
+    .from('families')
+    .select('id')
+    .eq('user_id', claims.sub)
+    .limit(1) as { data: Array<{ id: string }> | null }
+  
+  const familyId = families?.[0]?.id ?? null
+
+  // Always start with dashboard - it handles redirect to family or create form
+  const NAV_ITEMS = [
+    { label: 'Family Dashboard', icon: 'dashboard', href: '/dashboard' },
+    { label: 'Individual Holders', icon: 'group', href: familyId ? `/families/${familyId}/holders` : '/dashboard' },
+    { label: 'Asset Allocation', icon: 'pie_chart', href: familyId ? `/families/${familyId}/allocation` : '/dashboard' },
+    { label: 'Goals', icon: 'track_changes', href: familyId ? `/families/${familyId}/goals` : '/dashboard' },
+    { label: 'Tax Intelligence', icon: 'receipt_long', href: familyId ? `/families/${familyId}/tax` : '/dashboard' },
+    { label: 'AI Insights', icon: 'auto_awesome', href: familyId ? `/families/${familyId}/ai` : '/dashboard' },
+  ]
 
   return (
     <div className="min-h-screen bg-background">

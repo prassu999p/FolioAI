@@ -98,7 +98,9 @@ export async function FamilyDashboard({ familyId }: FamilyDashboardProps) {
     family.holders.map(async (holder, _index) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const [holdingsResult, txResult] = await Promise.all([
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (supabase as any).rpc('get_holder_holdings', { p_holder_id: holder.id }),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (supabase as any).rpc('get_holder_analytics_transactions', {
           p_holder_id: holder.id,
           p_start_date: null,
@@ -160,11 +162,6 @@ export async function FamilyDashboard({ familyId }: FamilyDashboardProps) {
       ? (familyGainLoss / familyTotalInvested) * 100
       : null
 
-  // Oldest nav date across all holders
-  const allNavDates = holdersWithAUM
-    .map(h => h.oldestNavDate)
-    .filter((d): d is string => d !== null)
-  const oldestNavDate = allNavDates.length > 0 ? allNavDates.sort()[0] : null
 
   // Compute family-level XIRR by aggregating all holder transactions
   // We fetch fresh all-holder transactions for family-level computation
