@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Phase 4 context gathered
-last_updated: "2026-03-24T10:51:57.320Z"
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-03-24T12:54:08.768Z"
 last_activity: 2026-03-21 — Completed Phase 3 Tax Engine
 progress:
   total_phases: 5
   completed_phases: 2
-  total_plans: 25
-  completed_plans: 21
+  total_plans: 31
+  completed_plans: 22
   percent: 60
 ---
 
@@ -71,6 +71,7 @@ Progress: [██████░░░░] 60%
 | Phase 02-portfolio-analytics P12 | 2min | 1 tasks | 3 files |
 | Phase 02-portfolio-analytics P13 | 3min | 1 tasks | 2 files |
 | Phase 02-portfolio-analytics P15 | 3min | 2 tasks | 1 files |
+| Phase 04-ai-intelligence P01 | 5min | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -128,6 +129,9 @@ Recent decisions affecting current work:
 - [Phase 02-portfolio-analytics]: Family dashboard: div-based table with role=table/row/cell used instead of tr/td to allow Link wrapping of rows in Server Component
 - [Phase 02-portfolio-analytics]: Family XIRR aggregates all holder transactions into one cashflow series with totalAUM as terminal value
 - [Phase 02-portfolio-analytics]: Top Performing Funds uses absolute return as proxy for 1Y return — 1Y NAV history not available in Phase 2
+- [Phase 04-ai-intelligence]: AI SDK packages installed in Wave 0 so Plans 02-04 can import without install step
+- [Phase 04-ai-intelligence]: Stub functions throw Not implemented — Phase 4 Plan 02 for clear error before implementation
+- [Phase 04-ai-intelligence]: fund_ai_scores UNIQUE(holder_id, scheme_code) — upsert semantics; portfolio_narratives UNIQUE(holder_id) — one active narrative per holder
 
 ### Pending Todos
 
@@ -144,6 +148,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-24T10:51:57.317Z
-Stopped at: Phase 4 context gathered
-Resume file: .planning/phases/04-ai-intelligence/04-CONTEXT.md
+Last session: 2026-03-24T12:54:08.765Z
+Stopped at: Completed 04-01-PLAN.md
+Resume file: None

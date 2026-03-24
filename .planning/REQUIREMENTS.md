@@ -87,10 +87,10 @@ Planners and executors for all phases must read the relevant design file before 
 
 ### AI Intelligence
 
-- [ ] **AI-01**: AI scores each fund the user holds on key quality signals: expense ratio vs category, alpha vs benchmark, AUM trend, fund manager track record — displayed as a structured scorecard
-- [ ] **AI-02**: AI identifies underperforming funds in the user's portfolio and recommends specific alternative funds to switch to, with reasoning
-- [ ] **AI-03**: User can chat with their portfolio using natural language ("How exposed am I to IT sector?", "What's my XIRR since January 2022?", "Which of my funds has the highest expense ratio?")
-- [ ] **AI-04**: AI generates a quarterly portfolio review report: what's performing well, what to review for exit, suggested additions, overall health assessment — presented as a written narrative
+- [x] **AI-01**: AI scores each fund the user holds on key quality signals: expense ratio vs category, alpha vs benchmark, AUM trend, fund manager track record — displayed as a structured scorecard
+- [x] **AI-02**: AI identifies underperforming funds in the user's portfolio and recommends specific alternative funds to switch to, with reasoning
+- [x] **AI-03**: User can chat with their portfolio using natural language ("How exposed am I to IT sector?", "What's my XIRR since January 2022?", "Which of my funds has the highest expense ratio?")
+- [x] **AI-04**: AI generates a quarterly portfolio review report: what's performing well, what to review for exit, suggested additions, overall health assessment — presented as a written narrative
 
 ### Alerts
 
@@ -179,10 +179,10 @@ Planners and executors for all phases must read the relevant design file before 
 | TAX-03 | Phase 3 | Pending |
 | TAX-04 | Phase 3 | Pending |
 | TAX-05 | Phase 3 | Pending |
-| AI-01 | Phase 4 | Pending |
-| AI-02 | Phase 4 | Pending |
-| AI-03 | Phase 4 | Pending |
-| AI-04 | Phase 4 | Pending |
+| AI-01 | Phase 4 | Complete |
+| AI-02 | Phase 4 | Complete |
+| AI-03 | Phase 4 | Complete |
+| AI-04 | Phase 4 | Complete |
 | ALRT-01 | Phase 5 | Pending |
 | ALRT-02 | Phase 5 | Pending |
 
