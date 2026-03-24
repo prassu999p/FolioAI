@@ -14,10 +14,13 @@
     "seed:nifty50": "npx tsx scripts/seed-nifty50.ts"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.64",
+    "@anthropic-ai/sdk": "^0.80.0",
     "@hookform/resolvers": "^5.2.2",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.50.0",
     "@tailwindcss/postcss": "^4.0.0",
+    "ai": "^6.0.137",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
