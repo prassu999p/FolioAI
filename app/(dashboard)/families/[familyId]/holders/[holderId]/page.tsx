@@ -5,8 +5,11 @@ import { PeriodSelector } from '@/components/analytics/period-selector'
 import { SummaryCards } from '@/components/analytics/summary-cards'
 import { SipSection } from '@/components/analytics/sip-section'
 import { AllocationSection } from '@/components/analytics/allocation-section'
+import { AIPortfolioHealth } from '@/components/ai/ai-portfolio-health'
+import { RefreshScoresButton } from '@/components/ai/refresh-scores-button'
 import { getPeriodBounds } from '@/lib/analytics/period-utils'
 import type { HoldingRow, HoldingRowWithAnalytics, AnalyticsTransaction, Transaction } from '@/lib/supabase/types'
+import type { FundScore } from '@/lib/ai/types'
 import { computeXIRR, computeGainLoss } from '@/lib/analytics/xirr'
 
 interface HolderHoldingsPageProps {
@@ -197,6 +200,23 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
     )
   }
 
+  // Fetch AI scores for this holder from fund_ai_scores cache
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: aiScoresData } = await (supabase as any)
+    .from('fund_ai_scores')
+    .select('*')
+    .eq('holder_id', holderId)
+  const rawAiScores: FundScore[] = aiScoresData ?? []
+
+  // Merge scheme_name into each score from holdings data (join by scheme_code)
+  const schemeNameMap = new Map<number, string>(
+    rawHoldings.map(h => [h.scheme_code, h.scheme_name])
+  )
+  const aiScores = rawAiScores.map(score => ({
+    ...score,
+    scheme_name: schemeNameMap.get(score.scheme_code) ?? `Fund ${score.scheme_code}`,
+  }))
+
   // Last synced: use the oldest nav date across holdings
   const navDates = rawHoldings
     .map(h => h.current_nav_date)
@@ -277,7 +297,8 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
           </div>
           <div className="space-y-8">
             <SipSection transactions={transactions} />
-            {/* Phase 4: AI Portfolio Health card will go here */}
+            <AIPortfolioHealth scores={aiScores} holderName={holder?.name ?? ''} />
+            <RefreshScoresButton holderId={holderId} />
           </div>
         </div>
 
