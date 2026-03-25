@@ -7,6 +7,7 @@ import { SipSection } from '@/components/analytics/sip-section'
 import { AllocationSection } from '@/components/analytics/allocation-section'
 import { AIPortfolioHealth } from '@/components/ai/ai-portfolio-health'
 import { RefreshScoresButton } from '@/components/ai/refresh-scores-button'
+import { GenerateReviewButton } from '@/components/ai/generate-review-button'
 import { getPeriodBounds } from '@/lib/analytics/period-utils'
 import type { HoldingRow, HoldingRowWithAnalytics, AnalyticsTransaction, Transaction } from '@/lib/supabase/types'
 import type { FundScore } from '@/lib/ai/types'
@@ -299,6 +300,7 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
             <SipSection transactions={transactions} />
             <AIPortfolioHealth scores={aiScores} holderName={holder?.name ?? ''} />
             <RefreshScoresButton holderId={holderId} />
+            <GenerateReviewButton holderId={holderId} hasExisting={false} />
           </div>
         </div>
 

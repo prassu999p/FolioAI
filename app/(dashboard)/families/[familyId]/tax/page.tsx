@@ -12,6 +12,7 @@ import { CapitalGainsSummary } from '@/components/tax/capital-gains-summary'
 import { ComplianceVault } from '@/components/tax/compliance-vault'
 import { FYToggle } from '@/components/tax/fy-toggle'
 import { HarvestingHero } from '@/components/tax/harvesting-hero'
+import { StrategicNarrative } from '@/components/ai/strategic-narrative'
 import { computeTaxSummary } from '@/lib/tax/engine'
 import type { UnrealizedGain } from '@/lib/tax/types'
 import { getCurrentFYBounds, getPriorFYBounds } from '@/lib/tax/fy-utils'
@@ -37,7 +38,13 @@ export default async function TaxIntelligencePage({ params, searchParams }: TaxP
     .eq('family_id', familyId) as { data: Array<{ id: string; name: string; pan: string; family_id: string }> | null }
   
   const holders = holdersData || []
-  
+
+  // Fetch narrative for the first holder (cached; Claude not called on page load)
+  const firstHolderId = holders[0]?.id ?? null
+  const { data: narrativeData } = firstHolderId
+    ? await supabase.from('portfolio_narratives').select('*').eq('holder_id', firstHolderId).single()
+    : { data: null }
+
   // Get current NAVs for all schemes
   const { data: navData } = await supabase
     .from('nav')
@@ -173,7 +180,16 @@ export default async function TaxIntelligencePage({ params, searchParams }: TaxP
         isPriorFY={isPriorFY}
       />
       
-      {/* Placeholder for AI Narrative - will be added in Phase 4 */}
+      {/* Strategic Portfolio Narrative — AI-generated quarterly review */}
+      {firstHolderId && (
+        <div className="mt-8">
+          <StrategicNarrative
+            holderId={firstHolderId}
+            narrative={(narrativeData as { narrative?: string } | null)?.narrative ?? null}
+            generatedAt={(narrativeData as { generated_at?: string } | null)?.generated_at ?? null}
+          />
+        </div>
+      )}
     </div>
   )
 }
