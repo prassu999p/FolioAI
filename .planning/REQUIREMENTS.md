@@ -46,7 +46,7 @@ Planners and executors for all phases must read the relevant design file before 
 
 - [x] **DATA-01**: User can import mutual fund holdings by uploading a CAMS Consolidated Account Statement (CAS) PDF
 - [x] **DATA-02**: User can import mutual fund holdings by uploading a KFintech CAS PDF
-- [ ] **DATA-03**: User can connect a Zerodha account via Kite Connect API to import stock holdings and transactions
+- [x] **DATA-03**: User can connect a Zerodha account via Kite Connect API to import stock holdings and transactions
 - [x] **DATA-04**: User can manually add a holding (fund/stock name, units, purchase date, cost price)
 - [x] **DATA-05**: User can view all holdings for a holder in a single unified list (mutual funds + stocks)
 - [x] **DATA-06**: System syncs end-of-day NAV from AMFI daily (automated, no user action)
@@ -73,9 +73,9 @@ Planners and executors for all phases must read the relevant design file before 
 
 ### Goal-Based Investing
 
-- [ ] **GOAL-01**: User can create a financial goal with a name, target amount (₹), and target date
-- [ ] **GOAL-02**: User can link specific holdings to a goal so the platform tracks progress toward it
-- [ ] **GOAL-03**: User can see projected corpus vs target amount for each goal, with on-track / off-track status
+- [x] **GOAL-01**: User can create a financial goal with a name, target amount (₹), and target date
+- [x] **GOAL-02**: User can link specific holdings to a goal so the platform tracks progress toward it
+- [x] **GOAL-03**: User can see projected corpus vs target amount for each goal, with on-track / off-track status
 
 ### Tax Intelligence
 
@@ -94,8 +94,8 @@ Planners and executors for all phases must read the relevant design file before 
 
 ### Alerts
 
-- [ ] **ALRT-01**: User receives an alert (email) when any held fund underperforms its benchmark category average for 6+ consecutive months
-- [ ] **ALRT-02**: User receives a tax harvesting window alert in February with a summary of loss-booking opportunities before March 31
+- [x] **ALRT-01**: User receives an alert (email) when any held fund underperforms its benchmark category average for 6+ consecutive months
+- [x] **ALRT-02**: User receives a tax harvesting window alert in February with a summary of loss-booking opportunities before March 31
 
 ---
 
@@ -156,7 +156,7 @@ Planners and executors for all phases must read the relevant design file before 
 | FAM-03 | Phase 1 | Complete |
 | DATA-01 | Phase 1 | Complete |
 | DATA-02 | Phase 1 | Complete |
-| DATA-03 | Phase 5 | Pending |
+| DATA-03 | Phase 5 | Complete |
 | DATA-04 | Phase 1 | Complete |
 | DATA-05 | Phase 1 | Complete |
 | DATA-06 | Phase 1 | Complete |
@@ -171,9 +171,9 @@ Planners and executors for all phases must read the relevant design file before 
 | ALLOC-01 | Phase 2 | Complete |
 | ALLOC-02 | Phase 2 | Complete |
 | ALLOC-03 | Phase 5 | Pending |
-| GOAL-01 | Phase 5 | Pending |
-| GOAL-02 | Phase 5 | Pending |
-| GOAL-03 | Phase 5 | Pending |
+| GOAL-01 | Phase 5 | Complete |
+| GOAL-02 | Phase 5 | Complete |
+| GOAL-03 | Phase 5 | Complete |
 | TAX-01 | Phase 3 | Pending |
 | TAX-02 | Phase 3 | Pending |
 | TAX-03 | Phase 3 | Pending |
@@ -183,8 +183,8 @@ Planners and executors for all phases must read the relevant design file before 
 | AI-02 | Phase 4 | Complete |
 | AI-03 | Phase 4 | Complete |
 | AI-04 | Phase 4 | Complete |
-| ALRT-01 | Phase 5 | Pending |
-| ALRT-02 | Phase 5 | Pending |
+| ALRT-01 | Phase 5 | Complete |
+| ALRT-02 | Phase 5 | Complete |
 
 **Coverage:**
 - v1 requirements: 34 total
