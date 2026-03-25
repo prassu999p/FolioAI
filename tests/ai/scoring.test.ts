@@ -33,13 +33,13 @@ describe('computeAlpha', () => {
   })
 
   it('returns positive alpha when fund XIRR exceeds nifty XIRR', () => {
-    // Fund grows strongly over 6 months vs moderate nifty growth
+    // Fund grows strongly over 6+ months vs moderate nifty growth (span >= 90 days)
     const transactions = [
-      { folio_id: 'f1', scheme_code: 100, scheme_name: 'Outperform Fund', transaction_date: '2023-07-01', transaction_type: 'purchase', amount: 50000, units: 500, nav: 100 },
-      { folio_id: 'f1', scheme_code: 100, scheme_name: 'Outperform Fund', transaction_date: '2023-09-01', transaction_type: 'purchase', amount: 50000, units: 455, nav: 110 },
+      { folio_id: 'f1', scheme_code: 100, scheme_name: 'Outperform Fund', transaction_date: '2023-01-01', transaction_type: 'purchase', amount: 50000, units: 500, nav: 100 },
+      { folio_id: 'f1', scheme_code: 100, scheme_name: 'Outperform Fund', transaction_date: '2023-07-01', transaction_type: 'purchase', amount: 50000, units: 435, nav: 115 },
     ]
     // Nifty grows ~10% over the period
-    const nifty = buildNiftyDaily('2023-07-01', 185, 20000, 0.0005) // ~10% total
+    const nifty = buildNiftyDaily('2023-01-01', 185, 20000, 0.0005) // ~10% total
     // Fund current value implies ~25% growth
     const input: AlphaInput = { transactions, currentValue: 125000, nifty50Daily: nifty }
     const alpha = computeAlpha(input)
@@ -48,13 +48,13 @@ describe('computeAlpha', () => {
   })
 
   it('returns negative alpha when fund XIRR is below nifty XIRR', () => {
-    // Nifty grows well, fund barely grows
+    // Nifty grows well, fund barely grows (span >= 90 days)
     const transactions = [
-      { folio_id: 'f1', scheme_code: 200, scheme_name: 'Underperform Fund', transaction_date: '2023-07-01', transaction_type: 'purchase', amount: 50000, units: 500, nav: 100 },
-      { folio_id: 'f1', scheme_code: 200, scheme_name: 'Underperform Fund', transaction_date: '2023-09-01', transaction_type: 'purchase', amount: 50000, units: 476, nav: 105 },
+      { folio_id: 'f1', scheme_code: 200, scheme_name: 'Underperform Fund', transaction_date: '2023-01-01', transaction_type: 'purchase', amount: 50000, units: 500, nav: 100 },
+      { folio_id: 'f1', scheme_code: 200, scheme_name: 'Underperform Fund', transaction_date: '2023-07-01', transaction_type: 'purchase', amount: 50000, units: 476, nav: 105 },
     ]
     // Nifty grows strongly ~20%
-    const nifty = buildNiftyDaily('2023-07-01', 185, 20000, 0.001) // ~20% total
+    const nifty = buildNiftyDaily('2023-01-01', 185, 20000, 0.001) // ~20% total
     // Fund barely grows — only 5% up total
     const input: AlphaInput = { transactions, currentValue: 105000, nifty50Daily: nifty }
     const alpha = computeAlpha(input)
