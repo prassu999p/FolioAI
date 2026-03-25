@@ -1,59 +1,85 @@
-'use client'
+// app/(dashboard)/families/[familyId]/import/page.tsx
+// Server Component — tab routing via ?tab= URL param.
+// CAS tab: client form component (file upload requires interactivity).
+// Broker tab: fully server-rendered (OAuth link, connection status, holdings table).
 
-import { useState, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { createClient } from '@/lib/supabase/server'
+import { getKiteLoginURL } from '@/lib/broker/kite-client'
+import CASImportForm from './CASImportForm'
 
-interface ImportResult {
-  imported: number
-  needs_review: number
-  errors: string[]
+interface PageProps {
+  params: Promise<{ familyId: string }>
+  searchParams: Promise<{ tab?: string; success?: string; error?: string }>
 }
 
-export default function ImportCASPage({
-  params,
-}: {
-  params: Promise<{ familyId: string }>
-}) {
-  const router = useRouter()
-  const fileRef = useRef<HTMLInputElement>(null)
-  const [file, setFile] = useState<File | null>(null)
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState<ImportResult | null>(null)
-  const [error, setError] = useState<string | null>(null)
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!file) return
+function formatINR(n: number): string {
+  return '₹' + n.toLocaleString('en-IN', { maximumFractionDigits: 2 })
+}
 
-    setLoading(true)
-    setError(null)
-    setResult(null)
+export default async function ImportPage({ params, searchParams }: PageProps) {
+  const { familyId } = await params
+  const { tab = 'cas', success, error } = await searchParams
 
-    const formData = new FormData()
-    formData.append('file', file)
-    if (password) formData.append('password', password)
+  const supabase = await createClient()
 
-    try {
-      const res = await fetch('/api/cas/import', { method: 'POST', body: formData })
-      const data = await res.json()
+  // Fetch holders for this family (needed for Broker tab)
+  const { data: holdersRaw } = await supabase
+    .from('holders')
+    .select('id, name')
+    .eq('family_id', familyId)
+    .order('name')
+  const holders = holdersRaw as Array<{ id: string; name: string }> | null
 
-      if (!res.ok) {
-        setError(data.error ?? 'Import failed')
-      } else {
-        setResult(data)
-      }
-    } catch {
-      setError('Network error — please try again')
-    } finally {
-      setLoading(false)
-    }
-  }
+  const holderIds = (holders ?? []).map((h: { id: string }) => h.id)
 
-  async function handleDone() {
-    const { familyId } = await params
-    router.push(`/families/${familyId}`)
-  }
+  // Fetch broker connections for all holders in this family
+  const { data: connections } = holderIds.length > 0
+    ? await (supabase as any)
+        .from('broker_connections')
+        .select('holder_id, broker, access_token, token_expires_at, last_synced_at, zerodha_user_id')
+        .in('holder_id', holderIds)
+        .eq('broker', 'zerodha')
+    : { data: [] }
+
+  // Fetch stock holdings for all holders
+  const { data: stockHoldings } = holderIds.length > 0
+    ? await (supabase as any)
+        .from('stock_holdings')
+        .select('holder_id, tradingsymbol, exchange, isin, quantity, average_price, last_price, pnl')
+        .in('holder_id', holderIds)
+        .order('tradingsymbol')
+    : { data: [] }
+
+  const now = new Date()
+
+  // Use the first holder as default for Broker tab V1
+  const defaultHolder = holders?.[0] ?? null
+
+  // Find connection for the default holder
+  const defaultConn = (connections ?? []).find(
+    (c: { holder_id: string }) => c.holder_id === defaultHolder?.id
+  ) ?? null
+
+  const isConnected =
+    defaultConn &&
+    defaultConn.token_expires_at &&
+    new Date(defaultConn.token_expires_at) > now
+
+  const isExpired =
+    defaultConn &&
+    defaultConn.token_expires_at &&
+    new Date(defaultConn.token_expires_at) <= now
 
   return (
     <>
@@ -62,188 +88,259 @@ export default function ImportCASPage({
         className="flex items-center gap-4 w-full px-8 py-4 sticky top-0 z-30"
         style={{ backgroundColor: '#f4faff' }}
       >
-        <button
-          onClick={handleDone}
+        <Link
+          href={`/families/${familyId}`}
           className="p-2 rounded-full hover:bg-[#c9e7f7] transition-colors"
           style={{ color: '#001f2a' }}
         >
           <span className="material-symbols-outlined">arrow_back</span>
-        </button>
+        </Link>
         <h2 className="text-xl font-bold tracking-tight font-headline" style={{ color: '#002B5B' }}>
-          Import CAS Statement
+          Import Holdings
         </h2>
       </header>
 
-      <div className="px-8 py-8 max-w-2xl mx-auto">
-        {/* Instructions */}
-        <div
-          className="rounded-2xl p-6 mb-8"
-          style={{ backgroundColor: '#e6f6ff' }}
+      {/* Tab bar */}
+      <div className="px-8 pt-6 pb-0 flex gap-2 border-b" style={{ borderColor: '#c9e7f7' }}>
+        <Link
+          href={`/families/${familyId}/import?tab=cas`}
+          className={`px-5 py-2.5 rounded-t-xl text-sm font-semibold transition-colors ${
+            tab === 'cas'
+              ? 'bg-white border border-b-white'
+              : 'hover:bg-[#e6f6ff]'
+          }`}
+          style={{
+            color: tab === 'cas' ? '#001736' : '#43474f',
+            borderColor: tab === 'cas' ? '#c9e7f7' : 'transparent',
+          }}
         >
-          <div className="flex gap-3 items-start">
-            <span className="material-symbols-outlined mt-0.5" style={{ color: '#006d43' }}>info</span>
+          <span className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-base">description</span>
+            CAS Import
+          </span>
+        </Link>
+        <Link
+          href={`/families/${familyId}/import?tab=broker`}
+          className={`px-5 py-2.5 rounded-t-xl text-sm font-semibold transition-colors ${
+            tab === 'broker'
+              ? 'bg-white border border-b-white'
+              : 'hover:bg-[#e6f6ff]'
+          }`}
+          style={{
+            color: tab === 'broker' ? '#001736' : '#43474f',
+            borderColor: tab === 'broker' ? '#c9e7f7' : 'transparent',
+          }}
+        >
+          <span className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-base">account_balance_wallet</span>
+            Broker
+          </span>
+        </Link>
+      </div>
+
+      {/* Tab content */}
+      {tab === 'cas' ? (
+        <CASImportForm familyId={familyId} />
+      ) : (
+        /* ---- Broker tab ---- */
+        <div className="px-8 py-8 max-w-2xl mx-auto">
+
+          {/* Success / error banner */}
+          {success && (
+            <div
+              className="rounded-xl px-4 py-3 text-sm flex gap-2 items-center mb-6"
+              style={{ backgroundColor: '#f0fdf4', color: '#15803d' }}
+            >
+              <span className="material-symbols-outlined text-base">check_circle</span>
+              {success === 'refreshed'
+                ? 'Holdings refreshed successfully.'
+                : 'Zerodha connected and holdings imported.'}
+            </div>
+          )}
+          {error && (
+            <div
+              className="rounded-xl px-4 py-3 text-sm flex gap-2 items-center mb-6"
+              style={{ backgroundColor: '#fef2f2', color: '#991b1b' }}
+            >
+              <span className="material-symbols-outlined text-base">error</span>
+              {error === 'missing_token' && 'Authentication failed — missing token.'}
+              {error === 'auth_failed' && 'Authentication failed. Please try again.'}
+              {error === 'upsert_failed' && 'Connected but failed to save holdings. Please retry.'}
+              {error === 'conn_failed' && 'Connected but failed to save connection. Please retry.'}
+              {error === 'refresh_failed' && 'Holdings refresh failed. Please try again.'}
+              {!['missing_token','auth_failed','upsert_failed','conn_failed','refresh_failed'].includes(error) && 'An error occurred. Please try again.'}
+            </div>
+          )}
+
+          {/* Header */}
+          <div className="flex items-center gap-3 mb-8">
+            <div
+              className="w-12 h-12 rounded-xl flex items-center justify-center"
+              style={{ backgroundColor: '#387ed1' }}
+            >
+              <span className="material-symbols-outlined text-white">account_balance_wallet</span>
+            </div>
             <div>
-              <p className="font-semibold text-sm mb-1" style={{ color: '#001f2a' }}>
-                How to get your CAS
-              </p>
+              <h3 className="font-bold text-lg font-headline" style={{ color: '#001f2a' }}>
+                Connect Zerodha
+              </h3>
               <p className="text-sm" style={{ color: '#43474f' }}>
-                Request a Consolidated Account Statement (CAS) from{' '}
-                <span className="font-medium">CAMS</span> or <span className="font-medium">KFintech</span>.
-                The PDF may be password-protected — enter your PAN in lowercase if prompted.
+                Import your stock holdings from Zerodha Demat account
               </p>
             </div>
           </div>
-        </div>
 
-        {!result ? (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* File upload */}
-            <div>
-              <label className="block text-sm font-semibold mb-2" style={{ color: '#001f2a' }}>
-                CAS PDF
-              </label>
-              <div
-                className="border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors hover:border-[#006d43]"
-                style={{ borderColor: file ? '#006d43' : '#43474f' }}
-                onClick={() => fileRef.current?.click()}
-              >
-                <span className="material-symbols-outlined text-4xl mb-2 block" style={{ color: file ? '#006d43' : '#43474f' }}>
-                  {file ? 'check_circle' : 'upload_file'}
-                </span>
-                <p className="text-sm font-medium" style={{ color: '#001f2a' }}>
-                  {file ? file.name : 'Click to select PDF'}
-                </p>
-                {!file && (
-                  <p className="text-xs mt-1" style={{ color: '#43474f' }}>
-                    PDF files only
-                  </p>
-                )}
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept="application/pdf"
-                  className="hidden"
-                  onChange={e => setFile(e.target.files?.[0] ?? null)}
-                />
-              </div>
-            </div>
-
-            {/* Password */}
-            <div>
-              <label className="block text-sm font-semibold mb-2" style={{ color: '#001f2a' }}>
-                PDF Password <span className="font-normal text-xs" style={{ color: '#43474f' }}>(optional — usually PAN in lowercase)</span>
-              </label>
-              <input
-                type="text"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="e.g. abcde1234f"
-                className="w-full px-4 py-3 rounded-xl border text-sm outline-none focus:ring-2"
-                style={{
-                  borderColor: '#c9e7f7',
-                  backgroundColor: '#ffffff',
-                  color: '#001f2a',
-                }}
-              />
-            </div>
-
-            {/* Error */}
-            {error && (
-              <div
-                className="rounded-xl px-4 py-3 text-sm flex gap-2 items-center"
-                style={{ backgroundColor: '#fef2f2', color: '#991b1b' }}
-              >
-                <span className="material-symbols-outlined text-base">error</span>
-                {error}
-              </div>
-            )}
-
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={!file || loading}
-              className="w-full py-3 rounded-xl font-semibold text-sm transition-opacity disabled:opacity-50"
-              style={{ backgroundColor: '#001736', color: '#ffffff' }}
-            >
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <span className="material-symbols-outlined text-base animate-spin">progress_activity</span>
-                  Importing…
-                </span>
-              ) : (
-                'Import CAS'
-              )}
-            </button>
-          </form>
-        ) : (
-          /* Results */
-          <div className="space-y-4">
+          {!defaultHolder ? (
             <div
-              className="rounded-2xl p-6"
-              style={{ backgroundColor: result.errors.length === 0 ? '#f0fdf4' : '#fefce8' }}
+              className="rounded-xl px-4 py-3 text-sm"
+              style={{ backgroundColor: '#fef9c3', color: '#854d0e' }}
             >
-              <div className="flex gap-3 items-center mb-4">
-                <span
-                  className="material-symbols-outlined"
-                  style={{ color: result.errors.length === 0 ? '#15803d' : '#a16207' }}
-                >
-                  {result.errors.length === 0 ? 'check_circle' : 'warning'}
-                </span>
-                <p className="font-semibold" style={{ color: '#001f2a' }}>
-                  Import complete
-                </p>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <p className="text-2xl font-bold tabular-nums" style={{ color: '#006d43' }}>
-                    {result.imported}
-                  </p>
-                  <p className="text-xs mt-1" style={{ color: '#43474f' }}>Imported</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold tabular-nums" style={{ color: '#a16207' }}>
-                    {result.needs_review}
-                  </p>
-                  <p className="text-xs mt-1" style={{ color: '#43474f' }}>Needs review</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold tabular-nums" style={{ color: '#991b1b' }}>
-                    {result.errors.length}
-                  </p>
-                  <p className="text-xs mt-1" style={{ color: '#43474f' }}>Errors</p>
-                </div>
-              </div>
+              No holders found in this family. Add a holder before connecting a broker.
             </div>
-
-            {result.errors.length > 0 && (
-              <div className="rounded-xl border p-4 space-y-1" style={{ borderColor: '#fecaca' }}>
-                <p className="text-xs font-semibold mb-2" style={{ color: '#991b1b' }}>Errors</p>
-                {result.errors.map((e, i) => (
-                  <p key={i} className="text-xs" style={{ color: '#43474f' }}>{e}</p>
-                ))}
+          ) : isConnected ? (
+            /* Connected state */
+            <div className="rounded-2xl border p-6 space-y-4" style={{ borderColor: '#c9e7f7', backgroundColor: '#ffffff' }}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span
+                    className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold"
+                    style={{ backgroundColor: '#dcfce7', color: '#15803d' }}
+                  >
+                    <span className="material-symbols-outlined text-sm">check_circle</span>
+                    Connected
+                  </span>
+                  <span className="text-sm" style={{ color: '#43474f' }}>
+                    {defaultHolder.name}
+                  </span>
+                </div>
+                {defaultConn.zerodha_user_id && (
+                  <span className="text-xs font-mono tabular-nums" style={{ color: '#43474f' }}>
+                    {defaultConn.zerodha_user_id}
+                  </span>
+                )}
               </div>
-            )}
 
-            <div className="flex gap-3">
-              <button
-                onClick={() => { setResult(null); setFile(null); setPassword('') }}
-                className="flex-1 py-3 rounded-xl font-semibold text-sm border transition-colors hover:bg-[#e6f6ff]"
-                style={{ borderColor: '#c9e7f7', color: '#001736' }}
-              >
-                Import another
-              </button>
-              <button
-                onClick={handleDone}
-                className="flex-1 py-3 rounded-xl font-semibold text-sm transition-opacity"
+              {defaultConn.last_synced_at && (
+                <p className="text-xs" style={{ color: '#43474f' }}>
+                  Last synced: {formatDate(defaultConn.last_synced_at)}
+                </p>
+              )}
+
+              <Link
+                href={`/api/broker/zerodha/refresh?holderId=${defaultHolder.id}`}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-opacity hover:opacity-80"
                 style={{ backgroundColor: '#001736', color: '#ffffff' }}
               >
-                Go to dashboard
-              </button>
+                <span className="material-symbols-outlined text-base">sync</span>
+                Refresh Holdings
+              </Link>
             </div>
-          </div>
-        )}
-      </div>
+          ) : isExpired ? (
+            /* Expired state */
+            <div className="rounded-2xl border p-6 space-y-4" style={{ borderColor: '#fde68a', backgroundColor: '#fffbeb' }}>
+              <div className="flex items-center gap-2">
+                <span
+                  className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold"
+                  style={{ backgroundColor: '#fef3c7', color: '#92400e' }}
+                >
+                  <span className="material-symbols-outlined text-sm">schedule</span>
+                  Session Expired
+                </span>
+                <span className="text-sm" style={{ color: '#43474f' }}>
+                  {defaultHolder.name}
+                </span>
+              </div>
+              <p className="text-sm" style={{ color: '#78350f' }}>
+                Your Zerodha session has expired (Kite tokens expire daily at 6 AM IST). Re-authorise to continue syncing.
+              </p>
+              <Link
+                href={getKiteLoginURL(defaultHolder.id)}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-opacity hover:opacity-80"
+                style={{ backgroundColor: '#001736', color: '#ffffff' }}
+              >
+                <span className="material-symbols-outlined text-base">lock_reset</span>
+                Re-authorise via Kite
+              </Link>
+            </div>
+          ) : (
+            /* Not connected state */
+            <div className="rounded-2xl border p-6 space-y-4" style={{ borderColor: '#c9e7f7', backgroundColor: '#ffffff' }}>
+              <p className="text-sm" style={{ color: '#43474f' }}>
+                Connect your Zerodha Demat account to automatically import stock holdings.
+                You will be redirected to Zerodha to authorise FolioAI.
+              </p>
+              <Link
+                href={getKiteLoginURL(defaultHolder.id)}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-opacity hover:opacity-80"
+                style={{ backgroundColor: '#001736', color: '#ffffff' }}
+              >
+                <span className="material-symbols-outlined text-base">link</span>
+                Connect via Kite
+              </Link>
+            </div>
+          )}
+
+          {/* Stock holdings table */}
+          {stockHoldings && stockHoldings.length > 0 && (
+            <div className="mt-8">
+              <h4 className="font-semibold text-sm mb-3 font-headline" style={{ color: '#001f2a' }}>
+                Imported Stock Holdings
+              </h4>
+              <div className="rounded-3xl border overflow-hidden" style={{ borderColor: '#c9e7f7' }}>
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr style={{ backgroundColor: '#e6f6ff' }}>
+                      <th className="px-4 py-3 text-left font-semibold text-xs" style={{ color: '#43474f' }}>Symbol</th>
+                      <th className="px-4 py-3 text-left font-semibold text-xs" style={{ color: '#43474f' }}>Exchange</th>
+                      <th className="px-4 py-3 text-right font-semibold text-xs tabular-nums" style={{ color: '#43474f' }}>Qty</th>
+                      <th className="px-4 py-3 text-right font-semibold text-xs tabular-nums" style={{ color: '#43474f' }}>Avg Price</th>
+                      <th className="px-4 py-3 text-right font-semibold text-xs tabular-nums" style={{ color: '#43474f' }}>Last Price</th>
+                      <th className="px-4 py-3 text-right font-semibold text-xs tabular-nums" style={{ color: '#43474f' }}>P&amp;L</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {stockHoldings.map((s: {
+                      tradingsymbol: string
+                      exchange: string
+                      quantity: number
+                      average_price: number
+                      last_price: number
+                      pnl: number
+                    }, i: number) => (
+                      <tr
+                        key={`${s.tradingsymbol}-${s.exchange}`}
+                        style={{ backgroundColor: i % 2 === 0 ? '#ffffff' : '#f4faff' }}
+                      >
+                        <td className="px-4 py-3 font-medium font-mono tabular-nums" style={{ color: '#001f2a' }}>
+                          {s.tradingsymbol}
+                        </td>
+                        <td className="px-4 py-3 text-xs" style={{ color: '#43474f' }}>
+                          {s.exchange}
+                        </td>
+                        <td className="px-4 py-3 text-right tabular-nums" style={{ color: '#001f2a' }}>
+                          {s.quantity}
+                        </td>
+                        <td className="px-4 py-3 text-right tabular-nums" style={{ color: '#001f2a' }}>
+                          {formatINR(s.average_price)}
+                        </td>
+                        <td className="px-4 py-3 text-right tabular-nums" style={{ color: '#001f2a' }}>
+                          {formatINR(s.last_price)}
+                        </td>
+                        <td
+                          className="px-4 py-3 text-right tabular-nums font-medium"
+                          style={{ color: s.pnl >= 0 ? '#006d43' : '#991b1b' }}
+                        >
+                          {s.pnl >= 0 ? '+' : ''}{formatINR(s.pnl)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </>
   )
 }
