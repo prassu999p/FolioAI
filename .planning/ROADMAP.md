@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Portfolio Analytics** - Holdings dashboard, XIRR, benchmark comparison, SIP tracking, and asset allocation view (completed 2026-03-20)
 - [x] **Phase 3: Tax Engine** - LTCG/STCG with grandfathering, TaxLot FIFO, harvesting suggestions, and ITR capital gains export
 - [ ] **Phase 4: AI Intelligence** - Fund scoring, replacement recommendations, portfolio chat, and quarterly review report
-- [ ] **Phase 5: Goals, Alerts and Broker Integration** - Goal tracking, allocation drift alerts, underperformance alerts, and Zerodha stock import
+- [x] **Phase 5: Goals, Alerts and Broker Integration** - Goal tracking, allocation drift alerts, underperformance alerts, and Zerodha stock import (completed 2026-03-25)
 
 ## Phase Details
 
@@ -135,4 +135,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Portfolio Analytics | 14/14 | Complete   | 2026-03-20 |
 | 3. Tax Engine | 4/4 | Complete   | 2026-03-21 |
 | 4. AI Intelligence | 5/6 | In Progress|  |
-| 5. Goals, Alerts and Broker Integration | 5/6 | In Progress|  |
+| 5. Goals, Alerts and Broker Integration | 6/6 | Complete   | 2026-03-25 |
