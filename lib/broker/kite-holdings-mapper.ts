@@ -1,5 +1,5 @@
 // lib/broker/kite-holdings-mapper.ts
-// Stub — implementation in 05-04-PLAN.md
+// Maps Kite API /portfolio/holdings response to the stock_holdings DB shape.
 
 export interface KiteHolding {
   tradingsymbol: string
@@ -23,9 +23,23 @@ export interface StockHoldingInsert {
   broker_source: 'zerodha'
 }
 
+/**
+ * Maps a single Kite API holding to the stock_holdings DB row shape.
+ * Converts empty-string isin to null (Kite returns "" when ISIN is unavailable).
+ */
 export function mapKiteHoldingToStockRow(
-  _holding: KiteHolding,
-  _holderId: string
+  holding: KiteHolding,
+  holderId: string
 ): StockHoldingInsert {
-  throw new Error('Not implemented')
+  return {
+    holder_id: holderId,
+    tradingsymbol: holding.tradingsymbol,
+    exchange: holding.exchange,
+    isin: holding.isin || null,
+    quantity: holding.quantity,
+    average_price: holding.average_price,
+    last_price: holding.last_price,
+    pnl: holding.pnl,
+    broker_source: 'zerodha',
+  }
 }
