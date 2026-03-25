@@ -92,7 +92,7 @@ Plans:
   1. Every fund in the user's portfolio shows an AI-generated scorecard covering expense ratio vs category, alpha, AUM trend, and manager track record
   2. AI identifies underperforming funds and recommends specific alternative funds with written reasoning, using SEBI-compliant advisory language
   3. User can ask natural language questions ("What's my XIRR since January 2022?", "How exposed am I to IT sector?") and receive accurate answers grounded in their actual transaction data
-  4. AI generates a quarterly portfolio review narrative — what's performing well, what to review for exit, overall health assessment — available on demand
+  4. AI generates a quarterly portfolio review narrative — what's performing well, what to review for exit, suggested additions, overall health assessment — available on demand
 **Plans**: 6 plans
 
 Plans:
@@ -113,7 +113,15 @@ Plans:
   2. User receives an email alert when any held fund underperforms its benchmark category average for 6 or more consecutive months
   3. User receives an email alert when any asset class drifts beyond their defined threshold, and a tax harvesting window alert in February before March 31 deadline
   4. User can connect a Zerodha account via Kite Connect to import stock holdings and transactions, which then appear in the unified holdings view
-**Plans**: TBD
+**Plans**: 6 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — Wave 0 foundation: kiteconnect install, DB migrations (goals, broker_connections, stock_holdings, rebalance_strategies), lib stubs, test scaffolds
+- [ ] 05-02-PLAN.md — TDD: goals projection engine (computeProjectedCorpus, computeGoalProjection, on-track/off-track logic)
+- [ ] 05-03-PLAN.md — Family allocation page: current vs target bars with drift badges, AI Rebalance Strategy card
+- [ ] 05-04-PLAN.md — Zerodha Kite Connect: kite-holdings-mapper TDD, OAuth callback route, Broker tab on import page
+- [ ] 05-05-PLAN.md — Goals page UI: 3-col goal cards grid, CreateGoalModal with holdings multi-select, Fund-Goal Linkage strip
+- [ ] 05-06-PLAN.md — Alert preferences DB scaffold (ALRT-01/02) + human verify checkpoint for all Phase 5 features
 
 ## Progress
 
@@ -127,4 +135,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Portfolio Analytics | 14/14 | Complete   | 2026-03-20 |
 | 3. Tax Engine | 4/4 | Complete   | 2026-03-21 |
 | 4. AI Intelligence | 5/6 | In Progress|  |
-| 5. Goals, Alerts and Broker Integration | 0/TBD | Not started | - |
+| 5. Goals, Alerts and Broker Integration | 0/6 | Not started | - |
