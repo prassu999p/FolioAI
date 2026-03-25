@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import type { Database } from '@/lib/supabase/types'
+import { ChatWidget } from '@/components/ai/chat-widget'
 
 export default async function DashboardLayout({
   children,
@@ -100,6 +101,7 @@ export default async function DashboardLayout({
       {/* Main Content */}
       <main className="ml-64 min-h-screen" style={{ backgroundColor: '#f4faff' }}>
         {children}
+        <ChatWidget familyId={familyId} />
       </main>
     </div>
   )
