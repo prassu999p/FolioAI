@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 05-01-PLAN.md
-last_updated: "2026-03-25T10:11:22.633Z"
+stopped_at: Completed 05-02-PLAN.md
+last_updated: "2026-03-25T10:14:23.692Z"
 last_activity: 2026-03-21 — Completed Phase 3 Tax Engine
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 37
-  completed_plans: 28
+  completed_plans: 29
   percent: 60
 ---
 
@@ -77,6 +77,7 @@ Progress: [██████░░░░] 60%
 | Phase 04-ai-intelligence P04 | 12min | 2 tasks | 4 files |
 | Phase 04-ai-intelligence P05 | 4min | 2 tasks | 7 files |
 | Phase 05-goals-alerts-and-broker-integration P01 | 5min | 2 tasks | 8 files |
+| Phase 05-goals-alerts-and-broker-integration P02 | 63s | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -150,6 +151,8 @@ Recent decisions affecting current work:
 - [Phase 05-goals-alerts-and-broker-integration]: goals and goal_holdings use three-hop RLS (goal_holdings -> goals -> holders -> families) — consistent with Phase 1 subquery chain pattern
 - [Phase 05-goals-alerts-and-broker-integration]: stock_holdings is separate table from folios — stocks have no folio numbers, different data model from MF holdings
 - [Phase 05-goals-alerts-and-broker-integration]: kiteconnect@5.1.0 installed in Wave 0 so Plans 02-04 can import without install step
+- [Phase 05-goals-alerts-and-broker-integration]: differenceInCalendarDays/365 used for fractional years — sub-year goals need accurate projections, not integer truncation
+- [Phase 05-goals-alerts-and-broker-integration]: computeGoalProjection returns baseValue as currentLinkedValue — callers see effective value used for projection when fallback fires
 
 ### Pending Todos
 
@@ -166,6 +169,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-25T10:11:22.629Z
-Stopped at: Completed 05-01-PLAN.md
+Last session: 2026-03-25T10:14:23.689Z
+Stopped at: Completed 05-02-PLAN.md
 Resume file: None
