@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-03-24T12:54:08.768Z"
+stopped_at: Completed 04-02-PLAN.md
+last_updated: "2026-03-25T02:56:58.806Z"
 last_activity: 2026-03-21 — Completed Phase 3 Tax Engine
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 31
-  completed_plans: 22
+  completed_plans: 23
   percent: 60
 ---
 
@@ -72,6 +72,7 @@ Progress: [██████░░░░] 60%
 | Phase 02-portfolio-analytics P13 | 3min | 1 tasks | 2 files |
 | Phase 02-portfolio-analytics P15 | 3min | 2 tasks | 1 files |
 | Phase 04-ai-intelligence P01 | 5min | 2 tasks | 9 files |
+| Phase 04-ai-intelligence P02 | 5min | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -132,6 +133,8 @@ Recent decisions affecting current work:
 - [Phase 04-ai-intelligence]: AI SDK packages installed in Wave 0 so Plans 02-04 can import without install step
 - [Phase 04-ai-intelligence]: Stub functions throw Not implemented — Phase 4 Plan 02 for clear error before implementation
 - [Phase 04-ai-intelligence]: fund_ai_scores UNIQUE(holder_id, scheme_code) — upsert semantics; portfolio_narratives UNIQUE(holder_id) — one active narrative per holder
+- [Phase 04-ai-intelligence]: computeAlpha uses 90-day span check — more precise than counting transactions for insufficient data detection
+- [Phase 04-ai-intelligence]: sync-ter.ts uses individual UPDATE per scheme_code — only updates funds that already exist in DB, no phantom rows
 
 ### Pending Todos
 
@@ -148,6 +151,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-24T12:54:08.765Z
-Stopped at: Completed 04-01-PLAN.md
+Last session: 2026-03-25T02:56:58.803Z
+Stopped at: Completed 04-02-PLAN.md
 Resume file: None
