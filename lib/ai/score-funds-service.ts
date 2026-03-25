@@ -1,12 +1,9 @@
-import Anthropic from '@anthropic-ai/sdk'
+import { generateText } from 'ai'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { computeAlpha, computeAUMTrend, computeQualityScore } from '@/lib/ai/scoring'
 import { buildScorecardPrompt } from '@/lib/ai/prompts'
+import { getAIModel } from '@/lib/ai/provider'
 import type { ScoringSignals, AlphaInput, FundScore } from '@/lib/ai/types'
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-})
 
 interface HoldingFromDB {
   scheme_code: number
@@ -142,19 +139,18 @@ export async function scoreFundsForHolder(
     if (hasInsufficientData) {
       narrativeText = 'Insufficient data — fewer than 3 months of history available for this fund.'
     } else {
-      // Call Anthropic for narrative prose
+      // Call AI provider for narrative prose
       try {
         const prompt = buildScorecardPrompt(signals, qualityScore)
-        const msg = await anthropic.messages.create({
-          model: 'claude-sonnet-4-6',
-          max_tokens: 400,
+        const { text } = await generateText({
+          model: getAIModel(),
+          maxOutputTokens: 400,
           messages: [{ role: 'user', content: prompt }],
         })
-        const firstContent = msg.content[0]
-        narrativeText = firstContent.type === 'text' ? firstContent.text : ''
+        narrativeText = text
       } catch (err) {
         narrativeText = 'Narrative generation failed. Please retry.'
-        console.error(`Anthropic error for scheme ${holding.scheme_code}:`, err)
+        console.error(`AI provider error for scheme ${holding.scheme_code}:`, err)
       }
     }
 

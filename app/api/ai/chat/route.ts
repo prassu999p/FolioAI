@@ -1,5 +1,5 @@
-import { anthropic } from '@ai-sdk/anthropic'
 import { streamText } from 'ai'
+import { getAIModel } from '@/lib/ai/provider'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { buildChatContextForHolder } from '@/lib/ai/chat-context-service'
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
   }
 
   const result = streamText({
-    model: anthropic('claude-sonnet-4-6'),
+    model: getAIModel(),
     system: systemPrompt,
     messages: messages as any,
     maxOutputTokens: 1000,

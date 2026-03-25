@@ -1,14 +1,14 @@
-import Anthropic from '@anthropic-ai/sdk'
+import { generateText } from 'ai'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { buildChatContextForHolder } from './chat-context-service'
 import { buildNarrativePrompt } from './prompts'
+import { getAIModel } from './provider'
 
 export async function generateNarrativeForHolder(
   holderId: string,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   supabase: SupabaseClient | any
 ): Promise<{ narrative: string }> {
-  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
   // 1. Build portfolio context (holdings, XIRR, sector, SIPs)
   const ctx = await buildChatContextForHolder(holderId, supabase)
@@ -40,15 +40,13 @@ export async function generateNarrativeForHolder(
     }
   })
 
-  // 4. Build prompt and call Claude
+  // 4. Build prompt and call AI provider
   const prompt = buildNarrativePrompt(ctx, scores)
-  const msg = await anthropic.messages.create({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 1500,
+  const { text: narrative } = await generateText({
+    model: getAIModel(),
+    maxOutputTokens: 1500,
     messages: [{ role: 'user', content: prompt }],
   })
-  const narrative =
-    msg.content[0].type === 'text' ? msg.content[0].text : 'Unable to generate narrative.'
 
   // 5. Upsert into portfolio_narratives (UNIQUE on holder_id — replaces on conflict)
   await (supabase as any).from('portfolio_narratives').upsert(
