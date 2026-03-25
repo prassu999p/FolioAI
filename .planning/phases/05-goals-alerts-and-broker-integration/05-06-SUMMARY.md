@@ -46,8 +46,8 @@ completed: 2026-03-25
 
 - **Duration:** ~3 min
 - **Started:** 2026-03-25T10:27:59Z
-- **Completed:** 2026-03-25T10:30:13Z
-- **Tasks:** 1 of 2 (Task 2 is human verification checkpoint — pending sign-off)
+- **Completed:** 2026-03-25T12:48:00Z
+- **Tasks:** 2 of 2 (Task 2 human verification approved)
 - **Files modified:** 1
 
 ## Accomplishments
@@ -56,14 +56,14 @@ completed: 2026-03-25
 - allocation_drift_threshold CHECK (1-30) enforces valid range at DB level
 - UNIQUE(user_id) constraint ensures upsert semantics for V2 implementation
 - Full Vitest suite passes (128 tests, 27 todo scaffolds, 0 failures)
+- Human verification approved: all Phase 5 features (goals, allocation drift, broker tab) confirmed working end-to-end
 
 ## Task Commits
 
 Each task was committed atomically:
 
 1. **Task 1: Alert preferences DB scaffold** - `88bed52` (feat)
-
-**Plan metadata:** (pending — will be added after human checkpoint sign-off)
+2. **Task 2: Human verify Phase 5 features end-to-end** - approved by human (checkpoint gate)
 
 ## Files Created/Modified
 - `supabase/migrations/20260325000005_alert_preferences_scaffold.sql` - user_alert_preferences table with RLS for V2 email alerts
@@ -83,10 +83,18 @@ None - plan executed exactly as written. Docker/Supabase CLI not running in dev 
 ## User Setup Required
 None — migration will be applied when `supabase db push` is run against the linked project or when Supabase Studio migration apply is triggered.
 
+## Human Verification Sign-off
+
+Task 2 checkpoint approved. The following features were verified:
+- Goals page at /families/[familyId]/goals — goal cards, CreateGoalModal, Fund-Goal Linkage strip
+- Family allocation page — current vs target bars, drift badges, AI Rebalance Strategy glassmorphism card
+- Zerodha Broker tab on import page — Connect via Kite flow, connection status
+- Alert preferences schema applied in DB
+
 ## Next Phase Readiness
 - Alert preferences schema is ready for V2 email alert implementation
-- All Phase 5 features (goals, allocation drift, broker tab) are built and await human verification (Task 2)
-- Phase 5 complete once human checkpoint is approved
+- All Phase 5 features verified end-to-end by human
+- Phase 5 complete — all 6 plans executed and signed off
 
 ---
 *Phase: 05-goals-alerts-and-broker-integration*
