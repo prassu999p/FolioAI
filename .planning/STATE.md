@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-03-25T10:30:00.000Z"
-last_activity: 2026-03-25 — Completed Phase 5 Plan 04 Zerodha Kite Integration
+stopped_at: Completed 05-05-PLAN.md
+last_updated: "2026-03-25T10:26:54.267Z"
+last_activity: 2026-03-21 — Completed Phase 3 Tax Engine
 progress:
   total_phases: 5
   completed_phases: 3
@@ -80,6 +80,7 @@ Progress: [████████░░] 84%
 | Phase 05-goals-alerts-and-broker-integration P02 | 63s | 2 tasks | 2 files |
 | Phase 05-goals-alerts-and-broker-integration P03 | 15min | 2 tasks | 5 files |
 | Phase 05-goals-alerts-and-broker-integration P04 | 15min | 2 tasks | 7 files |
+| Phase 05-goals-alerts-and-broker-integration P05 | 3min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -160,6 +161,8 @@ Recent decisions affecting current work:
 - [Phase 05-goals-alerts-and-broker-integration]: Import page converted to Server Component — OAuth link/status are static renders; CAS file upload form extracted to CASImportForm client component
 - [Phase 05-goals-alerts-and-broker-integration]: Default holder (first alphabetically) used for Broker tab V1 connection context — per-holder selector deferred; acceptable for families with 1-3 holders
 - [Phase 05-goals-alerts-and-broker-integration]: supabase .select() read results cast as typed arrays — same postgrest-js v2.99.2 never inference limitation as write ops; consistent with Phase 1 pattern
+- [Phase 05-goals-alerts-and-broker-integration]: CreateGoalModal uses uncontrolled Dialog (no open/onOpenChange) — consistent with SetTargetModal Phase 2 decision to prevent hydration issues
+- [Phase 05-goals-alerts-and-broker-integration]: Goals page uses primary holder (first alphabetically) for modal in V1 — per-holder selector deferred; acceptable for families with 1-3 holders
 
 ### Pending Todos
 
@@ -176,6 +179,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-25T10:30:00.000Z
-Stopped at: Completed 05-04-PLAN.md
+Last session: 2026-03-25T10:26:54.263Z
+Stopped at: Completed 05-05-PLAN.md
 Resume file: None

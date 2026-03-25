@@ -135,4 +135,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Portfolio Analytics | 14/14 | Complete   | 2026-03-20 |
 | 3. Tax Engine | 4/4 | Complete   | 2026-03-21 |
 | 4. AI Intelligence | 5/6 | In Progress|  |
-| 5. Goals, Alerts and Broker Integration | 2/6 | In Progress|  |
+| 5. Goals, Alerts and Broker Integration | 5/6 | In Progress|  |
