@@ -116,9 +116,9 @@ Plans:
 **Plans**: 6 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Wave 0 foundation: kiteconnect install, DB migrations (goals, broker_connections, stock_holdings, rebalance_strategies), lib stubs, test scaffolds
-- [ ] 05-02-PLAN.md — TDD: goals projection engine (computeProjectedCorpus, computeGoalProjection, on-track/off-track logic)
-- [ ] 05-03-PLAN.md — Family allocation page: current vs target bars with drift badges, AI Rebalance Strategy card
+- [x] 05-01-PLAN.md — Wave 0 foundation: kiteconnect install, DB migrations (goals, broker_connections, stock_holdings, rebalance_strategies), lib stubs, test scaffolds
+- [x] 05-02-PLAN.md — TDD: goals projection engine (computeProjectedCorpus, computeGoalProjection, on-track/off-track logic)
+- [x] 05-03-PLAN.md — Family allocation page: current vs target bars with drift badges, AI Rebalance Strategy card
 - [ ] 05-04-PLAN.md — Zerodha Kite Connect: kite-holdings-mapper TDD, OAuth callback route, Broker tab on import page
 - [ ] 05-05-PLAN.md — Goals page UI: 3-col goal cards grid, CreateGoalModal with holdings multi-select, Fund-Goal Linkage strip
 - [ ] 05-06-PLAN.md — Alert preferences DB scaffold (ALRT-01/02) + human verify checkpoint for all Phase 5 features

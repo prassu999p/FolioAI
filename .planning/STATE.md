@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 05-02-PLAN.md
-last_updated: "2026-03-25T10:14:23.692Z"
-last_activity: 2026-03-21 — Completed Phase 3 Tax Engine
+stopped_at: Completed 05-04-PLAN.md
+last_updated: "2026-03-25T10:30:00.000Z"
+last_activity: 2026-03-25 — Completed Phase 5 Plan 04 Zerodha Kite Integration
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 37
-  completed_plans: 29
-  percent: 60
+  completed_plans: 32
+  percent: 84
 ---
 
 # Project State
@@ -30,7 +30,7 @@ Plan: 4 of 4 in current phase
 Status: Complete
 Last activity: 2026-03-21 — Completed Phase 3 Tax Engine
 
-Progress: [██████░░░░] 60%
+Progress: [████████░░] 84%
 
 ## Performance Metrics
 
@@ -78,6 +78,8 @@ Progress: [██████░░░░] 60%
 | Phase 04-ai-intelligence P05 | 4min | 2 tasks | 7 files |
 | Phase 05-goals-alerts-and-broker-integration P01 | 5min | 2 tasks | 8 files |
 | Phase 05-goals-alerts-and-broker-integration P02 | 63s | 2 tasks | 2 files |
+| Phase 05-goals-alerts-and-broker-integration P03 | 15min | 2 tasks | 5 files |
+| Phase 05-goals-alerts-and-broker-integration P04 | 15min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -153,6 +155,11 @@ Recent decisions affecting current work:
 - [Phase 05-goals-alerts-and-broker-integration]: kiteconnect@5.1.0 installed in Wave 0 so Plans 02-04 can import without install step
 - [Phase 05-goals-alerts-and-broker-integration]: differenceInCalendarDays/365 used for fractional years — sub-year goals need accurate projections, not integer truncation
 - [Phase 05-goals-alerts-and-broker-integration]: computeGoalProjection returns baseValue as currentLinkedValue — callers see effective value used for projection when fallback fires
+- [Phase 05-goals-alerts-and-broker-integration]: Family allocation target = weighted average of holder targets by AUM — no separate family_allocation_targets table needed
+- [Phase 05-goals-alerts-and-broker-integration]: Drift badge threshold strictly greater-than 5% per CONTEXT.md spec — Math.abs(drift) > 5 not >= 5
+- [Phase 05-goals-alerts-and-broker-integration]: Import page converted to Server Component — OAuth link/status are static renders; CAS file upload form extracted to CASImportForm client component
+- [Phase 05-goals-alerts-and-broker-integration]: Default holder (first alphabetically) used for Broker tab V1 connection context — per-holder selector deferred; acceptable for families with 1-3 holders
+- [Phase 05-goals-alerts-and-broker-integration]: supabase .select() read results cast as typed arrays — same postgrest-js v2.99.2 never inference limitation as write ops; consistent with Phase 1 pattern
 
 ### Pending Todos
 
@@ -169,6 +176,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-25T10:14:23.689Z
-Stopped at: Completed 05-02-PLAN.md
+Last session: 2026-03-25T10:45:00.000Z
+Stopped at: Completed 05-03-PLAN.md
 Resume file: None
