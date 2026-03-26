@@ -81,7 +81,7 @@ Planners and executors for all phases must read the relevant design file before 
 
 - [ ] **TAX-01**: User can see LTCG and STCG breakdown per holding and total — calculated correctly per Indian tax rules (equity: 1-year rule, 12.5% above ₹1.25L; debt: slab rate for post-Apr-2023 purchases)
 - [ ] **TAX-02**: User can see grandfathering applied correctly for equity holdings purchased before Feb 1, 2018 (cost basis = MAX(actual cost, MIN(Jan 31 2018 NAV, sale price)))
-- [ ] **TAX-03**: User can see a real-time sell tax estimator: "If you sell X units of Fund Y today, your estimated tax is ₹Z" (rule-based, not LLM)
+- [x] **TAX-03**: User can see a real-time sell tax estimator: "If you sell X units of Fund Y today, your estimated tax is ₹Z" (rule-based, not LLM)
 - [ ] **TAX-04**: User receives LTCG harvesting suggestions — for each eligible holding, the platform calculates exactly how many units to sell to use the remaining ₹1.25L annual LTCG exemption, then reinvest the proceeds back into the same fund; this resets the cost basis without exiting the position, eliminating future tax on those gains. Suggestions show: fund name, units to sell, LTCG to book, remaining exemption used, and estimated tax saved vs not harvesting.
 - [ ] **TAX-05**: User can generate and download an ITR-ready capital gains statement (LTCG/STCG per fund/stock for the FY) in Schedule CG format
 
@@ -176,7 +176,7 @@ Planners and executors for all phases must read the relevant design file before 
 | GOAL-03 | Phase 5 | Complete |
 | TAX-01 | Phase 3 | Pending |
 | TAX-02 | Phase 3 | Pending |
-| TAX-03 | Phase 3 | Pending |
+| TAX-03 | Phase 3 | Complete |
 | TAX-04 | Phase 3 | Pending |
 | TAX-05 | Phase 3 | Pending |
 | AI-01 | Phase 4 | Complete |
