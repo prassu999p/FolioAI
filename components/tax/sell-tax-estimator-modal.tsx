@@ -18,36 +18,40 @@ import { estimateSellTax } from '@/lib/tax/engine'
 import { getTaxAssetClass } from '@/lib/tax/rules'
 import { formatINR } from '@/lib/utils'
 import type { HoldingRowWithAnalytics } from '@/lib/supabase/types'
+import type { TaxAssetClass } from '@/lib/tax/types'
 
 interface SellTaxEstimatorModalProps {
   holding: HoldingRowWithAnalytics
   children: React.ReactNode
+  // Real lot data — passed from HoldingsTable; defaults prevent regression if not provided
+  purchaseDate?: Date         // Oldest FIFO purchase date for this holding
+  grandfatheringNav?: number | null  // Jan 31 2018 NAV if pre-2018, else null
+  taxAssetClass?: TaxAssetClass      // Correct asset class from fund category
 }
 
-export function SellTaxEstimatorModal({ holding, children }: SellTaxEstimatorModalProps) {
+export function SellTaxEstimatorModal({ holding, children, purchaseDate, grandfatheringNav, taxAssetClass }: SellTaxEstimatorModalProps) {
   const [units, setUnits] = useState<number>(0)
   const [isOpen, setIsOpen] = useState(false)
-  
+
   // Calculate tax estimation
   const estimation = useMemo(() => {
     if (!holding.current_nav || units <= 0 || units > holding.units) {
       return null
     }
-    
-    // Use average cost NAV as proxy for purchase NAV (simplified)
-    // In a real implementation, we'd fetch actual tax lots
-    const assetClass = getTaxAssetClass('')
-    
+
+    const effectivePurchaseDate = purchaseDate ?? new Date('2020-01-01')
+    const isPostApr2023 = effectivePurchaseDate >= new Date('2023-04-01')
+
     return estimateSellTax({
-      purchaseDate: new Date('2020-01-01'), // Simplified - would use actual lot data
+      purchaseDate: effectivePurchaseDate,
       purchaseNav: holding.avg_cost_nav || 0,
       units,
       saleNav: holding.current_nav,
-      grandfatheringNav: null, // Would fetch from DB
-      assetClass,
-      isPostApr2023: false
+      grandfatheringNav: grandfatheringNav ?? null,
+      assetClass: taxAssetClass ?? getTaxAssetClass(''),
+      isPostApr2023,
     })
-  }, [units, holding])
+  }, [units, holding, purchaseDate, grandfatheringNav, taxAssetClass])
   
   const handleUnitsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value) || 0
