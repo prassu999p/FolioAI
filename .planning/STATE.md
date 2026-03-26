@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 03-05-PLAN.md — Tax Engine gap closure complete
-last_updated: "2026-03-26T02:26:52.080Z"
+stopped_at: Completed 03-07-PLAN.md — Tax engine test stubs implemented
+last_updated: "2026-03-26T03:14:13.372Z"
 last_activity: 2026-03-21 — Completed Phase 3 Tax Engine
 progress:
   total_phases: 5
   completed_phases: 4
-  total_plans: 38
-  completed_plans: 34
+  total_plans: 40
+  completed_plans: 35
   percent: 84
 ---
 
@@ -83,6 +83,7 @@ Progress: [████████░░] 84%
 | Phase 05-goals-alerts-and-broker-integration P05 | 3min | 2 tasks | 5 files |
 | Phase Phase 05-goals-alerts-and-broker-integration PP06 | 3min | 1 tasks | 1 files |
 | Phase 03-tax-engine P05 | 2min | 2 tasks | 4 files |
+| Phase 03-tax-engine P07 | 147s | 1 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -168,6 +169,7 @@ Recent decisions affecting current work:
 - [Phase Phase 05-goals-alerts-and-broker-integration]: user_alert_preferences scaffolded in Phase 5 so V2 email delivery can add logic without schema migration — consistent with deferred email delivery approach
 - [Phase 03-tax-engine]: estimateSellTax returns TaxEstimationResult typed shape — ltcgGain/stcgGain split derived from single classification value
 - [Phase 03-tax-engine]: DialogTitle replaces h3 in SellTaxEstimatorModal — eliminates Radix accessibility console warning
+- [Phase 03-tax-engine]: grandfatheringApplied in estimateSellTax uses Nav presence only (not comparison to purchaseNav)
 
 ### Pending Todos
 
@@ -184,6 +186,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-26T02:26:52.076Z
-Stopped at: Completed 03-05-PLAN.md — Tax Engine gap closure complete
+Last session: 2026-03-26T03:14:13.369Z
+Stopped at: Completed 03-07-PLAN.md — Tax engine test stubs implemented
 Resume file: None
