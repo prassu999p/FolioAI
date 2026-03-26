@@ -12,6 +12,7 @@ interface CapitalGainsSummaryProps {
   stcg: number
   exemptionUsed: number
   exemptionLimit?: number
+  fyLabel: string
   className?: string
 }
 
@@ -20,6 +21,7 @@ export function CapitalGainsSummary({
   stcg,
   exemptionUsed,
   exemptionLimit = 125000,
+  fyLabel,
   className = ''
 }: CapitalGainsSummaryProps) {
   const exemptionPercentage = Math.min((exemptionUsed / exemptionLimit) * 100, 100)
@@ -32,7 +34,7 @@ export function CapitalGainsSummary({
             Realized Gains Summary
           </span>
           <h3 className="text-3xl font-headline font-bold text-primary mt-2">
-            Capital Gains FY{new Date().getFullYear().toString().slice(2)}
+            Capital Gains {fyLabel}
           </h3>
         </div>
         <div className="flex gap-2">

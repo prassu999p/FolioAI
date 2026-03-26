@@ -158,6 +158,7 @@ export default async function TaxIntelligencePage({ params, searchParams }: TaxP
             stcg={totalSTCG}
             exemptionUsed={exemptionUsed}
             exemptionLimit={exemptionLimit}
+            fyLabel={fyBounds.label}
           />
         </div>
         
