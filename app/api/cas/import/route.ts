@@ -40,12 +40,14 @@ export async function POST(request: Request) {
 
   const parsed = await pyResponse.json()
   if (parsed.status === 'error') {
+    console.error('[CAS import] Parser error:', parsed.message)
     return NextResponse.json({ error: parsed.message }, { status: 422 })
   }
 
   // Validate casparser output with Zod
   const validation = CASOutputSchema.safeParse(parsed.data)
   if (!validation.success) {
+    console.error('[CAS import] Zod validation failed:', JSON.stringify(validation.error.issues.slice(0, 3), null, 2))
     return NextResponse.json(
       { error: 'CAS output failed schema validation', details: validation.error.issues },
       { status: 422 }
@@ -169,15 +171,17 @@ export async function POST(request: Request) {
         const closeUnits = Number(scheme.close ?? 0)
         const closeCalculated = Number(scheme.close_calculated ?? 0)
         const historyIncomplete = closeUnits > 0 && Math.abs(closeUnits - closeCalculated) > 0.01
-
-        if (historyIncomplete) {
-          // Synthesize a single balance transaction from the closing balance
+        if (historyIncomplete && scheme.transactions.length === 0) {
+          // No individual transactions at all — synthesize a single balance entry
+          // so the folio appears in the portfolio with the correct current units.
           const cost = Number(scheme.valuation?.cost ?? 0)
           const avgNav = cost > 0 ? cost / closeUnits : Number(scheme.valuation?.nav ?? 0)
-          const today = new Date().toISOString().split('T')[0]
+          const valuationDate = scheme.valuation?.date
+            ? String(scheme.valuation.date).split('T')[0]
+            : new Date().toISOString().split('T')[0]
           const syntheticTx: TransactionInsert = {
             folio_id: folioRecord.id,
-            transaction_date: today,
+            transaction_date: valuationDate,
             transaction_type: 'purchase',
             units: closeUnits,
             nav: parseFloat(avgNav.toFixed(4)),
@@ -185,12 +189,6 @@ export async function POST(request: Request) {
             import_status: 'needs_review',
             source: 'cas_import',
           }
-          // Delete any stale partial transactions first, then insert synthesis
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          await (supabase.from('transactions') as any)
-            .delete()
-            .eq('folio_id', folioRecord.id)
-            .neq('amount', cost > 0 ? cost : 0)
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const { error: synErr } = await (supabase.from('transactions') as any).upsert(syntheticTx, {
             onConflict: 'folio_id,transaction_date,transaction_type,units,amount',
@@ -201,6 +199,8 @@ export async function POST(request: Request) {
           }
           continue  // skip individual transaction processing
         }
+        // If historyIncomplete but we DO have partial transactions, fall through
+        // to import them individually (marked needs_review) — real data beats synthetic.
 
         // 4b. Upsert actual transactions (full history available)
         for (const tx of scheme.transactions) {
@@ -216,7 +216,7 @@ export async function POST(request: Request) {
 
           const dbType = TRANSACTION_TYPE_MAP[tx.type ?? ''] ?? null
           if (!dbType) console.log(`[CAS import] Unknown tx type: "${tx.type}" — flagging needs_review`)
-          const importStatus = dbType ? 'clean' : 'needs_review'
+          const importStatus = (dbType && !historyIncomplete) ? 'clean' : 'needs_review'
 
           const txInsert: TransactionInsert = {
             folio_id: folioRecord.id,

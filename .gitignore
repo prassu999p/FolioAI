@@ -51,8 +51,15 @@ build/
 .ruff_cache/
 
 .playwright-mcp/
+.playwright-cli/
 debug/
 .gsd/
 .kilocode/
 .gsd_backup/
 .kilocode_backup/
+
+# screenshots & test artifacts
+*.png
+*.jpg
+*.jpeg
+
