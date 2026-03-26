@@ -351,7 +351,7 @@ export function estimateSellTax(params: {
     ltcgRate: isLTCG ? taxRate : null,
     stcgRate: isLTCG ? null : taxRate,
     totalEstimatedTax: Math.max(0, taxAmount),
-    grandfatheringApplied: !!grandfatheringNav && grandfatheringNav < purchaseNav,
+    grandfatheringApplied: !!grandfatheringNav,
     holdingDays,
   }
 }
