@@ -6,12 +6,13 @@
  */
 
 import { differenceInDays } from 'date-fns'
-import type { 
-  TaxLot, 
-  RealizedGain, 
-  UnrealizedGain, 
-  TaxSummary, 
-  TaxAssetClass 
+import type {
+  TaxLot,
+  RealizedGain,
+  UnrealizedGain,
+  TaxSummary,
+  TaxAssetClass,
+  TaxEstimationResult
 } from './types'
 import { 
   classifyGain, 
@@ -307,7 +308,7 @@ export function estimateSellTax(params: {
   grandfatheringNav: number | null
   assetClass: TaxAssetClass
   isPostApr2023: boolean
-}) {
+}): TaxEstimationResult {
   const { 
     purchaseDate, 
     purchaseNav, 
@@ -337,14 +338,20 @@ export function estimateSellTax(params: {
     taxAmount = totalGain * 0.20
   }
 
+  const isLTCG = classification === 'LTCG'
+  const ltcgGain = isLTCG ? totalGain : 0
+  const stcgGain = isLTCG ? 0 : totalGain
+
   return {
     unitsSold: units,
-    totalGain,
-    classification,
-    taxRate,
-    effectiveCostBasis,
+    ltcgGain,
+    stcgGain,
+    ltcgClassification: classification,
+    stcgClassification: classification,
+    ltcgRate: isLTCG ? taxRate : null,
+    stcgRate: isLTCG ? null : taxRate,
+    totalEstimatedTax: Math.max(0, taxAmount),
+    grandfatheringApplied: !!grandfatheringNav && grandfatheringNav < purchaseNav,
     holdingDays,
-    estimatedTax: Math.max(0, taxAmount),
-    grandfatheringApplied: !!grandfatheringNav && grandfatheringNav < purchaseNav
   }
 }

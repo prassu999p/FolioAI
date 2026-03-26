@@ -11,6 +11,7 @@ import { useState, useMemo } from 'react'
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { estimateSellTax } from '@/lib/tax/engine'
@@ -69,9 +70,9 @@ export function SellTaxEstimatorModal({ holding, children }: SellTaxEstimatorMod
         <div className="space-y-6">
           {/* Header */}
           <div>
-            <h3 className="text-xl font-bold text-primary font-headline">
+            <DialogTitle className="text-xl font-bold text-primary font-headline">
               Estimate Tax
-            </h3>
+            </DialogTitle>
             <p className="text-sm text-on-surface-variant mt-1">
               {holding.scheme_name}
             </p>
@@ -104,34 +105,55 @@ export function SellTaxEstimatorModal({ holding, children }: SellTaxEstimatorMod
             <div className="space-y-4 p-4 bg-surface-container-low rounded-2xl">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-on-surface-variant">Total Gain</span>
-                <span className={`font-bold tabular ${estimation.totalGain >= 0 ? 'text-secondary' : 'text-error'}`}>
-                  {estimation.totalGain >= 0 ? '+' : ''}₹{formatINR(estimation.totalGain)}
+                <span className={`font-bold tabular ${(estimation.ltcgGain + estimation.stcgGain) >= 0 ? 'text-secondary' : 'text-error'}`}>
+                  {(estimation.ltcgGain + estimation.stcgGain) >= 0 ? '+' : ''}₹{formatINR(estimation.ltcgGain + estimation.stcgGain)}
                 </span>
               </div>
-              
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-on-surface-variant">Classification</span>
-                <span className="font-bold text-primary">
-                  {estimation.classification}
-                </span>
-              </div>
-              
+
+              {/* LTCG row */}
+              {estimation.ltcgGain > 0 && (
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-on-surface-variant">LTCG Gain</span>
+                  <span className="font-bold tabular text-secondary">+₹{formatINR(estimation.ltcgGain)}</span>
+                </div>
+              )}
+              {estimation.ltcgRate !== null && (
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-on-surface-variant">LTCG Tax Rate</span>
+                  <span className="font-bold text-primary">{(estimation.ltcgRate * 100).toFixed(1)}%</span>
+                </div>
+              )}
+
+              {/* STCG row */}
+              {estimation.stcgGain > 0 && (
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-on-surface-variant">STCG Gain</span>
+                  <span className="font-bold tabular text-secondary">+₹{formatINR(estimation.stcgGain)}</span>
+                </div>
+              )}
+              {estimation.stcgRate !== null && (
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-on-surface-variant">STCG Tax Rate</span>
+                  <span className="font-bold text-primary">{(estimation.stcgRate * 100).toFixed(1)}%</span>
+                </div>
+              )}
+
               <div className="flex justify-between items-center">
                 <span className="text-sm text-on-surface-variant">Holding Period</span>
                 <span className="font-bold tabular">
                   {estimation.holdingDays} days
                 </span>
               </div>
-              
+
               <div className="border-t border-outline-variant pt-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-bold text-primary">Estimated Tax</span>
                   <span className="text-2xl font-bold text-primary tabular">
-                    ₹{formatINR(estimation.estimatedTax)}
+                    ₹{formatINR(estimation.totalEstimatedTax)}
                   </span>
                 </div>
               </div>
-              
+
               {estimation.grandfatheringApplied && (
                 <div className="flex items-center gap-2 p-2 bg-secondary-container/30 rounded-lg">
                   <span className="material-symbols-outlined text-secondary text-sm">info</span>
@@ -140,7 +162,7 @@ export function SellTaxEstimatorModal({ holding, children }: SellTaxEstimatorMod
                   </span>
                 </div>
               )}
-              
+
               <div className="flex items-center gap-2 p-2 bg-surface-container-high rounded-lg">
                 <span className="material-symbols-outlined text-on-surface-variant text-sm">lightbulb</span>
                 <span className="text-xs text-on-surface-variant">
