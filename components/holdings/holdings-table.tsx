@@ -1,5 +1,6 @@
-import type { HoldingRowWithAnalytics } from '@/lib/supabase/types'
+import type { HoldingRowWithAnalytics, AnalyticsTransaction } from '@/lib/supabase/types'
 import { SellTaxEstimatorModal } from '@/components/tax/sell-tax-estimator-modal'
+import { getTaxAssetClass } from '@/lib/tax/rules'
 
 const formatINR = (value: number) =>
   new Intl.NumberFormat('en-IN', {
@@ -10,9 +11,11 @@ const formatINR = (value: number) =>
 
 interface HoldingsTableProps {
   holdings: HoldingRowWithAnalytics[]
+  fundCategories?: Record<number, string>   // scheme_code → category
+  transactions?: AnalyticsTransaction[]     // all holder transactions (for oldest lot date)
 }
 
-export function HoldingsTable({ holdings }: HoldingsTableProps) {
+export function HoldingsTable({ holdings, fundCategories, transactions }: HoldingsTableProps) {
   if (holdings.length === 0) {
     return (
       <div className="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-sm">
@@ -54,43 +57,62 @@ export function HoldingsTable({ holdings }: HoldingsTableProps) {
             </tr>
           </thead>
           <tbody className="text-sm">
-            {holdings.map((holding, i) => (
-              <tr
-                key={`${holding.folio_id}-${holding.scheme_code}`}
-                className={`${i % 2 === 1 ? 'bg-surface-container-low/20' : ''} hover:bg-surface-container-low transition-colors`}
-              >
-                <td className="py-5 px-8">
-                  <div className="font-bold text-primary">{holding.scheme_name}</div>
-                  <div className="text-xs text-on-surface-variant">
-                    {/* fund_category is not on HoldingRow — fall back to fund_house */}
-                    {holding.fund_house}
-                  </div>
-                </td>
-                <td className="py-5 px-4 text-center tabular-nums font-medium">
-                  {holding.units.toLocaleString('en-IN', { maximumFractionDigits: 3 })}
-                </td>
-                <td className="py-5 px-4 text-right tabular-nums">
-                  {holding.current_nav != null ? holding.current_nav.toFixed(2) : '—'}
-                </td>
-                <td className="py-5 px-4 text-right tabular-nums font-bold">
-                  {holding.current_value != null ? formatINR(holding.current_value) : '—'}
-                </td>
-                <td
-                  className={`py-5 px-8 text-right tabular-nums font-bold ${
-                    holding.xirr != null && holding.xirr >= 0 ? 'text-secondary' : 'text-error'
-                  }`}
+            {holdings.map((holding, i) => {
+              // Derive oldest FIFO purchase date for this holding's folio
+              const folioTxs = (transactions ?? [])
+                .filter(t => t.folio_id === holding.folio_id &&
+                  (t.transaction_type === 'PURCHASE' || t.transaction_type === 'SIP' ||
+                   t.transaction_type === 'purchase' || t.transaction_type === 'sip'))
+                .sort((a, b) => a.transaction_date.localeCompare(b.transaction_date))
+              const oldestLot = folioTxs[0]
+              const purchaseDate = oldestLot ? new Date(oldestLot.transaction_date) : undefined
+
+              // Correct asset class from fund category
+              const category = (fundCategories ?? {})[holding.scheme_code] ?? ''
+              const taxAssetClass = getTaxAssetClass(category)
+
+              return (
+                <tr
+                  key={`${holding.folio_id}-${holding.scheme_code}`}
+                  className={`${i % 2 === 1 ? 'bg-surface-container-low/20' : ''} hover:bg-surface-container-low transition-colors`}
                 >
-                  {holding.xirr != null ? `${(holding.xirr * 100).toFixed(1)}%` : '—'}
-                </td>
-                <td className="py-5 px-4 text-center">
-                  <SellTaxEstimatorModal holding={holding}>
-                    <button className="px-3 py-1.5 text-xs font-medium bg-surface-container-high hover:bg-surface-container rounded-lg transition-colors text-primary">
-                      Estimate Tax
-                    </button>
-                  </SellTaxEstimatorModal>
-                </td>
-              </tr>
-            ))}
+                  <td className="py-5 px-8">
+                    <div className="font-bold text-primary">{holding.scheme_name}</div>
+                    <div className="text-xs text-on-surface-variant">
+                      {holding.fund_house}
+                    </div>
+                  </td>
+                  <td className="py-5 px-4 text-center tabular-nums font-medium">
+                    {holding.units.toLocaleString('en-IN', { maximumFractionDigits: 3 })}
+                  </td>
+                  <td className="py-5 px-4 text-right tabular-nums">
+                    {holding.current_nav != null ? holding.current_nav.toFixed(2) : '—'}
+                  </td>
+                  <td className="py-5 px-4 text-right tabular-nums font-bold">
+                    {holding.current_value != null ? formatINR(holding.current_value) : '—'}
+                  </td>
+                  <td
+                    className={`py-5 px-8 text-right tabular-nums font-bold ${
+                      holding.xirr != null && holding.xirr >= 0 ? 'text-secondary' : 'text-error'
+                    }`}
+                  >
+                    {holding.xirr != null ? `${(holding.xirr * 100).toFixed(1)}%` : '—'}
+                  </td>
+                  <td className="py-5 px-4 text-center">
+                    <SellTaxEstimatorModal
+                      holding={holding}
+                      purchaseDate={purchaseDate}
+                      grandfatheringNav={null}
+                      taxAssetClass={taxAssetClass}
+                    >
+                      <button className="px-3 py-1.5 text-xs font-medium bg-surface-container-high hover:bg-surface-container rounded-lg transition-colors text-primary">
+                        Estimate Tax
+                      </button>
+                    </SellTaxEstimatorModal>
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </div>

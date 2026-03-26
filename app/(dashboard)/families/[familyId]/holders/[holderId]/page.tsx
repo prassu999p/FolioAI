@@ -294,7 +294,11 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
         {/* 2/3 holdings + 1/3 sidebar */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
           <div className="lg:col-span-2">
-            <HoldingsTable holdings={holdingsWithAnalytics} />
+            <HoldingsTable
+                holdings={holdingsWithAnalytics}
+                fundCategories={fundCategories}
+                transactions={transactions}
+              />
           </div>
           <div className="space-y-8">
             <SipSection transactions={transactions} />
