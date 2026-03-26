@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 03-07-PLAN.md — Tax engine test stubs implemented
-last_updated: "2026-03-26T03:14:13.372Z"
+stopped_at: Completed 03-06-PLAN.md — Sell Tax Estimator real lot data wiring
+last_updated: "2026-03-26T03:14:45.344Z"
 last_activity: 2026-03-21 — Completed Phase 3 Tax Engine
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 40
-  completed_plans: 35
+  completed_plans: 36
   percent: 84
 ---
 
@@ -84,6 +84,7 @@ Progress: [████████░░] 84%
 | Phase Phase 05-goals-alerts-and-broker-integration PP06 | 3min | 1 tasks | 1 files |
 | Phase 03-tax-engine P05 | 2min | 2 tasks | 4 files |
 | Phase 03-tax-engine P07 | 147s | 1 tasks | 4 files |
+| Phase 03-tax-engine P06 | 3min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -170,6 +171,7 @@ Recent decisions affecting current work:
 - [Phase 03-tax-engine]: estimateSellTax returns TaxEstimationResult typed shape — ltcgGain/stcgGain split derived from single classification value
 - [Phase 03-tax-engine]: DialogTitle replaces h3 in SellTaxEstimatorModal — eliminates Radix accessibility console warning
 - [Phase 03-tax-engine]: grandfatheringApplied in estimateSellTax uses Nav presence only (not comparison to purchaseNav)
+- [Phase 03-tax-engine]: grandfatheringNav passed as null from HoldingsTable — tax page grandfathering data not available at holder page; correct assetClass and purchaseDate are the critical TAX-02/TAX-03 fixes
 
 ### Pending Todos
 
@@ -186,6 +188,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-26T03:14:13.369Z
-Stopped at: Completed 03-07-PLAN.md — Tax engine test stubs implemented
+Last session: 2026-03-26T03:14:45.341Z
+Stopped at: Completed 03-06-PLAN.md — Sell Tax Estimator real lot data wiring
 Resume file: None
