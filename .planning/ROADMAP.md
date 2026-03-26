@@ -81,7 +81,7 @@ Plans:
   3. User can see "if I sell X units today, my tax is ₹Y" estimation in real time without LLM involvement
   4. User receives LTCG harvesting suggestions showing exactly how many units to sell per fund to consume the remaining ₹1.25L annual exemption
   5. User can generate and download an ITR-ready capital gains statement in Schedule CG format for the financial year
-**Plans**: 5 plans (4 feature + 1 UAT gap closure)
+**Plans**: 7 plans (4 feature + 1 UAT gap closure + 2 verification gap closure)
 
 Plans:
 - [ ] 03-01-PLAN.md — Tax engine lib: TaxLot FIFO, LTCG/STCG classification, grandfathering, estimateSellTax
@@ -89,6 +89,8 @@ Plans:
 - [ ] 03-03-PLAN.md — LTCG harvesting hero section + sell tax estimator modal
 - [ ] 03-04-PLAN.md — ITR capital gains export + final verification checkpoint
 - [ ] 03-05-PLAN.md — Gap closure: FY heading prop + estimateSellTax LTCG/STCG breakdown + DialogTitle fix
+- [ ] 03-06-PLAN.md — Gap closure: sell tax estimator real lot data (TAX-02/TAX-03) — correct asset class + purchase date from transactions
+- [ ] 03-07-PLAN.md — Gap closure: Schedule CG CSV export (TAX-05) + tax engine test implementations
 
 ### Phase 4: AI Intelligence
 **UI:** Follow `.planning/UI-design/tax_and_ai.html` and `.planning/UI-design/Individual_holder_view.html`. Key components: "AI Portfolio Health" dark card in holder right sidebar (`bg-primary text-on-primary`, circular SVG quality score, per-fund alpha bars); "Strategic Portfolio Narrative" full-width card with `psychology` icon; floating chat widget (fixed bottom-right, `bg-primary` header, message bubbles). MD3 tokens, Manrope headings, Material Symbols icons.
@@ -140,6 +142,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Data Foundation | 6/6 | Complete   | 2026-03-19 |
 | 2. Portfolio Analytics | 14/14 | Complete   | 2026-03-20 |
-| 3. Tax Engine | 1/5 | In Progress|  |
+| 3. Tax Engine | 1/7 | In Progress|  |
 | 4. AI Intelligence | 5/6 | In Progress|  |
 | 5. Goals, Alerts and Broker Integration | 6/6 | Complete   | 2026-03-25 |
