@@ -1,7 +1,6 @@
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { HoldingsTable } from '@/components/holdings/holdings-table'
-import { PeriodSelector } from '@/components/analytics/period-selector'
 import { SummaryCards } from '@/components/analytics/summary-cards'
 import { SipSection } from '@/components/analytics/sip-section'
 import { AllocationSection } from '@/components/analytics/allocation-section'
@@ -40,13 +39,22 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
   const endDateStr = bounds ? bounds.end.toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
 
   // Fetch holdings and transactions in parallel
+  // NOTE: For XIRR calculation, we need ALL historical transactions (not period-filtered).
+  // Period-filtered transactions are used for display and gain/loss calculations only.
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [holdingsResult, transactionsResult] = await Promise.all([
+  const [holdingsResult, allTransactionsResult, periodTransactionsResult] = await Promise.all([
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase as any).rpc('get_holder_holdings', {
       p_holder_id: holderId,
     }),
+    // Fetch ALL historical transactions for XIRR calculation (no period filter)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase as any).rpc('get_holder_analytics_transactions', {
+      p_holder_id: holderId,
+      p_start_date: null,  // No period filter
+      p_end_date: new Date().toISOString().split('T')[0],
+    }),
+    // Fetch period-filtered transactions for display and gain/loss
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase as any).rpc('get_holder_analytics_transactions', {
       p_holder_id: holderId,
@@ -66,9 +74,13 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
   }
 
   const rawHoldings: HoldingRow[] = holdingsResult.data ?? []
-  const transactions: AnalyticsTransaction[] = transactionsResult.error
+  // Use ALL historical transactions for XIRR calculation, period-filtered for display/gain-loss
+  const allTransactions: AnalyticsTransaction[] = allTransactionsResult.error
     ? []
-    : (transactionsResult.data ?? [])
+    : (allTransactionsResult.data ?? [])
+  const transactions: AnalyticsTransaction[] = periodTransactionsResult.error
+    ? []
+    : (periodTransactionsResult.data ?? [])
 
   // Map holdings to HoldingRowWithAnalytics with per-holding XIRR computation
   const validTxTypes = ['purchase', 'redemption', 'switch_in', 'switch_out', 'sip', 'dividend_reinvest'] as const
@@ -87,8 +99,8 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
   const today = new Date()
   const outflowTypes = new Set(['purchase', 'sip', 'switch_in', 'dividend_reinvest'])
   const holdingsWithAnalytics: HoldingRowWithAnalytics[] = rawHoldings.map((h) => {
-    // Filter transactions to this holding's folio only
-    const folioTxs = transactions
+    // Filter transactions to this holding's folio only (use allTransactions for XIRR)
+    const folioTxs = allTransactions
       .filter(t => t.folio_id === h.folio_id)
       .map(toHoldingTransaction)
 
@@ -114,10 +126,11 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
   // buy equivalent "units" of Nifty 50 at its close price on that date.
   // Terminal value: sell those units at the most recent Nifty 50 close.
   // This produces the XIRR you would have earned investing the same amounts in Nifty 50.
+  // NOTE: Use allTransactions (not period-filtered) for benchmark calculation
 
   let benchmarkXirr: number | null = null
 
-  const purchaseTxs = transactions.filter(t => outflowTypes.has(t.transaction_type))
+  const purchaseTxs = allTransactions.filter(t => outflowTypes.has(t.transaction_type))
 
   if (purchaseTxs.length > 0) {
     // Find the earliest purchase date to bound the Nifty 50 query
@@ -272,19 +285,12 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
           </div>
         </div>
 
-        {/* Period selector — above bento cards */}
-        <div className="mb-6 flex justify-end">
-          <Suspense>
-            <PeriodSelector />
-          </Suspense>
-        </div>
-
         {/* Bento summary cards */}
         <div className="mb-12">
           <SummaryCards
             holderId={holderId}
             period={period}
-            transactions={transactions}
+            transactions={allTransactions}
             holdings={holdingsWithAnalytics}
             nifty50Xirr={benchmarkXirr}
             viewMode={view}
@@ -301,7 +307,7 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
               />
           </div>
           <div className="space-y-8">
-            <SipSection transactions={transactions} />
+            <SipSection transactions={allTransactions} />
             <AIPortfolioHealth scores={aiScores} holderName={holder?.name ?? ''} />
             <RefreshScoresButton holderId={holderId} />
             <GenerateReviewButton holderId={holderId} hasExisting={false} />
