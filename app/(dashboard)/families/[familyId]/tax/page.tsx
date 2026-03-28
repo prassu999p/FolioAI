@@ -91,7 +91,7 @@ export default async function TaxIntelligencePage({ params, searchParams }: TaxP
   if (fundsData) {
     for (const fund of fundsData) {
       schemeNames.set(fund.scheme_code, fund.scheme_name)
-      assetClasses.set(fund.scheme_code, getTaxAssetClass(fund.category || ''))
+      assetClasses.set(fund.scheme_code, getTaxAssetClass(fund.category || '', fund.scheme_name))
     }
   }
   

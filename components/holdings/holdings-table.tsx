@@ -89,9 +89,9 @@ export function HoldingsTable({ holdings, fundCategories, transactions }: Holdin
               const oldestLot = folioTxs[0]
               const purchaseDate = oldestLot ? new Date(oldestLot.transaction_date) : undefined
 
-              // Correct asset class from fund category
+              // Correct asset class from fund category (infers from scheme_name if category empty)
               const category = (fundCategories ?? {})[holding.scheme_code] ?? ''
-              const taxAssetClass = getTaxAssetClass(category)
+              const taxAssetClass = getTaxAssetClass(category, holding.scheme_name)
 
               // Calculate current investment
               const currentInvestment = calculateCurrentInvestment(holding)
