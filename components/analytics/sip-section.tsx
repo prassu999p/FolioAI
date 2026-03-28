@@ -28,8 +28,8 @@ function estimateFolioCurrentValue(
   const folioTxs = allTxs.filter(t => t.folio_id === folioId)
   if (folioTxs.length === 0) return 0
 
-  const inTypes = new Set(['purchase', 'sip', 'switch_in', 'dividend_reinvest'])
-  const outTypes = new Set(['redemption', 'switch_out'])
+  const inTypes = new Set(['purchase', 'sip', 'switch_in', 'dividend_reinvest', 'PURCHASE', 'SIP', 'SWITCH_IN', 'DIVIDEND_REINVEST'])
+  const outTypes = new Set(['redemption', 'switch_out', 'REDEMPTION', 'SWITCH_OUT'])
 
   let netUnits = 0
   for (const tx of folioTxs) {
