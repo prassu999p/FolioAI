@@ -25,13 +25,13 @@ export function HoldingsTable({ holdings, fundCategories, transactions }: Holdin
   // Helper function to calculate current investment for a holding
   const calculateCurrentInvestment = (holding: HoldingRowWithAnalytics) => {
     const folioTxs = (transactions ?? []).filter(t => t.folio_id === holding.folio_id)
-    const outflowTypes = new Set(['purchase', 'sip', 'switch_in', 'dividend_reinvest', 'PURCHASE', 'SIP', 'SWITCH_IN', 'DIVIDEND_REINVEST'])
+    const outflowTypes = new Set(['purchase', 'sip', 'switch_in', 'dividend_reinvest'])
 
     let invested = 0
     for (const tx of folioTxs) {
       if (outflowTypes.has(tx.transaction_type)) {
         invested += tx.amount
-      } else if (tx.transaction_type === 'redemption' || tx.transaction_type === 'REDEMPTION' || tx.transaction_type === 'switch_out' || tx.transaction_type === 'SWITCH_OUT') {
+      } else if (tx.transaction_type === 'redemption' || tx.transaction_type === 'switch_out') {
         invested -= tx.amount
       }
     }
@@ -84,8 +84,7 @@ export function HoldingsTable({ holdings, fundCategories, transactions }: Holdin
               // Derive oldest FIFO purchase date for this holding's folio
               const folioTxs = (transactions ?? [])
                 .filter(t => t.folio_id === holding.folio_id &&
-                  (t.transaction_type === 'PURCHASE' || t.transaction_type === 'SIP' ||
-                   t.transaction_type === 'purchase' || t.transaction_type === 'sip'))
+                  (t.transaction_type === 'purchase' || t.transaction_type === 'sip'))
                 .sort((a, b) => a.transaction_date.localeCompare(b.transaction_date))
               const oldestLot = folioTxs[0]
               const purchaseDate = oldestLot ? new Date(oldestLot.transaction_date) : undefined
