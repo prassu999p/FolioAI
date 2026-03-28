@@ -1,11 +1,13 @@
 /**
  * Tax Intelligence Page
- * 
+ *
  * /families/[familyId]/tax
- * 
+ *
  * Shows capital gains summary, compliance vault, and harvesting suggestions.
  * Follows design from tax_and_ai.html.
  */
+
+export const dynamic = 'force-dynamic'
 
 import { createClient } from '@/lib/supabase/server'
 import { CapitalGainsSummary } from '@/components/tax/capital-gains-summary'
