@@ -11,6 +11,7 @@ import { createClient } from '@/lib/supabase/server'
 import { CapitalGainsSummary } from '@/components/tax/capital-gains-summary'
 import { ComplianceVault } from '@/components/tax/compliance-vault'
 import { FYToggle } from '@/components/tax/fy-toggle'
+import { HolderSelector } from '@/components/tax/holder-selector'
 import { HarvestingHero } from '@/components/tax/harvesting-hero'
 import { StrategicNarrative } from '@/components/ai/strategic-narrative'
 import { computeTaxSummary } from '@/lib/tax/engine'
@@ -21,12 +22,12 @@ import type { AnalyticsTransaction } from '@/lib/supabase/types'
 
 interface TaxPageProps {
   params: Promise<{ familyId: string }>
-  searchParams: Promise<{ fy?: string }>
+  searchParams: Promise<{ fy?: string; holder?: string }>
 }
 
 export default async function TaxIntelligencePage({ params, searchParams }: TaxPageProps) {
   const { familyId } = await params
-  const { fy: fyParam } = await searchParams
+  const { fy: fyParam, holder: holderParam } = await searchParams
   const isPriorFY = fyParam === 'prior'
   
   const supabase = await createClient()
@@ -39,10 +40,14 @@ export default async function TaxIntelligencePage({ params, searchParams }: TaxP
   
   const holders = holdersData || []
 
-  // Fetch narrative for the first holder (cached; Claude not called on page load)
-  const firstHolderId = holders[0]?.id ?? null
-  const { data: narrativeData } = firstHolderId
-    ? await supabase.from('portfolio_narratives').select('*').eq('holder_id', firstHolderId).single()
+  // Resolve selected holder (default to first holder)
+  const defaultHolderId = holders[0]?.id ?? ''
+  const selectedHolderId = holderParam ?? defaultHolderId
+  const selectedHolder = holders.find(h => h.id === selectedHolderId) ?? holders[0]
+
+  // Fetch narrative for the selected holder (cached; Claude not called on page load)
+  const { data: narrativeData } = selectedHolderId
+    ? await supabase.from('portfolio_narratives').select('*').eq('holder_id', selectedHolderId).single()
     : { data: null }
 
   // Get current NAVs for all schemes
@@ -90,45 +95,33 @@ export default async function TaxIntelligencePage({ params, searchParams }: TaxP
   
   // Determine FY bounds
   const fyBounds = isPriorFY ? getPriorFYBounds() : getCurrentFYBounds()
-  
-  // Process each holder
+
+  // Fetch transactions for selected holder
   let totalLTCG = 0
   let totalSTCG = 0
-  const allUnrealizedGains = new Map<number, UnrealizedGain[]>()
-  
-  for (const holder of holders) {
-    // Fetch all transactions for FIFO lot building (no date filter)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: txData } = await (supabase as any).rpc('get_holder_analytics_transactions', {
-      p_holder_id: holder.id,
-      p_start_date: null, // Full history for FIFO
-      p_end_date: new Date().toISOString().split('T')[0],
-    }) as { data: Array<{ folio_id: string; scheme_code: number; scheme_name: string; transaction_date: string; transaction_type: string; amount: number; units: number; nav: number }> | null }
-    
-    if (txData && txData.length > 0) {
-      const summary = computeTaxSummary({
-        transactions: txData as unknown as AnalyticsTransaction[],
-        grandfatheringNavs,
-        currentNavs,
-        assetClasses,
-        schemeNames,
-        fyBounds: { start: fyBounds.start, end: fyBounds.end }
-      })
-      
-      totalLTCG += summary.totalRealizedLTCG
-      totalSTCG += summary.totalRealizedSTCG
-      
-      // Collect unrealized gains for harvesting
-      for (const ug of summary.unrealizedGains) {
-        const existing = allUnrealizedGains.get(ug.schemeCode) || []
-        existing.push(ug)
-        allUnrealizedGains.set(ug.schemeCode, existing)
-      }
-    }
+  let unrealizedGainsArray: UnrealizedGain[] = []
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: txData } = await (supabase as any).rpc('get_holder_analytics_transactions', {
+    p_holder_id: selectedHolderId,
+    p_start_date: null, // Full history for FIFO
+    p_end_date: new Date().toISOString().split('T')[0],
+  }) as { data: Array<{ folio_id: string; scheme_code: number; scheme_name: string; transaction_date: string; transaction_type: string; amount: number; units: number; nav: number }> | null }
+
+  if (txData && txData.length > 0) {
+    const summary = computeTaxSummary({
+      transactions: txData as unknown as AnalyticsTransaction[],
+      grandfatheringNavs,
+      currentNavs,
+      assetClasses,
+      schemeNames,
+      fyBounds: { start: fyBounds.start, end: fyBounds.end }
+    })
+
+    totalLTCG = summary.totalRealizedLTCG
+    totalSTCG = summary.totalRealizedSTCG
+    unrealizedGainsArray = summary.unrealizedGains
   }
-  
-  // Flatten unrealized gains for harvesting
-  const unrealizedGainsArray = Array.from(allUnrealizedGains.values()).flat()
   
   // Calculate exemption and liability
   const exemptionUsed = Math.max(0, totalLTCG)
@@ -138,15 +131,18 @@ export default async function TaxIntelligencePage({ params, searchParams }: TaxP
   
   return (
     <div className="space-y-8">
-      {/* Header with FY Toggle */}
+      {/* Header with Holder Selector and FY Toggle */}
       <div className="flex justify-between items-start">
         <div>
           <h2 className="text-xl font-bold tracking-tight text-primary">Tax Intelligence</h2>
           <p className="text-xs text-on-surface-variant font-medium">
-            {isPriorFY ? fyBounds.label : fyBounds.label} Summary
+            {selectedHolder?.name} · {fyBounds.label} Summary
           </p>
         </div>
-        <FYToggle />
+        <div className="flex flex-col items-end gap-3">
+          <FYToggle />
+          <HolderSelector holders={holders} defaultHolderId={defaultHolderId} />
+        </div>
       </div>
       
       {/* Top Row: Capital Gains + Compliance Vault */}
@@ -182,10 +178,10 @@ export default async function TaxIntelligencePage({ params, searchParams }: TaxP
       />
       
       {/* Strategic Portfolio Narrative — AI-generated quarterly review */}
-      {firstHolderId && (
+      {selectedHolderId && (
         <div className="mt-8">
           <StrategicNarrative
-            holderId={firstHolderId}
+            holderId={selectedHolderId}
             narrative={(narrativeData as { narrative?: string } | null)?.narrative ?? null}
             generatedAt={(narrativeData as { generated_at?: string } | null)?.generated_at ?? null}
           />
