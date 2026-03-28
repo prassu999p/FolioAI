@@ -163,5 +163,56 @@ describe('Tax Engine', () => {
       expect(summary.realizedGains[0].costBasis).toBe(30)
       expect(summary.realizedGains[0].totalGain).toBe(7000)
     })
+
+    it('unrealized gains use currentNav from map, not fallback to purchaseNav', () => {
+      const txs = [
+        makeTx('folio-1', '2020-01-01', 'purchase', 100, 50),
+        // No redemptions, so all units remain
+      ]
+      const assetClasses = new Map([[100, 'equity' as const]])
+      // Current NAV is 120, significantly higher than purchase NAV of 50
+      const currentNavs = new Map([[100, 120]])
+      const schemeNames = new Map([[100, 'Equity Fund']])
+
+      const summary = computeTaxSummary({
+        transactions: txs,
+        grandfatheringNavs: new Map(),
+        currentNavs,
+        assetClasses,
+        schemeNames,
+      })
+
+      // Verify unrealised gains computed with currentNav (120), not purchaseNav (50)
+      expect(summary.unrealizedGains).toHaveLength(1)
+      const ug = summary.unrealizedGains[0]
+      expect(ug.currentNav).toBe(120) // Should be from map, not fallback
+      expect(ug.unrealizedGain).toBe(7000) // 100 units * (120 - 50) = 7000
+      expect(ug.wouldBeLTCG).toBe(true) // Held > 365 days
+    })
+
+    it('unrealized gains fallback to purchaseNav when currentNav not in map (missing NAV data)', () => {
+      const txs = [
+        makeTx('folio-1', '2020-01-01', 'purchase', 100, 50),
+      ]
+      const assetClasses = new Map([[100, 'equity' as const]])
+      // currentNavs map is EMPTY (simulating missing NAV data like bug in tax/page.tsx)
+      const currentNavs = new Map()
+      const schemeNames = new Map([[100, 'Equity Fund']])
+
+      const summary = computeTaxSummary({
+        transactions: txs,
+        grandfatheringNavs: new Map(),
+        currentNavs, // Empty!
+        assetClasses,
+        schemeNames,
+      })
+
+      // With empty currentNavs, should fallback to purchaseNav
+      expect(summary.unrealizedGains).toHaveLength(1)
+      const ug = summary.unrealizedGains[0]
+      expect(ug.currentNav).toBe(50) // Fallback to purchaseNav
+      expect(ug.unrealizedGain).toBe(0) // 100 units * (50 - 50) = 0 (BUG: no gain!)
+      // This is why the harvesting algorithm returns empty: gains <= 0 are filtered out
+    })
   })
 })

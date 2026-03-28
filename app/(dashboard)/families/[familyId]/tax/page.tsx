@@ -47,7 +47,7 @@ export default async function TaxIntelligencePage({ params, searchParams }: TaxP
 
   // Get current NAVs for all schemes
   const { data: navData } = await supabase
-    .from('nav')
+    .from('nav_prices')
     .select('scheme_code, nav_date, nav')
     .order('nav_date', { ascending: false })
     .limit(500) as { data: Array<{ scheme_code: number; nav_date: string; nav: number }> | null }
