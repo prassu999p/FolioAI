@@ -79,12 +79,18 @@ export interface TaxSummary {
 }
 
 /**
- * LTCG harvesting suggestion
+ * LTCG harvesting suggestion with FIFO profit breakdown
  */
 export interface HarvestingSuggestion {
   schemeCode: number
   schemeName: string
   unitsToSell: number
+  costBasisPerUnit: number      // effective cost basis (after grandfathering)
+  costBasisTotal: number        // costBasisPerUnit * unitsToSell
+  sellValuePerUnit: number      // current NAV per unit
+  sellValueTotal: number        // sellValuePerUnit * unitsToSell
+  profitPerUnit: number         // sellValuePerUnit - costBasisPerUnit
+  profitTotal: number           // profitPerUnit * unitsToSell (should equal ltcgToBook)
   ltcgToBook: number
   exemptionConsumed: number
   taxSaved: number

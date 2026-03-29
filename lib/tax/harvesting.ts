@@ -62,10 +62,21 @@ export function computeHarvestingSuggestions(
     const taxSaved = ltcgToBook * EQUITY_LTCG_RATE
     const schemeName = gain.schemeName || schemeNames.get(gain.schemeCode) || `Scheme ${gain.schemeCode}`
 
+    // FIFO profit breakdown
+    const costBasisPerUnit = gain.effectiveCostBasis
+    const costBasisTotal = costBasisPerUnit * unitsToSell
+    const sellValuePerUnit = gain.currentNav
+    const sellValueTotal = sellValuePerUnit * unitsToSell
+    const profitPerUnit = sellValuePerUnit - costBasisPerUnit
+    const profitTotal = profitPerUnit * unitsToSell
+
     // Group by scheme code - consolidate multiple folios of same fund
     const existing = suggestionsByScheme.get(gain.schemeCode)
     if (existing) {
       existing.unitsToSell += unitsToSell
+      existing.costBasisTotal += costBasisTotal
+      existing.sellValueTotal += sellValueTotal
+      existing.profitTotal += profitTotal
       existing.ltcgToBook += Math.round(ltcgToBook)
       existing.exemptionConsumed += Math.round(ltcgToBook)
       existing.taxSaved += Math.round(taxSaved)
@@ -74,6 +85,12 @@ export function computeHarvestingSuggestions(
         schemeCode: gain.schemeCode,
         schemeName,
         unitsToSell,
+        costBasisPerUnit,
+        costBasisTotal,
+        sellValuePerUnit,
+        sellValueTotal,
+        profitPerUnit,
+        profitTotal: Math.round(profitTotal),
         ltcgToBook: Math.round(ltcgToBook),
         exemptionConsumed: Math.round(ltcgToBook),
         taxSaved: Math.round(taxSaved),
