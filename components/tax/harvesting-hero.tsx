@@ -1,12 +1,13 @@
 /**
  * LTCG Harvesting Hero Section
- * 
+ *
  * Dark bg-primary card with harvesting suggestions.
  * Follows design from tax_and_ai.html.
  */
 
 import { computeHarvestingSuggestions, calculateHarvestingSavings } from '@/lib/tax/harvesting'
 import { formatINR } from '@/lib/utils'
+import { HarvestingExecutionButton } from './harvesting-execution-button'
 import type { UnrealizedGain } from '@/lib/tax/types'
 
 interface HarvestingHeroProps {
@@ -32,9 +33,9 @@ export function HarvestingHero({
     currentNavs,
     schemeNames
   )
-  
+
   const savings = calculateHarvestingSavings(suggestions)
-  
+
   // If no suggestions or prior FY, show read-only mode
   const isReadOnly = isPriorFY || suggestions.length === 0
   
@@ -123,9 +124,10 @@ export function HarvestingHero({
           </div>
           
           {!isReadOnly && suggestions.length > 0 && (
-            <button className="w-full py-4 bg-secondary text-on-secondary rounded-xl font-bold hover:scale-[1.02] transition-transform">
-              Execute Harvesting Plan
-            </button>
+            <HarvestingExecutionButton
+              suggestions={suggestions}
+              totalTaxSaved={savings.totalTaxSaved}
+            />
           )}
         </div>
       </div>
