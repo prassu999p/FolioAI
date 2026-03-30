@@ -43,16 +43,19 @@ function detectHeaderRow(
 
   for (let i = 0; i < allRows.length && i < 10; i++) {
     const row = allRows[i]
-    if (!Array.isArray(row)) continue
+    if (!Array.isArray(row) || row.length === 0) continue
 
     let matchCount = 0
     for (const cell of row) {
+      // Skip null/undefined cells (sparse arrays in XLSX)
+      if (cell === null || cell === undefined) continue
       const cellStr = String(cell).toLowerCase().trim()
       if (cellStr && knownKeywords.has(cellStr)) {
         matchCount++
       }
     }
 
+    // Require at least 3 matches for XLSX robustness (sparse arrays have fewer valid cells)
     if (matchCount > bestMatchCount) {
       bestMatchCount = matchCount
       bestRowIndex = i
