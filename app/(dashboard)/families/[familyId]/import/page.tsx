@@ -4,16 +4,10 @@
 // Broker tab: fully server-rendered (OAuth link, connection status, holdings table).
 
 import Link from 'next/link'
-import dynamic from 'next/dynamic'
 import { createClient } from '@/lib/supabase/server'
 import { getKiteLoginURL } from '@/lib/broker/kite-client'
 import CASImportForm from './CASImportForm'
-
-// Lazy-load TradebookImportForm to avoid SheetJS bloating the main bundle
-const TradebookImportForm = dynamic(
-  () => import('./TradebookImportForm'),
-  { ssr: false }
-)
+import TradebookImportLazy from './TradebookImportLazy'
 
 interface PageProps {
   params: Promise<{ familyId: string }>
@@ -166,7 +160,7 @@ export default async function ImportPage({ params, searchParams }: PageProps) {
       {tab === 'cas' ? (
         <CASImportForm familyId={familyId} />
       ) : tab === 'tradebook' ? (
-        <TradebookImportForm familyId={familyId} holders={holders ?? []} />
+        <TradebookImportLazy familyId={familyId} holders={holders ?? []} />
       ) : (
         /* ---- Broker tab ---- */
         <div className="px-8 py-8 max-w-2xl mx-auto">
