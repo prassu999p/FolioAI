@@ -25,16 +25,21 @@ export default async function StockHoldingsPage({ params }: PageProps) {
 
   if (!family) notFound()
 
+  // Get holder IDs for this family
+  const { data: holders } = await (supabase as any)
+    .from('holders')
+    .select('id')
+    .eq('family_id', familyId)
+
+  const holderIds = holders?.map((h: any) => h.id) || []
+
   // Fetch all stock holdings for every holder in this family (all sources)
   const { data: stockHoldings } = await (supabase as any)
     .from('stock_holdings')
     .select(
       'id, tradingsymbol, exchange, isin, quantity, average_price, last_price, pnl, source, imported_at, import_filename, holder_id'
     )
-    .in(
-      'holder_id',
-      (supabase as any).from('holders').select('id').eq('family_id', familyId)
-    )
+    .in('holder_id', holderIds)
     .order('tradingsymbol')
 
   return (
