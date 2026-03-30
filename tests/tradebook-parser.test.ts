@@ -87,4 +87,21 @@ describe('tradebook-parser: parseSpreadsheet', () => {
     const isSerialNumber = !isNaN(asNumber) && asNumber > 40000 && asNumber < 50000
     expect(isSerialNumber).toBe(false)
   })
+
+  it('auto-detects header row when CSV has title/metadata rows at top (Zerodha format)', async () => {
+    // Zerodha exports have a title row before the column headers
+    const csv = `Tradebook for Equity from 2024-01-01 to 2024-12-31
+
+symbol,isin,trade_date,exchange,trade_type,quantity,price,trade_id
+INFY,INE009A01021,2024-01-15,NSE,buy,10,1500.50,TXN001
+TCS,INE467B01029,2024-01-20,NSE,sell,5,3200.00,TXN002
+`
+    const file = makeCsvFile(csv, 'zerodha-tradebook.csv')
+    const rows = await parseSpreadsheet(file)
+    expect(rows.length).toBe(2)
+    // Should skip the title row and use the actual headers
+    expect(rows[0]['symbol']).toBe('INFY')
+    expect(rows[0]['isin']).toBe('INE009A01021')
+    expect(rows[1]['symbol']).toBe('TCS')
+  })
 })
