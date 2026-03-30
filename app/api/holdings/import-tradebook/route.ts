@@ -147,13 +147,42 @@ export async function POST(req: Request) {
   const insertedCount = (insertedTxns ?? []).length
   const skipped = rows.length - insertedCount
 
-  // 6. Aggregate net positions from the submitted rows
-  const aggregatedPositions = aggregatePositions(rows as ValidatedRow[])
+  // 6. Fetch ALL historical transactions for this holder to recalculate positions
+  // This ensures we aggregate across all previous imports + new import, avoiding duplicates via trade_id
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: allStockTxns, error: txnFetchError } = await (supabase as any)
+    .from('stock_transactions')
+    .select('tradingsymbol, exchange, isin, trade_type, quantity, price, trade_id')
+    .eq('holder_id', holderId)
+
+  if (txnFetchError) {
+    console.error('[import-tradebook] Failed to fetch all transactions for recalc:', txnFetchError)
+    return NextResponse.json({ error: 'Failed to recalculate positions' }, { status: 500 })
+  }
+
+  // Deduplicate transactions by trade_id (in case same file was imported multiple times)
+  // Keep the most recent entry for each trade_id
+  const txnsByTradeId = new Map<string, any>()
+  for (const t of (allStockTxns ?? [])) {
+    const existingTxn = txnsByTradeId.get(t.trade_id)
+    // Keep the transaction (only one entry per trade_id should exist due to DB constraints)
+    txnsByTradeId.set(t.trade_id, t)
+  }
+
+  // Aggregate ALL transactions (deduped by trade_id) to get correct net positions
+  const allTxnRows = Array.from(txnsByTradeId.values()).map((t: any) => ({
+    symbol: t.tradingsymbol,
+    isin: t.isin,
+    exchange: t.exchange,
+    trade_type: t.trade_type,
+    quantity: Number(t.quantity),
+    price: Number(t.price),
+  })) as ValidatedRow[]
+
+  const aggregatedPositions = aggregatePositions(allTxnRows)
 
   // 7. Upsert into stock_holdings
-  // CRITICAL: ignoreDuplicates: true means if a (holder_id, tradingsymbol, exchange)
-  // row already exists (e.g. from Zerodha), we do NOT overwrite it.
-  // Only net-new symbols are inserted. Zerodha rows (source='zerodha') are never clobbered.
+  // Update existing holdings for this symbol or insert new ones
   const holdingsToUpsert = aggregatedPositions.map((pos) => ({
     holder_id: holderId,
     tradingsymbol: pos.tradingsymbol,
@@ -173,7 +202,6 @@ export async function POST(req: Request) {
     .from('stock_holdings')
     .upsert(holdingsToUpsert, {
       onConflict: 'holder_id,tradingsymbol,exchange',
-      ignoreDuplicates: true, // existing Zerodha rows are NEVER updated
     })
 
   if (holdingsError) {

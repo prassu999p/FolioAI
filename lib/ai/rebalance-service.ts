@@ -43,7 +43,6 @@ function computeFamilyTargets(
  */
 export async function generateRebalanceStrategy(
   familyId: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   supabase: SupabaseClient | any
 ): Promise<{ strategy: string }> {
   // 1. Fetch all holders for the family

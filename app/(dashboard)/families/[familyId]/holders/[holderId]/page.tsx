@@ -333,8 +333,9 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
             {stockHoldings.length > 0 && (
               <div className="mt-12">
                 <h3 className="text-lg font-bold text-primary mb-6">Stock Holdings</h3>
-                <div className="overflow-x-auto rounded-3xl border border-outline-variant/20 bg-surface-container-lowest">
-                  <table className="w-full">
+                <div className="rounded-3xl border border-outline-variant/20 bg-surface-container-lowest overflow-y-auto" style={{ maxHeight: '60vh' }}>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
                     <thead className="bg-surface-container text-on-surface text-sm font-semibold">
                       <tr>
                         <th className="px-6 py-4 text-left">Symbol</th>
@@ -373,6 +374,7 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
                       })}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               </div>
             )}

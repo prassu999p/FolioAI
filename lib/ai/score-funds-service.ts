@@ -45,11 +45,9 @@ interface FundRow {
  */
 export async function scoreFundsForHolder(
   holderId: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   supabase: SupabaseClient<any>
 ): Promise<number> {
   // 1. Fetch active holdings via RPC
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: holdingsData, error: holdingsError } = await (supabase as any).rpc('get_holder_holdings', {
     p_holder_id: holderId,
   })
@@ -59,7 +57,6 @@ export async function scoreFundsForHolder(
   if (holdings.length === 0) return 0
 
   // 2. Fetch all transactions for this holder (unfiltered by date)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: txData } = await (supabase as any).rpc('get_holder_analytics_transactions', {
     p_holder_id: holderId,
     p_start_date: null,
@@ -68,7 +65,6 @@ export async function scoreFundsForHolder(
   const allTransactions: AnalyticsTransactionFromDB[] = txData ?? []
 
   // 3. Fetch Nifty 50 daily data (all rows — small table)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: niftyData } = await (supabase as any)
     .from('nifty50_daily')
     .select('nav_date, close')
@@ -78,7 +74,6 @@ export async function scoreFundsForHolder(
 
   // 4. Fetch expense ratios for all held scheme_codes
   const schemeCodes = holdings.map(h => h.scheme_code)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: fundsData } = await (supabase as any)
     .from('funds')
     .select('scheme_code, ter')
@@ -110,7 +105,7 @@ export async function scoreFundsForHolder(
     // Compute AUM trend using NAV history approximation from nifty50Daily dates + holding nav
     // We build a synthetic nav history: filter nifty rows that have matching dates from transactions
     // Use the last 6 months of nifty dates as time anchors and approximate fund NAV from txs
-    const navHistory = buildNavHistoryFromTransactions(holdingTxs, holding.units)
+    const navHistory = buildNavHistoryFromTransactions(holdingTxs)
     const aumTrend = computeAUMTrend(navHistory, holding.units)
 
     // Expense ratio from funds table
@@ -166,7 +161,6 @@ export async function scoreFundsForHolder(
       generated_at: new Date().toISOString(),
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: upsertError } = await (supabase as any)
       .from('fund_ai_scores')
       .upsert(scoreRecord, { onConflict: 'holder_id,scheme_code' })
@@ -188,8 +182,7 @@ export async function scoreFundsForHolder(
  * Requires at least 3 data points from transactions for meaningful trend computation.
  */
 function buildNavHistoryFromTransactions(
-  transactions: AnalyticsTransactionFromDB[],
-  _units: number
+  transactions: AnalyticsTransactionFromDB[]
 ): Array<{ date: string; nav: number }> {
   if (transactions.length === 0) return []
 

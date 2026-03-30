@@ -3,7 +3,6 @@ import { computeXIRR } from '@/lib/analytics/xirr'
 import type { Cashflow } from '@/lib/analytics/xirr'
 
 // Use a flexible client type to accept any Supabase client variant (server, browser, etc.)
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnySupabaseClient = any
 
 /**

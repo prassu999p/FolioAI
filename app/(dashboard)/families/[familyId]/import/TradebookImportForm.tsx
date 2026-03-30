@@ -28,7 +28,15 @@ interface ImportResult {
   batched: string
 }
 
-type ParseState = 'idle' | 'parsing' | 'mapping' | 'previewing' | 'done'
+interface FileToProcess {
+  file: File
+  status: 'pending' | 'processing' | 'done' | 'error'
+  result?: ImportResult
+  error?: string
+  rawRows?: Record<string, string>[]
+}
+
+type ParseState = 'idle' | 'parsing' | 'mapping' | 'previewing' | 'importing' | 'done'
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -72,33 +80,38 @@ export default function TradebookImportForm({ familyId, holders }: TradebookImpo
   const router = useRouter()
   const fileRef = useRef<HTMLInputElement>(null)
 
-  const [file, setFile] = useState<File | null>(null)
   const [selectedHolderId, setSelectedHolderId] = useState<string>('')
+  const [filesToProcess, setFilesToProcess] = useState<FileToProcess[]>([])
   const [parseState, setParseState] = useState<ParseState>('idle')
+  const [currentFileIndex, setCurrentFileIndex] = useState(0)
   const [rawRows, setRawRows] = useState<Record<string, string>[]>([])
   const [detectedMappings, setDetectedMappings] = useState<DetectedMapping[]>([])
   const [rowResults, setRowResults] = useState<RowWithStatus[]>([])
   const [loading, setLoading] = useState(false)
-  const [importResult, setImportResult] = useState<ImportResult | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   // ─── File selection handler ─────────────────────────────────────────────
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const selected = e.target.files?.[0] ?? null
-    if (!selected) return
+    const selected = Array.from(e.target.files ?? [])
+    if (selected.length === 0) return
 
-    setFile(selected)
     setError(null)
-    setImportResult(null)
+    setFilesToProcess(selected.map(file => ({ file, status: 'pending' })))
     setParseState('parsing')
+    setCurrentFileIndex(0)
 
+    // Parse the first file
+    await parseAndPreviewFile(selected[0])
+  }
+
+  async function parseAndPreviewFile(file: File) {
     try {
-      const rows = await parseSpreadsheet(selected)
+      const rows = await parseSpreadsheet(file)
       setRawRows(rows)
 
       if (rows.length === 0) {
-        setError('No rows found in the file. Please check the file format.')
+        setError(`No rows found in ${file.name}. Please check the file format.`)
         setParseState('idle')
         return
       }
@@ -109,7 +122,7 @@ export default function TradebookImportForm({ familyId, holders }: TradebookImpo
       setDetectedMappings(mappings)
       setParseState('mapping')
     } catch (err) {
-      setError('Failed to parse file. Please ensure it is a valid CSV or XLSX.')
+      setError(`Failed to parse ${file.name}. Please ensure it is a valid CSV or XLSX.`)
       setParseState('idle')
     }
   }
@@ -136,10 +149,15 @@ export default function TradebookImportForm({ familyId, holders }: TradebookImpo
 
   async function handleImport() {
     const validRows = rowResults.filter((r) => r.valid && r.data).map((r) => r.data!)
-    if (validRows.length === 0 || !selectedHolderId || !file) return
+    if (validRows.length === 0 || !selectedHolderId) return
 
     setLoading(true)
     setError(null)
+    setParseState('importing')
+
+    // Import all files sequentially
+    const currentFile = filesToProcess[currentFileIndex]?.file
+    if (!currentFile) return
 
     const batchId = crypto.randomUUID()
 
@@ -149,7 +167,7 @@ export default function TradebookImportForm({ familyId, holders }: TradebookImpo
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           holderId: selectedHolderId,
-          filename: file.name,
+          filename: currentFile.name,
           batchId,
           rows: validRows,
         }),
@@ -158,33 +176,50 @@ export default function TradebookImportForm({ familyId, holders }: TradebookImpo
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error ?? 'Import failed. Please try again.')
+        setError(data.error ?? `Import failed for ${currentFile.name}. Please try again.`)
+        updateFileStatus(currentFileIndex, 'error', undefined, data.error)
         return
       }
 
-      setImportResult(data as ImportResult)
-      setParseState('done')
+      // Mark this file as done
+      updateFileStatus(currentFileIndex, 'done', data as ImportResult)
 
-      // Redirect to holdings page after 1500ms
-      setTimeout(() => {
-        router.push(`/families/${familyId}/holdings`)
-      }, 1500)
+      // If there are more files, process the next one
+      if (currentFileIndex + 1 < filesToProcess.length) {
+        setCurrentFileIndex(currentFileIndex + 1)
+        await parseAndPreviewFile(filesToProcess[currentFileIndex + 1].file)
+      } else {
+        // All files processed
+        setParseState('done')
+        setTimeout(() => {
+          router.push(`/families/${familyId}/holdings`)
+        }, 1500)
+      }
     } catch {
       setError('Network error — please try again.')
+      updateFileStatus(currentFileIndex, 'error', undefined, 'Network error')
     } finally {
       setLoading(false)
     }
   }
 
+  function updateFileStatus(index: number, status: 'pending' | 'processing' | 'done' | 'error', result?: ImportResult, error?: string) {
+    setFilesToProcess(prev => {
+      const updated = [...prev]
+      updated[index] = { ...updated[index], status, result, error }
+      return updated
+    })
+  }
+
   // ─── Reset ──────────────────────────────────────────────────────────────
 
   function handleReset() {
-    setFile(null)
     setParseState('idle')
+    setFilesToProcess([])
+    setCurrentFileIndex(0)
     setRawRows([])
     setDetectedMappings([])
     setRowResults([])
-    setImportResult(null)
     setError(null)
     if (fileRef.current) fileRef.current.value = ''
   }
@@ -208,13 +243,33 @@ export default function TradebookImportForm({ familyId, holders }: TradebookImpo
     <div className="px-8 py-8 max-w-2xl mx-auto">
 
       {/* Success banner */}
-      {importResult && parseState === 'done' && (
+      {parseState === 'done' && (
+        <div className="space-y-2 mb-6">
+          <div
+            className="rounded-xl px-4 py-3 text-sm flex gap-2 items-center"
+            style={{ backgroundColor: '#f0fdf4', color: '#15803d' }}
+          >
+            <span className="material-symbols-outlined text-base">check_circle</span>
+            All files imported successfully! Redirecting…
+          </div>
+          {filesToProcess.map((file, idx) => (
+            file.status === 'done' && file.result && (
+              <div key={idx} className="text-xs px-3 py-2 bg-green-50 rounded" style={{ color: '#15803d' }}>
+                <span className="font-medium">{file.file.name}:</span> {file.result.imported} stocks imported ({file.result.skipped} duplicates skipped)
+              </div>
+            )
+          ))}
+        </div>
+      )}
+
+      {/* Error in importing */}
+      {parseState === 'importing' && filesToProcess.some(f => f.status === 'error') && (
         <div
           className="rounded-xl px-4 py-3 text-sm flex gap-2 items-center mb-6"
-          style={{ backgroundColor: '#f0fdf4', color: '#15803d' }}
+          style={{ backgroundColor: '#fef2f2', color: '#991b1b' }}
         >
-          <span className="material-symbols-outlined text-base">check_circle</span>
-          Imported {importResult.imported} stocks ({importResult.skipped} duplicates skipped). Redirecting…
+          <span className="material-symbols-outlined text-base">error</span>
+          Import failed for {filesToProcess.find(f => f.status === 'error')?.file.name}
         </div>
       )}
 
@@ -287,7 +342,7 @@ export default function TradebookImportForm({ familyId, holders }: TradebookImpo
             <div
               className="border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors hover:border-[#006d43]"
               style={{
-                borderColor: file ? '#006d43' : '#43474f',
+                borderColor: filesToProcess.length > 0 ? '#006d43' : '#43474f',
                 opacity: !selectedHolderId ? 0.5 : 1,
                 pointerEvents: !selectedHolderId ? 'none' : 'auto',
               }}
@@ -302,19 +357,20 @@ export default function TradebookImportForm({ familyId, holders }: TradebookImpo
               <p className="text-sm font-medium" style={{ color: '#001f2a' }}>
                 {parseState === 'parsing'
                   ? 'Parsing file…'
-                  : file
-                  ? file.name
+                  : filesToProcess.length > 0
+                  ? `${filesToProcess.length} file${filesToProcess.length !== 1 ? 's' : ''} selected`
                   : 'Click to select CSV or XLSX'}
               </p>
-              {!file && parseState === 'idle' && (
+              {filesToProcess.length === 0 && parseState === 'idle' && (
                 <p className="text-xs mt-1" style={{ color: '#43474f' }}>
-                  .csv and .xlsx formats supported
+                  .csv and .xlsx formats supported — select multiple files
                 </p>
               )}
               <input
                 ref={fileRef}
                 type="file"
                 accept=".csv,.xlsx"
+                multiple
                 className="hidden"
                 onChange={handleFileChange}
                 disabled={!selectedHolderId}
@@ -330,17 +386,22 @@ export default function TradebookImportForm({ familyId, holders }: TradebookImpo
       ) : null}
 
       {/* Step 2 — Column mapping confirmation */}
-      {parseState === 'mapping' && (
+      {parseState === 'mapping' && filesToProcess.length > 0 && (
         <div>
-          {/* File info */}
+          {/* File info with progress */}
           <div className="flex items-center gap-2 mb-4">
             <span className="material-symbols-outlined text-base" style={{ color: '#006d43' }}>
               check_circle
             </span>
-            <span className="text-sm font-medium" style={{ color: '#001f2a' }}>{file?.name}</span>
+            <span className="text-sm font-medium" style={{ color: '#001f2a' }}>{filesToProcess[currentFileIndex]?.file.name}</span>
             <span className="text-xs" style={{ color: '#43474f' }}>
               • {rawRows.length} rows detected
             </span>
+            {filesToProcess.length > 1 && (
+              <span className="text-xs ml-auto" style={{ color: '#43474f' }}>
+                File {currentFileIndex + 1} of {filesToProcess.length}
+              </span>
+            )}
           </div>
 
           {/* Mapping confirmation panel */}
@@ -418,20 +479,25 @@ export default function TradebookImportForm({ familyId, holders }: TradebookImpo
       )}
 
       {/* Step 3 — Row-data preview table */}
-      {parseState === 'previewing' && (
+      {parseState === 'previewing' && filesToProcess.length > 0 && (
         <div>
-          {/* File info */}
+          {/* File info with progress */}
           <div className="flex items-center gap-2 mb-4">
             <span className="material-symbols-outlined text-base" style={{ color: '#006d43' }}>
               check_circle
             </span>
-            <span className="text-sm font-medium" style={{ color: '#001f2a' }}>{file?.name}</span>
+            <span className="text-sm font-medium" style={{ color: '#001f2a' }}>{filesToProcess[currentFileIndex]?.file.name}</span>
+            {filesToProcess.length > 1 && (
+              <span className="text-xs" style={{ color: '#43474f' }}>
+                • File {currentFileIndex + 1} of {filesToProcess.length}
+              </span>
+            )}
             <button
               onClick={handleReset}
               className="ml-auto text-xs border rounded-xl px-3 py-1"
               style={{ color: '#001736', borderColor: '#c9e7f7' }}
             >
-              Change file
+              Change files
             </button>
           </div>
 
@@ -520,28 +586,57 @@ export default function TradebookImportForm({ familyId, holders }: TradebookImpo
             </div>
           )}
 
+          {/* File queue status (if multiple files) */}
+          {filesToProcess.length > 1 && (
+            <div className="mb-6 p-4 rounded-xl border" style={{ borderColor: '#c9e7f7', backgroundColor: '#f4faff' }}>
+              <p className="text-xs font-semibold mb-2" style={{ color: '#001f2a' }}>Import Queue</p>
+              <div className="space-y-1">
+                {filesToProcess.map((file, idx) => (
+                  <div key={idx} className="flex items-center gap-2 text-xs">
+                    {file.status === 'pending' && (
+                      <span className="material-symbols-outlined text-sm" style={{ color: '#43474f' }}>schedule</span>
+                    )}
+                    {file.status === 'processing' && (
+                      <span className="material-symbols-outlined text-sm animate-spin" style={{ color: '#006d43' }}>progress_activity</span>
+                    )}
+                    {file.status === 'done' && (
+                      <span className="material-symbols-outlined text-sm" style={{ color: '#006d43' }}>check_circle</span>
+                    )}
+                    {file.status === 'error' && (
+                      <span className="material-symbols-outlined text-sm" style={{ color: '#991b1b' }}>error</span>
+                    )}
+                    <span style={{ color: file.status === 'done' ? '#006d43' : file.status === 'error' ? '#991b1b' : '#001f2a' }}>
+                      {file.file.name}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="flex gap-3">
             <button
               onClick={handleImport}
-              disabled={validRows.length === 0 || !selectedHolderId || loading}
+              disabled={validRows.length === 0 || !selectedHolderId || loading || parseState === 'done'}
               className="flex-1 py-3 rounded-xl font-semibold text-sm transition-opacity disabled:opacity-50"
               style={{ backgroundColor: '#001736', color: '#ffffff' }}
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <span className="material-symbols-outlined text-base">progress_activity</span>
-                  Importing…
+                  Importing {filesToProcess[currentFileIndex]?.file.name}…
                 </span>
               ) : (
-                `Import ${validRows.length} transaction${validRows.length !== 1 ? 's' : ''}`
+                `Import ${validRows.length} transaction${validRows.length !== 1 ? 's' : ''} (File ${currentFileIndex + 1}/${filesToProcess.length})`
               )}
             </button>
             <button
               onClick={handleReset}
               className="px-5 py-3 rounded-xl text-sm font-semibold border transition-colors hover:bg-[#e6f6ff]"
               style={{ borderColor: '#c9e7f7', color: '#001736' }}
+              disabled={loading}
             >
-              Cancel
+              {loading ? 'Cancel' : 'Reset'}
             </button>
           </div>
         </div>

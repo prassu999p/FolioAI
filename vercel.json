@@ -1,4 +1,5 @@
 {
+  "name": "folioai",
   "functions": {
     "api/**/*.py": {
       "maxDuration": 60,

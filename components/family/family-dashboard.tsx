@@ -74,7 +74,6 @@ export async function FamilyDashboard({ familyId }: FamilyDashboardProps) {
   const supabase = await createClient()
 
   // Fetch family info with holders (including is_primary and pan_unmatched for role)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: family } = await (supabase.from('families') as any)
     .select('id, name, holders(id, name, pan, is_primary, pan_unmatched)')
     .eq('id', familyId)
@@ -95,12 +94,9 @@ export async function FamilyDashboard({ familyId }: FamilyDashboardProps) {
 
   // For each holder: fetch holdings + transactions in parallel, compute per-holder XIRR
   const holdersWithAUM: HolderWithAUM[] = await Promise.all(
-    family.holders.map(async (holder, _index) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    family.holders.map(async (holder) => {
       const [holdingsResult, txResult] = await Promise.all([
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (supabase as any).rpc('get_holder_holdings', { p_holder_id: holder.id }),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (supabase as any).rpc('get_holder_analytics_transactions', {
           p_holder_id: holder.id,
           p_start_date: null,

@@ -48,8 +48,6 @@ function toTransactions(rows: AnalyticsTransaction[]): Transaction[] {
 }
 
 export function SummaryCards({
-  holderId: _holderId,
-  period: _period,
   transactions,
   holdings,
   nifty50Xirr = null,
@@ -58,7 +56,11 @@ export function SummaryCards({
   const today = new Date()
 
   // Compute portfolio-level totals
-  const total_aum = holdings.reduce((sum, h) => sum + (h.current_value ?? 0), 0)
+  // For holdings without current_value (NAV not synced), use total_invested as fallback
+  const total_aum = holdings.reduce((sum, h) => {
+    const value = h.current_value ?? h.total_invested ?? 0
+    return sum + value
+  }, 0)
   const total_invested = holdings.reduce((sum, h) => sum + h.total_invested, 0)
 
   // Gain/loss aggregated from per-holding computeGainLoss
