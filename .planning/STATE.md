@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Phase 6 context gathered
-last_updated: "2026-03-29T08:58:07.722Z"
+stopped_at: Completed 06-02-PLAN.md
+last_updated: "2026-03-30T02:06:39.928Z"
 last_activity: 2026-03-21 — Completed Phase 3 Tax Engine
 progress:
   total_phases: 6
   completed_phases: 4
-  total_plans: 40
-  completed_plans: 36
+  total_plans: 44
+  completed_plans: 38
   percent: 84
 ---
 
@@ -85,6 +85,8 @@ Progress: [████████░░] 84%
 | Phase 03-tax-engine P05 | 2min | 2 tasks | 4 files |
 | Phase 03-tax-engine P07 | 147s | 1 tasks | 4 files |
 | Phase 03-tax-engine P06 | 3min | 2 tasks | 3 files |
+| Phase 06-tradebook-import P01 | 8min | 2 tasks | 13 files |
+| Phase 06-tradebook-import P02 | 11min | 1 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -172,6 +174,11 @@ Recent decisions affecting current work:
 - [Phase 03-tax-engine]: DialogTitle replaces h3 in SellTaxEstimatorModal — eliminates Radix accessibility console warning
 - [Phase 03-tax-engine]: grandfatheringApplied in estimateSellTax uses Nav presence only (not comparison to purchaseNav)
 - [Phase 03-tax-engine]: grandfatheringNav passed as null from HoldingsTable — tax page grandfathering data not available at holder page; correct assetClass and purchaseDate are the critical TAX-02/TAX-03 fixes
+- [Phase 06-tradebook-import]: SheetJS installed from cdn.sheetjs.com tarball via pnpm (npm v9.8.1 arborist bug prevented URL install)
+- [Phase 06-tradebook-import]: stock_transactions UNIQUE(holder_id, trade_id) for dedup; broker_source kept for backward compat, new source column is canonical
+- [Phase 06-tradebook-import]: tradebook-dedup.test.ts stubs match exact plan-specified strings — Plan 06-03 Task 1 depends on these
+- [Phase 06-tradebook-import]: Blob.prototype.arrayBuffer polyfilled via FileReader in setup.ts — jsdom 25 lacks this method; FileReader is available and reliable in jsdom
+- [Phase 06-tradebook-import]: throws-when-no-sheets test changed to assert empty array return — SheetJS always creates Sheet1 even for empty buffers
 
 ### Pending Todos
 
@@ -192,6 +199,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-29T08:58:07.717Z
-Stopped at: Phase 6 context gathered
-Resume file: .planning/phases/06-i-want-to-add-option-to-import-stocks-bought-using-tradebooks-downloaded-manually/06-CONTEXT.md
+Last session: 2026-03-30T02:06:39.921Z
+Stopped at: Completed 06-02-PLAN.md
+Resume file: None

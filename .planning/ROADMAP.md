@@ -157,4 +157,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 3. Tax Engine | 2/7 | In Progress|  |
 | 4. AI Intelligence | 5/6 | In Progress|  |
 | 5. Goals, Alerts and Broker Integration | 6/6 | Complete   | 2026-03-25 |
-| 6. Tradebook Import | 0/4 | Planned |  |
+| 6. Tradebook Import | 2/4 | In Progress|  |
