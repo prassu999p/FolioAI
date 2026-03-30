@@ -1,5 +1,19 @@
 import { vi } from 'vitest'
 
+// Polyfill Blob.prototype.arrayBuffer() for jsdom 25 which lacks this method.
+// Uses FileReader (available in jsdom) to read the blob's data as an ArrayBuffer.
+// File extends Blob so File.prototype.arrayBuffer() is also provided by this polyfill.
+if (typeof Blob !== 'undefined' && !Blob.prototype.arrayBuffer) {
+  Blob.prototype.arrayBuffer = function (): Promise<ArrayBuffer> {
+    return new Promise<ArrayBuffer>((resolve, reject) => {
+      const fr = new FileReader()
+      fr.onload = () => resolve(fr.result as ArrayBuffer)
+      fr.onerror = () => reject(fr.error)
+      fr.readAsArrayBuffer(this)
+    })
+  }
+}
+
 // Mock Supabase client factory — returns a typed mock
 // Downstream tests call createMockSupabase() and stub the methods they need
 export function createMockSupabase() {
