@@ -91,6 +91,19 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
     ? []
     : (periodTransactionsResult.data ?? [])
 
+  // Create combined holdings for AUM (includes both mutual funds and stocks)
+  // Convert stock holdings to have a current_value for AUM calculation
+  const stockHoldingsForAUM = (stockHoldings as Array<any>).map((holding: any) => {
+    const qty = Number(holding.quantity || 0)
+    const lastPrice = Number(holding.last_price || holding.average_price || 0)
+    const currentValue = qty * lastPrice
+    return {
+      ...holding,
+      current_value: currentValue,
+      total_invested: qty * Number(holding.average_price || 0),
+    }
+  })
+
   // Map holdings to HoldingRowWithAnalytics with per-holding XIRR computation
   const validTxTypes = ['purchase', 'redemption', 'switch_in', 'switch_out', 'sip', 'dividend_reinvest'] as const
   type ValidTxType = typeof validTxTypes[number]
@@ -300,7 +313,7 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
             holderId={holderId}
             period={period}
             transactions={allTransactions}
-            holdings={holdingsWithAnalytics}
+            holdings={[...holdingsWithAnalytics, ...stockHoldingsForAUM] as any}
             nifty50Xirr={benchmarkXirr}
             viewMode={view}
           />
@@ -328,24 +341,36 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
                         <th className="px-6 py-4 text-left">ISIN</th>
                         <th className="px-6 py-4 text-right">Quantity</th>
                         <th className="px-6 py-4 text-right">Avg Price (₹)</th>
-                        <th className="px-6 py-4 text-left">Source</th>
+                        <th className="px-6 py-4 text-right">Invested (₹)</th>
+                        <th className="px-6 py-4 text-right">Current Value (₹)</th>
+                        <th className="px-6 py-4 text-right">Gain/Loss %</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-outline-variant/10">
-                      {(stockHoldings as Array<any>).map((holding: any) => (
-                        <tr key={holding.id} className="hover:bg-surface-container-lowest/50 transition-colors">
-                          <td className="px-6 py-4 font-semibold text-on-surface">{holding.tradingsymbol}</td>
-                          <td className="px-6 py-4 text-sm text-on-surface-variant">{holding.isin}</td>
-                          <td className="px-6 py-4 text-right text-on-surface font-variant-numeric: tabular-nums">{Number(holding.quantity).toFixed(2)}</td>
-                          <td className="px-6 py-4 text-right text-on-surface font-variant-numeric: tabular-nums">₹{Number(holding.average_price ?? 0).toFixed(2)}</td>
-                          <td className="px-6 py-4">
-                            <span className="inline-flex items-center gap-1 text-xs bg-secondary-fixed/20 text-secondary px-2 py-1 rounded-full">
-                              <span className="material-symbols-outlined text-xs">upload_file</span>
-                              {holding.source}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
+                      {(stockHoldings as Array<any>).map((holding: any) => {
+                        const qty = Number(holding.quantity || 0)
+                        const avgPrice = Number(holding.average_price || 0)
+                        const lastPrice = Number(holding.last_price || avgPrice)
+                        const invested = qty * avgPrice
+                        const currentValue = qty * lastPrice
+                        const gainLoss = currentValue - invested
+                        const gainLossPct = invested > 0 ? (gainLoss / invested) * 100 : 0
+                        const isPositive = gainLoss >= 0
+
+                        return (
+                          <tr key={holding.id} className="hover:bg-surface-container-lowest/50 transition-colors">
+                            <td className="px-6 py-4 font-semibold text-on-surface">{holding.tradingsymbol}</td>
+                            <td className="px-6 py-4 text-sm text-on-surface-variant">{holding.isin}</td>
+                            <td className="px-6 py-4 text-right text-on-surface tabular-nums">{qty.toFixed(2)}</td>
+                            <td className="px-6 py-4 text-right text-on-surface tabular-nums">₹{avgPrice.toFixed(2)}</td>
+                            <td className="px-6 py-4 text-right text-on-surface tabular-nums">₹{invested.toFixed(2)}</td>
+                            <td className="px-6 py-4 text-right text-on-surface tabular-nums">₹{currentValue.toFixed(2)}</td>
+                            <td className={`px-6 py-4 text-right font-semibold tabular-nums ${isPositive ? 'text-secondary' : 'text-error'}`}>
+                              {isPositive ? '+' : ''}{gainLossPct.toFixed(2)}%
+                            </td>
+                          </tr>
+                        )
+                      })}
                     </tbody>
                   </table>
                 </div>
