@@ -46,7 +46,6 @@ export const COLUMN_ALIASES: Record<string, string[]> = {
     'exchange',
     'exch',
     'market',
-    'segment',
   ],
   trade_type: [
     'trade_type',
