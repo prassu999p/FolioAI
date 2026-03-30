@@ -42,11 +42,18 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
   // NOTE: For XIRR calculation, we need ALL historical transactions (not period-filtered).
   // Period-filtered transactions are used for display and gain/loss calculations only.
 
-  const [holdingsResult, allTransactionsResult, periodTransactionsResult] = await Promise.all([
+  const [holdingsResult, stockHoldingsResult, allTransactionsResult, periodTransactionsResult] = await Promise.all([
+    // Fetch mutual fund holdings via RPC
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase as any).rpc('get_holder_holdings', {
       p_holder_id: holderId,
     }),
+    // Fetch stock holdings (from tradebook imports)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase as any)
+      .from('stock_holdings')
+      .select('*')
+      .eq('holder_id', holderId),
     // Fetch ALL historical transactions for XIRR calculation (no period filter)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase as any).rpc('get_holder_analytics_transactions', {
@@ -74,6 +81,8 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
   }
 
   const rawHoldings: HoldingRow[] = holdingsResult.data ?? []
+  // Stock holdings from tradebook imports
+  const stockHoldings = stockHoldingsResult.error ? [] : (stockHoldingsResult.data ?? [])
   // Use ALL historical transactions for XIRR calculation, period-filtered for display/gain-loss
   const allTransactions: AnalyticsTransaction[] = allTransactionsResult.error
     ? []
@@ -300,11 +309,48 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
         {/* 2/3 holdings + 1/3 sidebar */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
           <div className="lg:col-span-2">
+            {/* Mutual fund holdings */}
             <HoldingsTable
                 holdings={holdingsWithAnalytics}
                 fundCategories={fundCategories}
                 transactions={transactions}
               />
+
+            {/* Stock holdings from tradebook imports */}
+            {stockHoldings.length > 0 && (
+              <div className="mt-12">
+                <h3 className="text-lg font-bold text-primary mb-6">Stock Holdings</h3>
+                <div className="overflow-x-auto rounded-3xl border border-outline-variant/20 bg-surface-container-lowest">
+                  <table className="w-full">
+                    <thead className="bg-surface-container text-on-surface text-sm font-semibold">
+                      <tr>
+                        <th className="px-6 py-4 text-left">Symbol</th>
+                        <th className="px-6 py-4 text-left">ISIN</th>
+                        <th className="px-6 py-4 text-right">Quantity</th>
+                        <th className="px-6 py-4 text-right">Avg Price (₹)</th>
+                        <th className="px-6 py-4 text-left">Source</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-outline-variant/10">
+                      {(stockHoldings as Array<any>).map((holding: any) => (
+                        <tr key={holding.id} className="hover:bg-surface-container-lowest/50 transition-colors">
+                          <td className="px-6 py-4 font-semibold text-on-surface">{holding.tradingsymbol}</td>
+                          <td className="px-6 py-4 text-sm text-on-surface-variant">{holding.isin}</td>
+                          <td className="px-6 py-4 text-right text-on-surface font-variant-numeric: tabular-nums">{Number(holding.quantity).toFixed(2)}</td>
+                          <td className="px-6 py-4 text-right text-on-surface font-variant-numeric: tabular-nums">₹{Number(holding.average_price ?? 0).toFixed(2)}</td>
+                          <td className="px-6 py-4">
+                            <span className="inline-flex items-center gap-1 text-xs bg-secondary-fixed/20 text-secondary px-2 py-1 rounded-full">
+                              <span className="material-symbols-outlined text-xs">upload_file</span>
+                              {holding.source}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
           </div>
           <div className="space-y-8">
             <SipSection transactions={allTransactions} />
