@@ -18,9 +18,11 @@ import { COLUMN_ALIASES } from './tradebook-column-mapper'
 
 /**
  * Detects which row contains the actual column headers by looking for
- * known column alias patterns. Returns the header row index (0-based).
+ * known column alias patterns. Returns header names and the row index.
  */
-function detectHeaderRow(sheet: XLSX.WorkSheet): number {
+function detectHeaderRow(
+  sheet: XLSX.WorkSheet
+): { headerNames: string[]; rowIndex: number } {
   const allRows = XLSX.utils.sheet_to_json(sheet, {
     header: 1, // Get raw array format [[col1, col2, ...], ...]
     defval: '',
@@ -58,7 +60,10 @@ function detectHeaderRow(sheet: XLSX.WorkSheet): number {
   }
 
   // If we found at least 2 header matches, use that row; otherwise default to 0
-  return bestMatchCount >= 2 ? bestRowIndex : 0
+  const headerRowToUse = bestMatchCount >= 2 ? bestRowIndex : 0
+  const headerNames = (allRows[headerRowToUse] || []) as string[]
+
+  return { headerNames, rowIndex: headerRowToUse }
 }
 
 /**
@@ -93,14 +98,37 @@ export async function parseSpreadsheet(
   }
 
   // Auto-detect header row
-  const headerRowIndex = detectHeaderRow(sheet)
+  const { headerNames, rowIndex: headerRowIndex } = detectHeaderRow(sheet)
 
-  // Parse with the detected header row
-  const rows = XLSX.utils.sheet_to_json<Record<string, string>>(sheet, {
-    defval: '',
-    raw: false,
-    range: headerRowIndex, // Skip rows before the header
-  })
+  // If header row is not the first row, re-parse starting from that row with custom headers
+  if (headerRowIndex === 0) {
+    // Standard case: headers are in row 1
+    const rows = XLSX.utils.sheet_to_json<Record<string, string>>(sheet, {
+      defval: '',
+      raw: false,
+    })
+    return rows
+  } else {
+    // Custom case: headers are in a later row, use them explicitly
+    const allRows = XLSX.utils.sheet_to_json(sheet, {
+      header: 1, // Get raw array format
+      defval: '',
+      raw: false,
+    }) as string[][]
 
-  return rows
+    // Extract data rows starting after the header
+    const dataRows: Record<string, string>[] = []
+    for (let i = headerRowIndex + 1; i < allRows.length; i++) {
+      const row = allRows[i]
+      if (!Array.isArray(row)) continue
+
+      const recordRow: Record<string, string> = {}
+      for (let j = 0; j < headerNames.length; j++) {
+        recordRow[headerNames[j]] = String(row[j] || '')
+      }
+      dataRows.push(recordRow)
+    }
+
+    return dataRows
+  }
 }
