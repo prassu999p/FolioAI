@@ -29,7 +29,10 @@ CREATE TABLE stock_transactions (
   import_filename TEXT,
   imported_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  UNIQUE (holder_id, trade_id)
+  -- Dedup key: trade IDs are exchange-assigned per-day (not globally unique across years).
+  -- Including exchange + trade_date prevents cross-year false positives when the same
+  -- numeric trade ID is reused by an exchange on a different date.
+  UNIQUE (holder_id, trade_id, exchange, trade_date)
 );
 
 ALTER TABLE stock_transactions ENABLE ROW LEVEL SECURITY;

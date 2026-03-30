@@ -129,12 +129,14 @@ export async function POST(req: Request) {
     mapToStockTransactionInsert(row as ValidatedRow, holderId, batchId, filename)
   )
 
-  // 5. Upsert into stock_transactions (dedup by holder_id, trade_id)
-  // ignoreDuplicates: true — re-importing same file skips already-imported rows
+  // 5. Upsert into stock_transactions (dedup by holder_id, trade_id, exchange, trade_date)
+  // trade_id alone is not globally unique — exchanges assign IDs per-day so the same
+  // numeric ID can appear across different years. Including exchange + trade_date ensures
+  // independent annual tradebooks never collide with each other.
   const { data: insertedTxns, error: txnError } = await (supabase as any)
     .from('stock_transactions')
     .upsert(transactionRows, {
-      onConflict: 'holder_id,trade_id',
+      onConflict: 'holder_id,trade_id,exchange,trade_date',
       ignoreDuplicates: true,
     })
     .select('id')
