@@ -1,0 +1,273 @@
+- generic:
+  - button "Open Next.js Dev Tools" [ref=e26] [cursor=pointer]:
+    - img [ref=e27]
+  - alert
+  - generic:
+    - complementary:
+      - generic:
+        - heading [level=1]: FolioAI
+        - paragraph: The Digital Fiduciary
+      - navigation:
+        - link:
+          - /url: /dashboard
+          - generic: dashboard
+          - generic: Family Dashboard
+        - link:
+          - /url: /families/abc0ffc7-e7cc-4482-8072-3e1d2a405d76/holders
+          - generic: group
+          - generic: Individual Holders
+        - link:
+          - /url: /families/abc0ffc7-e7cc-4482-8072-3e1d2a405d76/allocation
+          - generic: pie_chart
+          - generic: Asset Allocation
+        - link:
+          - /url: /families/abc0ffc7-e7cc-4482-8072-3e1d2a405d76/goals
+          - generic: track_changes
+          - generic: Goals
+        - link:
+          - /url: /families/abc0ffc7-e7cc-4482-8072-3e1d2a405d76/tax
+          - generic: receipt_long
+          - generic: Tax Intelligence
+        - link:
+          - /url: /families/abc0ffc7-e7cc-4482-8072-3e1d2a405d76/ai
+          - generic: auto_awesome
+          - generic: AI Insights
+      - generic:
+        - button:
+          - generic: auto_awesome
+          - text: Ask AI Intelligence
+      - generic:
+        - link:
+          - /url: "#"
+          - generic: help
+          - text: Support
+        - link:
+          - /url: "#"
+          - generic: settings
+          - text: Settings
+    - main:
+      - generic:
+        - navigation:
+          - link:
+            - /url: /families/abc0ffc7-e7cc-4482-8072-3e1d2a405d76
+            - text: Family Dashboard
+          - generic: chevron_right
+          - generic: Holder (CBHPP4362C)
+        - generic:
+          - generic:
+            - button:
+              - generic: add
+              - text: Add Manual Holding
+            - button:
+              - generic: download
+              - text: Export Statement
+          - generic:
+            - generic: notifications
+            - generic: settings
+      - generic:
+        - generic:
+          - generic:
+            - heading [level=2]: Holder (CBHPP4362C)
+            - paragraph: Portfolio holder — managed by FolioAI
+          - generic:
+            - generic: Last Synced
+            - text: 18 Mar 2026
+        - generic:
+          - generic:
+            - generic:
+              - button: 1M
+              - button: 3M
+              - button: 6M
+              - button: 1Y
+              - button: 3Y
+              - button: This FY
+              - button: All Time
+            - generic:
+              - button: XIRR
+              - button: Absolute
+              - button: Benchmark
+        - generic:
+          - generic:
+            - generic:
+              - paragraph: Total AUM
+              - heading [level=3]: ₹11,28,752
+              - generic:
+                - generic: trending_up
+                - text: +32.0% overall
+            - generic:
+              - paragraph: Total Invested
+              - heading [level=3]: ₹8,55,061
+            - generic:
+              - paragraph: Absolute Gain
+              - heading [level=3]: ₹2,73,691
+              - generic: 32.01%
+            - generic:
+              - paragraph: XIRR (Annualized)
+              - heading [level=3]: 11.26%
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - heading [level=3]: Portfolio Holdings
+                - generic:
+                  - generic: Mutual Funds
+              - generic:
+                - table:
+                  - rowgroup:
+                    - row:
+                      - columnheader: Asset Name
+                      - columnheader: Units
+                      - columnheader: Current NAV
+                      - columnheader: Value (₹)
+                      - columnheader: XIRR
+                      - columnheader: Action
+                  - rowgroup:
+                    - row:
+                      - cell:
+                        - generic: Axis Large Cap Fund - Direct Growth
+                        - generic: AXIS Mutual Fund
+                      - cell: 4,571.169
+                      - cell: "66.26"
+                      - cell: ₹3,02,886
+                      - cell: 7.2%
+                      - cell:
+                        - button: Estimate Tax
+                    - row:
+                      - cell:
+                        - generic: Axis Mid Cap Fund - Direct Growth
+                        - generic: AXIS Mutual Fund
+                      - cell: 2,934.381
+                      - cell: "126.93"
+                      - cell: ₹3,72,461
+                      - cell: 13.1%
+                      - cell:
+                        - button: Estimate Tax
+                    - row:
+                      - cell:
+                        - generic: Parag Parikh Flexi Cap Fund - Direct Plan Growth
+                        - generic: PPFAS Mutual Fund
+                      - cell: 1,177.384
+                      - cell: "89.38"
+                      - cell: ₹1,05,229
+                      - cell: 14.4%
+                      - cell:
+                        - button: Estimate Tax
+                    - row:
+                      - cell:
+                        - generic: Axis Small Cap Fund Direct Growth
+                        - generic: AXIS Mutual Fund
+                      - cell: 3,060.08
+                      - cell: "113.78"
+                      - cell: ₹3,48,176
+                      - cell: 11.7%
+                      - cell:
+                        - button: Estimate Tax
+          - generic:
+            - generic:
+              - generic:
+                - heading [level=3]: Active SIPs
+                - generic: 3 Total
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic: calendar_month
+                    - generic:
+                      - paragraph: ₹5,000/mo
+                      - paragraph: Axis Mid Cap Fund - Direct Growth
+                      - paragraph: "XIRR: 53385741577.74%"
+                  - generic:
+                    - paragraph: Next Debit
+                    - paragraph: 12 Apr
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic: calendar_month
+                    - generic:
+                      - paragraph: ₹5,000/mo
+                      - paragraph: Axis Small Cap Fund Direct Growth
+                      - paragraph: "XIRR: 37898549127.06%"
+                  - generic:
+                    - paragraph: Next Debit
+                    - paragraph: 12 Apr
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic: calendar_month
+                    - generic:
+                      - paragraph: ₹5,000/mo
+                      - paragraph: Axis Large Cap Fund - Direct Growth
+                      - paragraph: "XIRR: 17090066233.01%"
+                  - generic:
+                    - paragraph: Next Debit
+                    - paragraph: 12 Apr
+              - button: View All SIPs
+            - generic:
+              - generic:
+                - heading [level=3]: AI Portfolio Health
+                - generic: auto_awesome
+              - paragraph: No scores yet. Click “Refresh Scores” to analyse your portfolio.
+              - paragraph: Educational analysis only. Not SEBI-registered investment advice.
+            - generic:
+              - button:
+                - generic: refresh
+                - text: Refresh Scores
+            - button:
+              - generic: auto_awesome
+              - text: Generate Review
+        - generic:
+          - generic:
+            - generic:
+              - heading [level=3]: Asset Allocation
+              - paragraph: Current vs target allocation
+            - button [expanded]: Set Target
+          - generic:
+            - generic:
+              - generic:
+                - generic: Equity
+                - generic:
+                  - generic: 100.0%
+            - generic:
+              - generic:
+                - generic: Debt
+                - generic:
+                  - generic: 0.0%
+            - generic:
+              - generic:
+                - generic: Gold
+                - generic:
+                  - generic: 0.0%
+            - generic:
+              - generic:
+                - generic: International
+                - generic:
+                  - generic: 0.0%
+          - paragraph: Based on current portfolio value of ₹11,28,752
+      - button:
+        - generic: auto_awesome
+        - generic: Ask AI
+  - dialog "Set Allocation Targets" [ref=e451]:
+    - heading "Set Allocation Targets" [level=2] [ref=e453]
+    - generic [ref=e454]:
+      - paragraph [ref=e455]: Define your target allocation across asset classes. Total must not exceed 100%.
+      - generic [ref=e456]:
+        - generic [ref=e457]: Equity %
+        - spinbutton [active] [ref=e458]: "0"
+      - generic [ref=e459]:
+        - generic [ref=e460]: Debt %
+        - spinbutton [ref=e461]: "0"
+      - generic [ref=e462]:
+        - generic [ref=e463]: Gold %
+        - spinbutton [ref=e464]: "0"
+      - generic [ref=e465]:
+        - generic [ref=e466]: International %
+        - spinbutton [ref=e467]: "0"
+      - generic [ref=e468]:
+        - text: "Total: 0.0%"
+        - generic [ref=e469]: (100.0% unallocated)
+      - generic [ref=e470]:
+        - button "Cancel" [ref=e471]
+        - button "Save Targets" [ref=e472]
+    - button "Close" [ref=e473]:
+      - img
+      - generic [ref=e474]: Close

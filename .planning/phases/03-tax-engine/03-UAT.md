@@ -3,7 +3,8 @@ status: complete
 phase: 03-tax-engine
 source: [03-01-PLAN.md, 03-02-PLAN.md, 03-03-PLAN.md, 03-04-PLAN.md]
 started: 2026-03-25T14:47:46Z
-updated: 2026-03-25T14:55:00Z
+updated: 2026-03-27T09:00:00Z
+fixes_verified: 2026-03-27T09:00:00Z (Playwright browser testing confirmed all fixes in production)
 ---
 
 ## Current Test
@@ -59,21 +60,37 @@ skipped: 0
 ## Gaps
 
 - truth: "FY toggle switches Capital Gains card heading to reflect selected FY (e.g., Capital Gains FY25 when viewing FY24-25)"
-  status: failed
-  reason: "User reported: URL updates to ?fy=prior, subtitle switches to FY24-25 Summary, FY24-25 button becomes active, harvesting section becomes read-only — but the Capital Gains card heading still shows 'Capital Gains FY26' when Prior FY is selected; it should show 'Capital Gains FY25'"
+  status: resolved
+  reason: "Browser verified 2026-03-27: FY toggle correctly updates heading from 'Capital Gains FY25-26' to 'Capital Gains FY24-25'"
   severity: minor
   test: 3
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "components/tax/capital-gains-summary.tsx line 35 hardcodes `new Date().getFullYear()` in the heading, completely ignoring the selected FY. The component's Props interface has no FY prop, so the page never passes fyBounds.label into the component even though it's computed correctly in page.tsx."
+  artifacts:
+    - path: "components/tax/capital-gains-summary.tsx"
+      issue: "Line 35: heading uses `new Date().getFullYear()` instead of a prop; Props interface (lines 10-16) missing fyLabel/fyYear prop"
+    - path: "app/(dashboard)/families/[familyId]/tax/page.tsx"
+      issue: "Line 156-161: CapitalGainsSummary call site passes no FY prop despite fyBounds being in scope"
+  missing:
+    - "Add fyLabel (or fyYear) prop to CapitalGainsSummaryProps"
+    - "Replace hardcoded new Date().getFullYear() with the prop value"
+    - "Pass fyBounds.label (or fyBounds.fyYear) from page.tsx call site"
+  debug_session: ".planning/debug/capital-gains-heading-hardcoded-fy.md"
 
 - truth: "Sell Tax Estimator modal shows LTCG gain (₹), STCG gain (₹) as separate line items, and applicable tax rate per type"
-  status: failed
-  reason: "User reported: Real-time calculation works (100 units shows Total Gain +₹981, Classification LTCG, Holding Period 2275 days, Estimated Tax ₹0, Reinvest hint). However the breakdown doesn't show LTCG gain and STCG gain as separate line items, and the applicable tax rate (12.5% for LTCG) is not shown. Also console error: DialogContent requires a DialogTitle for accessibility (Radix warning)."
+  status: resolved
+  reason: "Browser verified 2026-03-27: Modal shows LTCG Gain (+₹1,046) and LTCG Tax Rate (12.5%) as separate line items. Real-time calculation works correctly. DialogTitle imported and accessibility fixed."
   severity: minor
   test: 6
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "Dual-layer problem: (1) lib/tax/engine.ts estimateSellTax (lines 302-350) returns an ad-hoc object that doesn't implement TaxEstimationResult — it has no ltcgGain/stcgGain/ltcgRate/stcgRate fields, despite TaxEstimationResult in types.ts (lines 113-124) already defining the correct shape. (2) The modal (components/tax/sell-tax-estimator-modal.tsx lines 103-150) only renders the fields that come back from the engine. (3) DialogTitle not imported; header uses plain <h3> instead of Radix DialogTitle."
+  artifacts:
+    - path: "lib/tax/engine.ts"
+      issue: "Lines 302-350: estimateSellTax return shape is ad-hoc, not TaxEstimationResult; missing ltcgGain/stcgGain/ltcgRate/stcgRate"
+    - path: "lib/tax/types.ts"
+      issue: "Lines 113-124: TaxEstimationResult correctly defined but engine never returns it"
+    - path: "components/tax/sell-tax-estimator-modal.tsx"
+      issue: "Lines 11-15: DialogTitle not imported; line 73: plain <h3> instead of DialogTitle; lines 103-150: no LTCG/STCG split rows"
+  missing:
+    - "engine.ts: estimateSellTax must return TaxEstimationResult — set ltcgGain=totalGain/stcgGain=0 (or vice versa) based on classification"
+    - "modal: add LTCG gain + rate row and STCG gain + rate row using new fields"
+    - "modal: import DialogTitle and replace <h3> with <DialogTitle>"
+  debug_session: ".planning/debug/sell-tax-estimator-modal-breakdown.md"

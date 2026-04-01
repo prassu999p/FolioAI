@@ -87,50 +87,53 @@ export function calculateHoldingDays(purchaseDate: Date, saleDate: Date): number
 /**
  * Determine if a holding qualifies as equity-oriented for tax purposes
  * Uses 65% equity threshold per SEBI regulations
- * 
- * @param category - Fund category from AMFI/casparser
+ *
+ * @param category - Fund category from AMFI/casparser (may be empty for legacy data)
+ * @param schemeName - Optional fund name for inference when category is empty
  * @returns TaxAssetClass classification
  */
-export function getTaxAssetClass(category: string): TaxAssetClass {
+export function getTaxAssetClass(category: string, schemeName?: string): TaxAssetClass {
   const cat = category.toLowerCase()
-  
+  // Fallback to scheme name if category is empty
+  const searchStr = cat || (schemeName?.toLowerCase() ?? '')
+
   // Pure equity
-  if (cat.includes('large cap') || 
-      cat.includes('mid cap') || 
-      cat.includes('small cap') ||
-      cat.includes('flexi cap') ||
-      cat.includes('multi cap') ||
-      cat.includes('value') ||
-      cat.includes('growth') ||
-      cat.includes('focus') ||
-      cat.includes('eldest') ||
-      cat.includes('dividend yield')) {
+  if (searchStr.includes('large cap') ||
+      searchStr.includes('mid cap') ||
+      searchStr.includes('small cap') ||
+      searchStr.includes('flexi cap') ||
+      searchStr.includes('multi cap') ||
+      searchStr.includes('value') ||
+      searchStr.includes('growth') ||
+      searchStr.includes('focus') ||
+      searchStr.includes('eldest') ||
+      searchStr.includes('dividend yield')) {
     return 'equity'
   }
-  
+
   // Aggressive hybrid (>=65% equity)
-  if (cat.includes('aggressive hybrid')) {
+  if (searchStr.includes('aggressive hybrid')) {
     return 'hybrid_aggressive'
   }
-  
+
   // Balanced/Other hybrid (35-65% equity)
-  if (cat.includes('balanced') || cat.includes('hybrid')) {
+  if (searchStr.includes('balanced') || searchStr.includes('hybrid')) {
     return 'hybrid_other'
   }
-  
+
   // Debt funds
-  if (cat.includes('debt') || 
-      cat.includes('liquid') || 
-      cat.includes('money market') ||
-      cat.includes('overnight') ||
-      cat.includes('gilt') ||
-      cat.includes('credit risk') ||
-      cat.includes('corporate bond') ||
-      cat.includes('banking') ||
-      cat.includes('psu')) {
+  if (searchStr.includes('debt') ||
+      searchStr.includes('liquid') ||
+      searchStr.includes('money market') ||
+      searchStr.includes('overnight') ||
+      searchStr.includes('gilt') ||
+      searchStr.includes('credit risk') ||
+      searchStr.includes('corporate bond') ||
+      searchStr.includes('banking') ||
+      searchStr.includes('psu')) {
     return 'debt'
   }
-  
+
   // Default to debt if unknown (conservative)
   return 'debt'
 }

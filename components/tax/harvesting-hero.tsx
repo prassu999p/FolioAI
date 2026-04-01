@@ -1,12 +1,13 @@
 /**
  * LTCG Harvesting Hero Section
- * 
+ *
  * Dark bg-primary card with harvesting suggestions.
  * Follows design from tax_and_ai.html.
  */
 
 import { computeHarvestingSuggestions, calculateHarvestingSavings } from '@/lib/tax/harvesting'
 import { formatINR } from '@/lib/utils'
+import { HarvestingExecutionButton } from './harvesting-execution-button'
 import type { UnrealizedGain } from '@/lib/tax/types'
 
 interface HarvestingHeroProps {
@@ -32,9 +33,9 @@ export function HarvestingHero({
     currentNavs,
     schemeNames
   )
-  
+
   const savings = calculateHarvestingSavings(suggestions)
-  
+
   // If no suggestions or prior FY, show read-only mode
   const isReadOnly = isPriorFY || suggestions.length === 0
   
@@ -89,16 +90,29 @@ export function HarvestingHero({
           <div className="space-y-4">
             {suggestions.length > 0 ? (
               suggestions.map((suggestion, idx) => (
-                <div key={idx} className="flex justify-between items-center pb-4 border-b border-white/10">
-                  <div className="text-sm">
-                    <p className="font-bold">{suggestion.schemeName}</p>
-                    <p className="text-[10px] text-surface-variant/60">
-                      {suggestion.unitsToSell.toFixed(3)} Units
+                <div key={idx} className="pb-4 border-b border-white/10">
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="text-sm">
+                      <p className="font-bold">{suggestion.schemeName}</p>
+                      <p className="text-[10px] text-surface-variant/60 mt-1">
+                        {suggestion.unitsToSell.toFixed(3)} Units @ ₹{suggestion.sellValuePerUnit.toFixed(2)}
+                      </p>
+                    </div>
+                    <p className="font-headline font-bold text-secondary-container tabular tracking-tight text-right">
+                      ₹{formatINR(suggestion.profitTotal)}
                     </p>
                   </div>
-                  <p className="font-headline font-bold text-secondary-container tabular tracking-tight">
-                    ₹{formatINR(suggestion.ltcgToBook)}
-                  </p>
+
+                  <div className="grid grid-cols-2 gap-2 text-[10px] text-surface-variant/60">
+                    <div>
+                      <p className="uppercase text-[9px] tracking-wider font-semibold mb-1">Cost Basis</p>
+                      <p className="font-bold text-surface-variant tabular">₹{formatINR(suggestion.costBasisTotal)}</p>
+                    </div>
+                    <div>
+                      <p className="uppercase text-[9px] tracking-wider font-semibold mb-1">Sell Value</p>
+                      <p className="font-bold text-surface-variant tabular">₹{formatINR(suggestion.sellValueTotal)}</p>
+                    </div>
+                  </div>
                 </div>
               ))
             ) : (
@@ -110,9 +124,10 @@ export function HarvestingHero({
           </div>
           
           {!isReadOnly && suggestions.length > 0 && (
-            <button className="w-full py-4 bg-secondary text-on-secondary rounded-xl font-bold hover:scale-[1.02] transition-transform">
-              Execute Harvesting Plan
-            </button>
+            <HarvestingExecutionButton
+              suggestions={suggestions}
+              totalTaxSaved={savings.totalTaxSaved}
+            />
           )}
         </div>
       </div>

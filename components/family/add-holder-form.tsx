@@ -16,7 +16,7 @@ interface AddHolderFormProps {
   familyId: string
 }
 
-export function AddHolderForm({ familyId: _familyId }: AddHolderFormProps) {
+export function AddHolderForm({}: AddHolderFormProps) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [name, setName] = useState('')

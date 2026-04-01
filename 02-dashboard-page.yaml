@@ -1,0 +1,208 @@
+- generic [active] [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e26] [cursor=pointer]:
+    - img [ref=e27]
+  - alert [ref=e20]
+  - generic [ref=e30]:
+    - complementary [ref=e31]:
+      - generic [ref=e32]:
+        - heading "FolioAI" [level=1] [ref=e33]
+        - paragraph [ref=e34]: The Digital Fiduciary
+      - navigation [ref=e35]:
+        - link "dashboard Family Dashboard" [ref=e36] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=e37]: dashboard
+          - generic [ref=e38]: Family Dashboard
+        - link "group Individual Holders" [ref=e39] [cursor=pointer]:
+          - /url: /families/abc0ffc7-e7cc-4482-8072-3e1d2a405d76/holders
+          - generic [ref=e40]: group
+          - generic [ref=e41]: Individual Holders
+        - link "pie_chart Asset Allocation" [ref=e42] [cursor=pointer]:
+          - /url: /families/abc0ffc7-e7cc-4482-8072-3e1d2a405d76/allocation
+          - generic [ref=e43]: pie_chart
+          - generic [ref=e44]: Asset Allocation
+        - link "track_changes Goals" [ref=e45] [cursor=pointer]:
+          - /url: /families/abc0ffc7-e7cc-4482-8072-3e1d2a405d76/goals
+          - generic [ref=e46]: track_changes
+          - generic [ref=e47]: Goals
+        - link "receipt_long Tax Intelligence" [ref=e48] [cursor=pointer]:
+          - /url: /families/abc0ffc7-e7cc-4482-8072-3e1d2a405d76/tax
+          - generic [ref=e49]: receipt_long
+          - generic [ref=e50]: Tax Intelligence
+        - link "auto_awesome AI Insights" [ref=e51] [cursor=pointer]:
+          - /url: /families/abc0ffc7-e7cc-4482-8072-3e1d2a405d76/ai
+          - generic [ref=e52]: auto_awesome
+          - generic [ref=e53]: AI Insights
+      - button "auto_awesome Ask AI Intelligence" [ref=e55]:
+        - generic [ref=e56]: auto_awesome
+        - text: Ask AI Intelligence
+      - generic [ref=e57]:
+        - link "help Support" [ref=e58] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e59]: help
+          - text: Support
+        - link "settings Settings" [ref=e60] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e61]: settings
+          - text: Settings
+    - main [ref=e62]:
+      - generic [ref=e63]:
+        - generic [ref=e64]:
+          - heading "Family Dashboard" [level=2] [ref=e65]
+          - link "Import CAS" [ref=e66] [cursor=pointer]:
+            - /url: /families/abc0ffc7-e7cc-4482-8072-3e1d2a405d76/import
+        - generic [ref=e67]:
+          - button "notifications" [ref=e68]:
+            - generic [ref=e69]: notifications
+          - button "settings" [ref=e70]:
+            - generic [ref=e71]: settings
+          - generic [ref=e72]: M
+      - generic [ref=e74]:
+        - generic [ref=e75]:
+          - generic [ref=e77]: auto_awesome
+          - generic [ref=e78]:
+            - heading "Morning Insight" [level=3] [ref=e79]
+            - paragraph [ref=e80]:
+              - text: Your family wealth is on track. Import a CAS to see personalised insights powered by AI.
+              - generic [ref=e81]: AI-powered morning insights will be available in Phase 4.
+        - generic [ref=e83]:
+          - generic [ref=e84]:
+            - text: Total Family AUM
+            - heading "—" [level=2] [ref=e85]
+            - paragraph [ref=e86]: Sync NAV to calculate
+          - generic [ref=e87]:
+            - generic [ref=e88]:
+              - text: Total Invested
+              - paragraph [ref=e89]: ₹8,55,061
+            - generic [ref=e90]:
+              - text: Absolute Gain
+              - paragraph [ref=e91]: —
+          - generic [ref=e92]:
+            - generic [ref=e93]:
+              - text: Family XIRR
+              - paragraph [ref=e94]: —
+            - paragraph [ref=e96]: "Benchmark Nifty 50: —"
+            - generic [ref=e99]: analytics
+        - generic [ref=e100]:
+          - generic [ref=e101]:
+            - generic [ref=e102]:
+              - heading "Asset Allocation" [level=3] [ref=e103]
+              - generic [ref=e104]: more_vert
+            - generic [ref=e105]:
+              - img [ref=e106]
+              - generic [ref=e112]:
+                - generic [ref=e113]: Equities
+                - generic [ref=e114]: 100%
+            - generic [ref=e115]:
+              - generic [ref=e116]:
+                - generic [ref=e119]: Domestic Equity
+                - generic [ref=e120]: ₹11,28,752
+              - generic [ref=e121]:
+                - generic [ref=e124]: Intl. Equity
+                - generic [ref=e125]: —
+              - generic [ref=e126]:
+                - generic [ref=e129]: Debt
+                - generic [ref=e130]: —
+              - generic [ref=e131]:
+                - generic [ref=e134]: Gold & Cash
+                - generic [ref=e135]: —
+          - generic [ref=e136]:
+            - generic [ref=e137]:
+              - generic [ref=e138]:
+                - heading "Family Holders" [level=3] [ref=e139]
+                - paragraph [ref=e140]: Allocation by family member entities
+              - button "View Detailed Report" [ref=e141]
+            - table [ref=e143]:
+              - rowgroup [ref=e144]:
+                - row "Member Portfolio Value Individual XIRR Action" [ref=e145]:
+                  - columnheader "Member" [ref=e146]
+                  - columnheader "Portfolio Value" [ref=e147]
+                  - columnheader "Individual XIRR" [ref=e148]
+                  - columnheader "Action" [ref=e149]
+              - rowgroup [ref=e150]:
+                - row "P Prasanth Test Account Joint Holder — — chevron_right" [ref=e151] [cursor=pointer]:
+                  - cell "P Prasanth Test Account Joint Holder" [ref=e152]:
+                    - generic [ref=e153]: P
+                    - generic [ref=e154]:
+                      - paragraph [ref=e155]: Prasanth Test Account
+                      - paragraph [ref=e156]: Joint Holder
+                  - cell "—" [ref=e157]
+                  - cell "—" [ref=e158]
+                  - cell "chevron_right" [ref=e159]:
+                    - generic [ref=e160]: chevron_right
+                - row "H Holder (CBHPP4362C) Minor ₹11,28,752 11.3% chevron_right" [ref=e161] [cursor=pointer]:
+                  - cell "H Holder (CBHPP4362C) Minor" [ref=e162]:
+                    - generic [ref=e163]: H
+                    - generic [ref=e164]:
+                      - paragraph [ref=e165]: Holder (CBHPP4362C)
+                      - paragraph [ref=e166]: Minor
+                  - cell "₹11,28,752" [ref=e167]
+                  - cell "11.3%" [ref=e168]
+                  - cell "chevron_right" [ref=e169]:
+                    - generic [ref=e170]: chevron_right
+        - generic [ref=e171]:
+          - generic [ref=e172]:
+            - heading "Top Performing Funds" [level=3] [ref=e173]
+            - generic [ref=e174]:
+              - generic [ref=e175]:
+                - generic [ref=e176]:
+                  - generic [ref=e178]: show_chart
+                  - generic [ref=e179]:
+                    - paragraph [ref=e180]: Parag Parikh Flexi Cap Fund - Direct Plan Growth
+                    - paragraph [ref=e181]: Equity
+                - generic [ref=e182]:
+                  - paragraph [ref=e183]: +75.4%
+                  - paragraph [ref=e184]: 1Y Returns
+              - generic [ref=e185]:
+                - generic [ref=e186]:
+                  - generic [ref=e188]: trending_up
+                  - generic [ref=e189]:
+                    - paragraph [ref=e190]: Axis Mid Cap Fund - Direct Growth
+                    - paragraph [ref=e191]: Equity
+                - generic [ref=e192]:
+                  - paragraph [ref=e193]: +35.4%
+                  - paragraph [ref=e194]: 1Y Returns
+          - generic [ref=e195]:
+            - heading "Recent Activity" [level=3] [ref=e196]
+            - generic [ref=e197]:
+              - generic [ref=e198]:
+                - generic [ref=e201]: sync_alt
+                - generic [ref=e203]:
+                  - generic [ref=e204]:
+                    - paragraph [ref=e205]: SIP Debit Successful
+                    - generic [ref=e206]: 12 Mar 2026
+                  - paragraph [ref=e207]: ₹5,000 invested for Holder (CBHPP4362C)
+              - generic [ref=e208]:
+                - generic [ref=e211]: sync_alt
+                - generic [ref=e213]:
+                  - generic [ref=e214]:
+                    - paragraph [ref=e215]: SIP Debit Successful
+                    - generic [ref=e216]: 12 Mar 2026
+                  - paragraph [ref=e217]: ₹5,000 invested for Holder (CBHPP4362C)
+              - generic [ref=e218]:
+                - generic [ref=e221]: sync_alt
+                - generic [ref=e223]:
+                  - generic [ref=e224]:
+                    - paragraph [ref=e225]: SIP Debit Successful
+                    - generic [ref=e226]: 12 Mar 2026
+                  - paragraph [ref=e227]: ₹5,000 invested for Holder (CBHPP4362C)
+              - generic [ref=e228]:
+                - generic [ref=e231]: sync_alt
+                - generic [ref=e233]:
+                  - generic [ref=e234]:
+                    - paragraph [ref=e235]: SIP Debit Successful
+                    - generic [ref=e236]: 12 Feb 2026
+                  - paragraph [ref=e237]: ₹5,000 invested for Holder (CBHPP4362C)
+              - generic [ref=e238]:
+                - generic [ref=e241]: sync_alt
+                - generic [ref=e242]:
+                  - generic [ref=e243]:
+                    - paragraph [ref=e244]: SIP Debit Successful
+                    - generic [ref=e245]: 12 Feb 2026
+                  - paragraph [ref=e246]: ₹5,000 invested for Holder (CBHPP4362C)
+        - link "add Import New CAS" [ref=e247] [cursor=pointer]:
+          - /url: /families/abc0ffc7-e7cc-4482-8072-3e1d2a405d76?import=cas
+          - generic [ref=e248]: add
+          - generic: Import New CAS
+      - button "Open AI chat" [ref=e249]:
+        - generic [ref=e250]: auto_awesome
+        - generic [ref=e251]: Ask AI

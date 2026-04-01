@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 03-06-PLAN.md — Sell Tax Estimator real lot data wiring
-last_updated: "2026-03-26T03:14:45.344Z"
+stopped_at: Completed 06-03-PLAN.md
+last_updated: "2026-03-30T02:27:49.299Z"
 last_activity: 2026-03-21 — Completed Phase 3 Tax Engine
 progress:
-  total_phases: 5
+  total_phases: 6
   completed_phases: 4
-  total_plans: 40
-  completed_plans: 36
+  total_plans: 44
+  completed_plans: 39
   percent: 84
 ---
 
@@ -85,6 +85,9 @@ Progress: [████████░░] 84%
 | Phase 03-tax-engine P05 | 2min | 2 tasks | 4 files |
 | Phase 03-tax-engine P07 | 147s | 1 tasks | 4 files |
 | Phase 03-tax-engine P06 | 3min | 2 tasks | 3 files |
+| Phase 06-tradebook-import P01 | 8min | 2 tasks | 13 files |
+| Phase 06-tradebook-import P02 | 11min | 1 tasks | 5 files |
+| Phase 06-tradebook-import PP03 | 13min | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -172,6 +175,13 @@ Recent decisions affecting current work:
 - [Phase 03-tax-engine]: DialogTitle replaces h3 in SellTaxEstimatorModal — eliminates Radix accessibility console warning
 - [Phase 03-tax-engine]: grandfatheringApplied in estimateSellTax uses Nav presence only (not comparison to purchaseNav)
 - [Phase 03-tax-engine]: grandfatheringNav passed as null from HoldingsTable — tax page grandfathering data not available at holder page; correct assetClass and purchaseDate are the critical TAX-02/TAX-03 fixes
+- [Phase 06-tradebook-import]: SheetJS installed from cdn.sheetjs.com tarball via pnpm (npm v9.8.1 arborist bug prevented URL install)
+- [Phase 06-tradebook-import]: stock_transactions UNIQUE(holder_id, trade_id) for dedup; broker_source kept for backward compat, new source column is canonical
+- [Phase 06-tradebook-import]: tradebook-dedup.test.ts stubs match exact plan-specified strings — Plan 06-03 Task 1 depends on these
+- [Phase 06-tradebook-import]: Blob.prototype.arrayBuffer polyfilled via FileReader in setup.ts — jsdom 25 lacks this method; FileReader is available and reliable in jsdom
+- [Phase 06-tradebook-import]: throws-when-no-sheets test changed to assert empty array return — SheetJS always creates Sheet1 even for empty buffers
+- [Phase 06-tradebook-import]: TradebookImportLazy wrapper for dynamic import — next/dynamic ssr:false disallowed in Server Components (Next.js 15 App Router); 'use client' wrapper preserves bundle-splitting
+- [Phase 06-tradebook-import]: ignoreDuplicates:true on stock_holdings upsert — tradebook data is historical cost basis only; existing Zerodha rows never overwritten
 
 ### Pending Todos
 
@@ -186,8 +196,12 @@ None yet.
 - [Phase 4]: SEBI RIA compliance review of AI prompt templates required before Phase 4 launch
 - [Phase 5]: Zerodha Kite Connect historical data availability requires verification — may need additional subscription
 
+### Roadmap Evolution
+
+- Phase 6 added: I want to add option to import stocks bought using tradebooks downloaded manually.
+
 ## Session Continuity
 
-Last session: 2026-03-26T03:14:45.341Z
-Stopped at: Completed 03-06-PLAN.md — Sell Tax Estimator real lot data wiring
+Last session: 2026-03-30T02:27:49.265Z
+Stopped at: Completed 06-03-PLAN.md
 Resume file: None

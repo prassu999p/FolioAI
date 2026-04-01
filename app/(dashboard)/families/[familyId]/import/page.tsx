@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { getKiteLoginURL } from '@/lib/broker/kite-client'
 import CASImportForm from './CASImportForm'
+import TradebookImportLazy from './TradebookImportLazy'
 
 interface PageProps {
   params: Promise<{ familyId: string }>
@@ -136,11 +137,30 @@ export default async function ImportPage({ params, searchParams }: PageProps) {
             Broker
           </span>
         </Link>
+        <Link
+          href={`/families/${familyId}/import?tab=tradebook`}
+          className={`px-5 py-2.5 rounded-t-xl text-sm font-semibold transition-colors ${
+            tab === 'tradebook'
+              ? 'bg-white border border-b-white'
+              : 'hover:bg-[#e6f6ff]'
+          }`}
+          style={{
+            color: tab === 'tradebook' ? '#001736' : '#43474f',
+            borderColor: tab === 'tradebook' ? '#c9e7f7' : 'transparent',
+          }}
+        >
+          <span className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-base">upload_file</span>
+            Tradebook
+          </span>
+        </Link>
       </div>
 
       {/* Tab content */}
       {tab === 'cas' ? (
         <CASImportForm familyId={familyId} />
+      ) : tab === 'tradebook' ? (
+        <TradebookImportLazy familyId={familyId} holders={holders ?? []} />
       ) : (
         /* ---- Broker tab ---- */
         <div className="px-8 py-8 max-w-2xl mx-auto">

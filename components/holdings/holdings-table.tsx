@@ -1,6 +1,10 @@
+'use client'
+
+import { useState } from 'react'
 import type { HoldingRowWithAnalytics, AnalyticsTransaction } from '@/lib/supabase/types'
 import { SellTaxEstimatorModal } from '@/components/tax/sell-tax-estimator-modal'
 import { getTaxAssetClass } from '@/lib/tax/rules'
+import { InvestmentHistoryModal } from '@/components/holdings/investment-history-modal'
 
 const formatINR = (value: number) =>
   new Intl.NumberFormat('en-IN', {
@@ -16,6 +20,24 @@ interface HoldingsTableProps {
 }
 
 export function HoldingsTable({ holdings, fundCategories, transactions }: HoldingsTableProps) {
+  const [selectedHolding, setSelectedHolding] = useState<HoldingRowWithAnalytics | null>(null)
+
+  // Helper function to calculate current investment for a holding
+  const calculateCurrentInvestment = (holding: HoldingRowWithAnalytics) => {
+    const folioTxs = (transactions ?? []).filter(t => t.folio_id === holding.folio_id)
+    const outflowTypes = new Set(['purchase', 'sip', 'switch_in', 'dividend_reinvest'])
+
+    let invested = 0
+    for (const tx of folioTxs) {
+      if (outflowTypes.has(tx.transaction_type)) {
+        invested += tx.amount
+      } else if (tx.transaction_type === 'redemption' || tx.transaction_type === 'switch_out') {
+        invested -= tx.amount
+      }
+    }
+    return Math.max(0, invested)
+  }
+
   if (holdings.length === 0) {
     return (
       <div className="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-sm">
@@ -51,6 +73,7 @@ export function HoldingsTable({ holdings, fundCategories, transactions }: Holdin
               <th className="py-4 px-8">Asset Name</th>
               <th className="py-4 px-4 text-center">Units</th>
               <th className="py-4 px-4 text-right">Current NAV</th>
+              <th className="py-4 px-4 text-right">Current Investment (&#8377;)</th>
               <th className="py-4 px-4 text-right">Value (&#8377;)</th>
               <th className="py-4 px-4 text-right">XIRR</th>
               <th className="py-4 px-4 text-center">Action</th>
@@ -61,20 +84,23 @@ export function HoldingsTable({ holdings, fundCategories, transactions }: Holdin
               // Derive oldest FIFO purchase date for this holding's folio
               const folioTxs = (transactions ?? [])
                 .filter(t => t.folio_id === holding.folio_id &&
-                  (t.transaction_type === 'PURCHASE' || t.transaction_type === 'SIP' ||
-                   t.transaction_type === 'purchase' || t.transaction_type === 'sip'))
+                  (t.transaction_type === 'purchase' || t.transaction_type === 'sip'))
                 .sort((a, b) => a.transaction_date.localeCompare(b.transaction_date))
               const oldestLot = folioTxs[0]
               const purchaseDate = oldestLot ? new Date(oldestLot.transaction_date) : undefined
 
-              // Correct asset class from fund category
+              // Correct asset class from fund category (infers from scheme_name if category empty)
               const category = (fundCategories ?? {})[holding.scheme_code] ?? ''
-              const taxAssetClass = getTaxAssetClass(category)
+              const taxAssetClass = getTaxAssetClass(category, holding.scheme_name)
+
+              // Calculate current investment
+              const currentInvestment = calculateCurrentInvestment(holding)
 
               return (
                 <tr
                   key={`${holding.folio_id}-${holding.scheme_code}`}
-                  className={`${i % 2 === 1 ? 'bg-surface-container-low/20' : ''} hover:bg-surface-container-low transition-colors`}
+                  className={`${i % 2 === 1 ? 'bg-surface-container-low/20' : ''} hover:bg-surface-container-low transition-colors cursor-pointer`}
+                  onClick={() => setSelectedHolding(holding)}
                 >
                   <td className="py-5 px-8">
                     <div className="font-bold text-primary">{holding.scheme_name}</div>
@@ -87,6 +113,9 @@ export function HoldingsTable({ holdings, fundCategories, transactions }: Holdin
                   </td>
                   <td className="py-5 px-4 text-right tabular-nums">
                     {holding.current_nav != null ? holding.current_nav.toFixed(2) : '—'}
+                  </td>
+                  <td className="py-5 px-4 text-right tabular-nums font-bold">
+                    {formatINR(currentInvestment)}
                   </td>
                   <td className="py-5 px-4 text-right tabular-nums font-bold">
                     {holding.current_value != null ? formatINR(holding.current_value) : '—'}
@@ -116,6 +145,14 @@ export function HoldingsTable({ holdings, fundCategories, transactions }: Holdin
           </tbody>
         </table>
       </div>
+
+      {selectedHolding && (
+        <InvestmentHistoryModal
+          holding={selectedHolding}
+          transactions={transactions ?? []}
+          onClose={() => setSelectedHolding(null)}
+        />
+      )}
     </div>
   )
 }

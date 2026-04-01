@@ -1,7 +1,6 @@
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { HoldingsTable } from '@/components/holdings/holdings-table'
-import { PeriodSelector } from '@/components/analytics/period-selector'
 import { SummaryCards } from '@/components/analytics/summary-cards'
 import { SipSection } from '@/components/analytics/sip-section'
 import { AllocationSection } from '@/components/analytics/allocation-section'
@@ -40,13 +39,29 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
   const endDateStr = bounds ? bounds.end.toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
 
   // Fetch holdings and transactions in parallel
+  // NOTE: For XIRR calculation, we need ALL historical transactions (not period-filtered).
+  // Period-filtered transactions are used for display and gain/loss calculations only.
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [holdingsResult, transactionsResult] = await Promise.all([
+  const [holdingsResult, stockHoldingsResult, allTransactionsResult, periodTransactionsResult] = await Promise.all([
+    // Fetch mutual fund holdings via RPC
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase as any).rpc('get_holder_holdings', {
       p_holder_id: holderId,
     }),
+    // Fetch stock holdings (from tradebook imports)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase as any)
+      .from('stock_holdings')
+      .select('*')
+      .eq('holder_id', holderId),
+    // Fetch ALL historical transactions for XIRR calculation (no period filter)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase as any).rpc('get_holder_analytics_transactions', {
+      p_holder_id: holderId,
+      p_start_date: null,  // No period filter
+      p_end_date: new Date().toISOString().split('T')[0],
+    }),
+    // Fetch period-filtered transactions for display and gain/loss
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase as any).rpc('get_holder_analytics_transactions', {
       p_holder_id: holderId,
@@ -66,9 +81,28 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
   }
 
   const rawHoldings: HoldingRow[] = holdingsResult.data ?? []
-  const transactions: AnalyticsTransaction[] = transactionsResult.error
+  // Stock holdings from tradebook imports
+  const stockHoldings = stockHoldingsResult.error ? [] : (stockHoldingsResult.data ?? [])
+  // Use ALL historical transactions for XIRR calculation, period-filtered for display/gain-loss
+  const allTransactions: AnalyticsTransaction[] = allTransactionsResult.error
     ? []
-    : (transactionsResult.data ?? [])
+    : (allTransactionsResult.data ?? [])
+  const transactions: AnalyticsTransaction[] = periodTransactionsResult.error
+    ? []
+    : (periodTransactionsResult.data ?? [])
+
+  // Create combined holdings for AUM (includes both mutual funds and stocks)
+  // Convert stock holdings to have a current_value for AUM calculation
+  const stockHoldingsForAUM = (stockHoldings as Array<any>).map((holding: any) => {
+    const qty = Number(holding.quantity || 0)
+    const lastPrice = Number(holding.last_price || holding.average_price || 0)
+    const currentValue = qty * lastPrice
+    return {
+      ...holding,
+      current_value: currentValue,
+      total_invested: qty * Number(holding.average_price || 0),
+    }
+  })
 
   // Map holdings to HoldingRowWithAnalytics with per-holding XIRR computation
   const validTxTypes = ['purchase', 'redemption', 'switch_in', 'switch_out', 'sip', 'dividend_reinvest'] as const
@@ -87,8 +121,8 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
   const today = new Date()
   const outflowTypes = new Set(['purchase', 'sip', 'switch_in', 'dividend_reinvest'])
   const holdingsWithAnalytics: HoldingRowWithAnalytics[] = rawHoldings.map((h) => {
-    // Filter transactions to this holding's folio only
-    const folioTxs = transactions
+    // Filter transactions to this holding's folio only (use allTransactions for XIRR)
+    const folioTxs = allTransactions
       .filter(t => t.folio_id === h.folio_id)
       .map(toHoldingTransaction)
 
@@ -114,10 +148,11 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
   // buy equivalent "units" of Nifty 50 at its close price on that date.
   // Terminal value: sell those units at the most recent Nifty 50 close.
   // This produces the XIRR you would have earned investing the same amounts in Nifty 50.
+  // NOTE: Use allTransactions (not period-filtered) for benchmark calculation
 
   let benchmarkXirr: number | null = null
 
-  const purchaseTxs = transactions.filter(t => outflowTypes.has(t.transaction_type))
+  const purchaseTxs = allTransactions.filter(t => outflowTypes.has(t.transaction_type))
 
   if (purchaseTxs.length > 0) {
     // Find the earliest purchase date to bound the Nifty 50 query
@@ -272,20 +307,13 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
           </div>
         </div>
 
-        {/* Period selector — above bento cards */}
-        <div className="mb-6 flex justify-end">
-          <Suspense>
-            <PeriodSelector />
-          </Suspense>
-        </div>
-
         {/* Bento summary cards */}
         <div className="mb-12">
           <SummaryCards
             holderId={holderId}
             period={period}
-            transactions={transactions}
-            holdings={holdingsWithAnalytics}
+            transactions={allTransactions}
+            holdings={[...holdingsWithAnalytics, ...stockHoldingsForAUM] as any}
             nifty50Xirr={benchmarkXirr}
             viewMode={view}
           />
@@ -294,14 +322,65 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
         {/* 2/3 holdings + 1/3 sidebar */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
           <div className="lg:col-span-2">
+            {/* Mutual fund holdings */}
             <HoldingsTable
                 holdings={holdingsWithAnalytics}
                 fundCategories={fundCategories}
                 transactions={transactions}
               />
+
+            {/* Stock holdings from tradebook imports */}
+            {stockHoldings.length > 0 && (
+              <div className="mt-12">
+                <h3 className="text-lg font-bold text-primary mb-6">Stock Holdings</h3>
+                <div className="rounded-3xl border border-outline-variant/20 bg-surface-container-lowest overflow-y-auto" style={{ maxHeight: '60vh' }}>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                    <thead className="bg-surface-container text-on-surface text-sm font-semibold">
+                      <tr>
+                        <th className="px-6 py-4 text-left">Symbol</th>
+                        <th className="px-6 py-4 text-left">ISIN</th>
+                        <th className="px-6 py-4 text-right">Quantity</th>
+                        <th className="px-6 py-4 text-right">Avg Price (₹)</th>
+                        <th className="px-6 py-4 text-right">Invested (₹)</th>
+                        <th className="px-6 py-4 text-right">Current Value (₹)</th>
+                        <th className="px-6 py-4 text-right">Gain/Loss %</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-outline-variant/10">
+                      {(stockHoldings as Array<any>).map((holding: any) => {
+                        const qty = Number(holding.quantity || 0)
+                        const avgPrice = Number(holding.average_price || 0)
+                        const lastPrice = Number(holding.last_price || avgPrice)
+                        const invested = qty * avgPrice
+                        const currentValue = qty * lastPrice
+                        const gainLoss = currentValue - invested
+                        const gainLossPct = invested > 0 ? (gainLoss / invested) * 100 : 0
+                        const isPositive = gainLoss >= 0
+
+                        return (
+                          <tr key={holding.id} className="hover:bg-surface-container-lowest/50 transition-colors">
+                            <td className="px-6 py-4 font-semibold text-on-surface">{holding.tradingsymbol}</td>
+                            <td className="px-6 py-4 text-sm text-on-surface-variant">{holding.isin}</td>
+                            <td className="px-6 py-4 text-right text-on-surface tabular-nums">{qty.toFixed(2)}</td>
+                            <td className="px-6 py-4 text-right text-on-surface tabular-nums">₹{avgPrice.toFixed(2)}</td>
+                            <td className="px-6 py-4 text-right text-on-surface tabular-nums">₹{invested.toFixed(2)}</td>
+                            <td className="px-6 py-4 text-right text-on-surface tabular-nums">₹{currentValue.toFixed(2)}</td>
+                            <td className={`px-6 py-4 text-right font-semibold tabular-nums ${isPositive ? 'text-secondary' : 'text-error'}`}>
+                              {isPositive ? '+' : ''}{gainLossPct.toFixed(2)}%
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
           <div className="space-y-8">
-            <SipSection transactions={transactions} />
+            <SipSection transactions={allTransactions} />
             <AIPortfolioHealth scores={aiScores} holderName={holder?.name ?? ''} />
             <RefreshScoresButton holderId={holderId} />
             <GenerateReviewButton holderId={holderId} hasExisting={false} />

@@ -23,8 +23,8 @@ describe('Tax Engine', () => {
   describe('buildTaxLots', () => {
     it('buildTaxLots creates FIFO lot queue from transactions', () => {
       const txs = [
-        makeTx('folio-1', '2021-06-01', 'PURCHASE', 100, 50),
-        makeTx('folio-1', '2022-01-15', 'PURCHASE', 200, 75),
+        makeTx('folio-1', '2021-06-01', 'purchase', 100, 50),
+        makeTx('folio-1', '2022-01-15', 'purchase', 200, 75),
       ]
       const lots = buildTaxLots(txs)
       expect(lots).toHaveLength(2)
@@ -38,8 +38,8 @@ describe('Tax Engine', () => {
 
     it('buildTaxLots returns lots sorted by date ascending regardless of input order', () => {
       const txs = [
-        makeTx('folio-1', '2022-03-01', 'PURCHASE', 50, 90),
-        makeTx('folio-1', '2020-01-01', 'PURCHASE', 80, 30),
+        makeTx('folio-1', '2022-03-01', 'purchase', 50, 90),
+        makeTx('folio-1', '2020-01-01', 'purchase', 80, 30),
       ]
       const lots = buildTaxLots(txs)
       expect(lots[0].purchaseDate).toEqual(new Date('2020-01-01'))
@@ -50,11 +50,11 @@ describe('Tax Engine', () => {
   describe('depleteLots', () => {
     it('depleteLots consumes oldest lots first (FIFO)', () => {
       const lots = buildTaxLots([
-        makeTx('folio-1', '2020-01-01', 'PURCHASE', 100, 40),
-        makeTx('folio-1', '2022-01-01', 'PURCHASE', 200, 70),
+        makeTx('folio-1', '2020-01-01', 'purchase', 100, 40),
+        makeTx('folio-1', '2022-01-01', 'purchase', 200, 70),
       ])
 
-      const redemption = makeTx('folio-1', '2023-06-01', 'REDEMPTION', 60, 100)
+      const redemption = makeTx('folio-1', '2023-06-01', 'redemption', 60, 100)
       const { updatedLots, realizedGains } = depleteLots(lots, redemption, 100, 'equity', false)
 
       // 60 units sold from oldest lot (which had 100 units)
@@ -70,12 +70,12 @@ describe('Tax Engine', () => {
 
     it('depleteLots handles partial lot splitting across two lots', () => {
       const lots = buildTaxLots([
-        makeTx('folio-1', '2020-01-01', 'PURCHASE', 100, 40),
-        makeTx('folio-1', '2022-01-01', 'PURCHASE', 200, 70),
+        makeTx('folio-1', '2020-01-01', 'purchase', 100, 40),
+        makeTx('folio-1', '2022-01-01', 'purchase', 200, 70),
       ])
 
       // Sell 150 units: fully depletes first lot (100) + 50 from second
-      const redemption = makeTx('folio-1', '2023-06-01', 'REDEMPTION', 150, 100)
+      const redemption = makeTx('folio-1', '2023-06-01', 'redemption', 150, 100)
       const { updatedLots, realizedGains } = depleteLots(lots, redemption, 100, 'equity', false)
 
       expect(realizedGains).toHaveLength(2)
@@ -95,8 +95,8 @@ describe('Tax Engine', () => {
   describe('computeTaxSummary', () => {
     it('computeTaxSummary: equity fund held > 365 days produces LTCG', () => {
       const txs = [
-        makeTx('folio-1', '2021-06-01', 'PURCHASE', 100, 50),
-        makeTx('folio-1', '2023-06-01', 'REDEMPTION', 100, 120),
+        makeTx('folio-1', '2021-06-01', 'purchase', 100, 50),
+        makeTx('folio-1', '2023-06-01', 'redemption', 100, 120),
       ]
       const assetClasses = new Map([[100, 'equity' as const]])
       const currentNavs = new Map([[100, 120]])
@@ -117,8 +117,8 @@ describe('Tax Engine', () => {
 
     it('grandfathering formula: purchaseNav=30 fmv=80 sale=100 → effectiveCostBasis=80', () => {
       const txs = [
-        makeTx('folio-1', '2017-01-01', 'PURCHASE', 100, 30),
-        makeTx('folio-1', '2023-06-01', 'REDEMPTION', 100, 100),
+        makeTx('folio-1', '2017-01-01', 'purchase', 100, 30),
+        makeTx('folio-1', '2023-06-01', 'redemption', 100, 100),
       ]
       const assetClasses = new Map([[100, 'equity' as const]])
       const currentNavs = new Map([[100, 100]])
@@ -143,8 +143,8 @@ describe('Tax Engine', () => {
 
     it('missing grandfathering NAV falls back to actual purchaseNav', () => {
       const txs = [
-        makeTx('folio-1', '2017-01-01', 'PURCHASE', 100, 30),
-        makeTx('folio-1', '2023-06-01', 'REDEMPTION', 100, 100),
+        makeTx('folio-1', '2017-01-01', 'purchase', 100, 30),
+        makeTx('folio-1', '2023-06-01', 'redemption', 100, 100),
       ]
       const assetClasses = new Map([[100, 'equity' as const]])
       const currentNavs = new Map([[100, 100]])
@@ -162,6 +162,57 @@ describe('Tax Engine', () => {
       // gainPerUnit = 100 - 30 = 70, totalGain = 100 * 70 = 7000
       expect(summary.realizedGains[0].costBasis).toBe(30)
       expect(summary.realizedGains[0].totalGain).toBe(7000)
+    })
+
+    it('unrealized gains use currentNav from map, not fallback to purchaseNav', () => {
+      const txs = [
+        makeTx('folio-1', '2020-01-01', 'purchase', 100, 50),
+        // No redemptions, so all units remain
+      ]
+      const assetClasses = new Map([[100, 'equity' as const]])
+      // Current NAV is 120, significantly higher than purchase NAV of 50
+      const currentNavs = new Map([[100, 120]])
+      const schemeNames = new Map([[100, 'Equity Fund']])
+
+      const summary = computeTaxSummary({
+        transactions: txs,
+        grandfatheringNavs: new Map(),
+        currentNavs,
+        assetClasses,
+        schemeNames,
+      })
+
+      // Verify unrealised gains computed with currentNav (120), not purchaseNav (50)
+      expect(summary.unrealizedGains).toHaveLength(1)
+      const ug = summary.unrealizedGains[0]
+      expect(ug.currentNav).toBe(120) // Should be from map, not fallback
+      expect(ug.unrealizedGain).toBe(7000) // 100 units * (120 - 50) = 7000
+      expect(ug.wouldBeLTCG).toBe(true) // Held > 365 days
+    })
+
+    it('unrealized gains fallback to purchaseNav when currentNav not in map (missing NAV data)', () => {
+      const txs = [
+        makeTx('folio-1', '2020-01-01', 'purchase', 100, 50),
+      ]
+      const assetClasses = new Map([[100, 'equity' as const]])
+      // currentNavs map is EMPTY (simulating missing NAV data like bug in tax/page.tsx)
+      const currentNavs = new Map()
+      const schemeNames = new Map([[100, 'Equity Fund']])
+
+      const summary = computeTaxSummary({
+        transactions: txs,
+        grandfatheringNavs: new Map(),
+        currentNavs, // Empty!
+        assetClasses,
+        schemeNames,
+      })
+
+      // With empty currentNavs, should fallback to purchaseNav
+      expect(summary.unrealizedGains).toHaveLength(1)
+      const ug = summary.unrealizedGains[0]
+      expect(ug.currentNav).toBe(50) // Fallback to purchaseNav
+      expect(ug.unrealizedGain).toBe(0) // 100 units * (50 - 50) = 0 (BUG: no gain!)
+      // This is why the harvesting algorithm returns empty: gains <= 0 are filtered out
     })
   })
 })

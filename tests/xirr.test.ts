@@ -169,4 +169,90 @@ describe('buildPortfolioCashflows', () => {
     expect(terminal.amount).toBe(1200)
     expect(terminal.date).toEqual(today)
   })
+
+  it('period-filtered transactions produce unrealistic XIRR; all transactions produce realistic XIRR', () => {
+    // Scenario: Portfolio invested over 12+ months, filtered to last 3 months
+    // This demonstrates the bug from issue: using period-filtered transactions
+    // with current terminal value produces unrealistic annualized returns
+
+    // All transactions (lifetime history)
+    const allTransactions = [
+      {
+        id: 'tx-1',
+        folio_id: 'folio-001',
+        transaction_date: '2023-01-01',
+        transaction_type: 'purchase' as const,
+        units: 100,
+        nav: 10,
+        amount: 1000,
+        import_status: 'clean' as const,
+        source: 'cas_import' as const,
+        created_at: '2023-01-01T00:00:00Z',
+      },
+      {
+        id: 'tx-2',
+        folio_id: 'folio-001',
+        transaction_date: '2023-07-01',
+        transaction_type: 'purchase' as const,
+        units: 50,
+        nav: 12,
+        amount: 600,
+        import_status: 'clean' as const,
+        source: 'cas_import' as const,
+        created_at: '2023-07-01T00:00:00Z',
+      },
+      {
+        id: 'tx-3',
+        folio_id: 'folio-001',
+        transaction_date: '2024-10-01',
+        transaction_type: 'purchase' as const,
+        units: 100,
+        nav: 14,
+        amount: 1400,
+        import_status: 'clean' as const,
+        source: 'cas_import' as const,
+        created_at: '2024-10-01T00:00:00Z',
+      },
+    ]
+
+    // Period-filtered transactions (last 3 months only) - this was the bug
+    const filteredTransactions = [allTransactions[2]] // Only Oct 2024 purchase
+
+    const holdings: HoldingRow[] = [
+      {
+        scheme_code: 100001,
+        scheme_name: 'Test Fund',
+        fund_house: 'Test AMC',
+        folio_id: 'folio-001',
+        units: 250,
+        avg_cost_nav: 10.8,
+        total_invested: 3000, // 1000 + 600 + 1400
+        current_nav: 18,
+        current_nav_date: '2025-01-01',
+        current_value: 4500, // 250 * 18
+      },
+    ]
+
+    const today = new Date('2025-01-01')
+
+    // WRONG: Period-filtered cashflows with today's terminal value
+    const wrongCashflows = buildPortfolioCashflows(filteredTransactions, holdings, today)
+    const wrongXirr = computeXIRR(wrongCashflows)
+
+    // CORRECT: All historical cashflows with today's terminal value
+    const rightCashflows = buildPortfolioCashflows(allTransactions, holdings, today)
+    const rightXirr = computeXIRR(rightCashflows)
+
+    // The wrong approach should produce unrealistic values (very high returns)
+    // The right approach should produce realistic values (moderate returns)
+    expect(wrongXirr).not.toBeNull()
+    expect(rightXirr).not.toBeNull()
+
+    // Sanity check: the correct XIRR should be much lower (more realistic)
+    // than the wrong one. Portfolio has ~50% gain over ~2 years = ~20-25% annualized
+    // The wrong one has artificially high return because it treats recent investment + full current value
+    expect(rightXirr!).toBeLessThan(wrongXirr!) // Correct should be much lower
+    expect(rightXirr!).toBeGreaterThan(0.15) // Realistic 15%+ annualized
+    expect(rightXirr!).toBeLessThan(0.50) // But not unrealistically high (40% is still reasonable)
+  })
 })

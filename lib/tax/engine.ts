@@ -44,7 +44,7 @@ interface TaxTransaction {
 export function buildTaxLots(transactions: TaxTransaction[]): TaxLot[] {
   // Filter to only purchases and sort by date
   const purchases = transactions
-    .filter(t => t.transaction_type === 'PURCHASE' || t.transaction_type === 'SIP')
+    .filter(t => t.transaction_type === 'purchase' || t.transaction_type === 'sip')
     .sort((a, b) => new Date(a.transaction_date).getTime() - new Date(b.transaction_date).getTime())
 
   const lots: TaxLot[] = []
@@ -220,7 +220,7 @@ export function computeTaxSummary(params: {
 
   // Process redemptions in date order
   const redemptions = transactions
-    .filter(t => t.transaction_type === 'REDEMPTION' || t.transaction_type === 'SWITCH_OUT')
+    .filter(t => t.transaction_type === 'redemption' || t.transaction_type === 'switch_out')
     .sort((a, b) => new Date(a.transaction_date).getTime() - new Date(b.transaction_date).getTime())
 
   const allRealizedGains: RealizedGain[] = []

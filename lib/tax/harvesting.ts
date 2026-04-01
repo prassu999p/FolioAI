@@ -40,7 +40,7 @@ export function computeHarvestingSuggestions(
     })
     .sort((a, b) => b.unrealizedGain - a.unrealizedGain)
 
-  const suggestions: HarvestingSuggestion[] = []
+  const suggestionsByScheme = new Map<number, HarvestingSuggestion>()
   let remainingExemptionConsumed = remainingExemption
 
   for (const gain of eligibleGains) {
@@ -52,30 +52,56 @@ export function computeHarvestingSuggestions(
 
     // How much LTCG can we book from this holding?
     const gainToBook = Math.min(gain.unrealizedGain, remainingExemptionConsumed)
-    
+
     // Calculate exact units to sell (floor to 3 decimal places)
     const unitsToSell = Math.floor((gainToBook / gainPerUnit) * 1000) / 1000
-    
+
     if (unitsToSell <= 0) continue
 
     const ltcgToBook = unitsToSell * gainPerUnit
     const taxSaved = ltcgToBook * EQUITY_LTCG_RATE
     const schemeName = gain.schemeName || schemeNames.get(gain.schemeCode) || `Scheme ${gain.schemeCode}`
 
-    suggestions.push({
-      schemeCode: gain.schemeCode,
-      schemeName,
-      unitsToSell,
-      ltcgToBook: Math.round(ltcgToBook),
-      exemptionConsumed: Math.round(ltcgToBook),
-      taxSaved: Math.round(taxSaved),
-      reinvestInstruction: 'Reinvest proceeds in the same fund to reset cost basis'
-    })
+    // FIFO profit breakdown
+    const costBasisPerUnit = gain.effectiveCostBasis
+    const costBasisTotal = costBasisPerUnit * unitsToSell
+    const sellValuePerUnit = gain.currentNav
+    const sellValueTotal = sellValuePerUnit * unitsToSell
+    const profitPerUnit = sellValuePerUnit - costBasisPerUnit
+    const profitTotal = profitPerUnit * unitsToSell
+
+    // Group by scheme code - consolidate multiple folios of same fund
+    const existing = suggestionsByScheme.get(gain.schemeCode)
+    if (existing) {
+      existing.unitsToSell += unitsToSell
+      existing.costBasisTotal += costBasisTotal
+      existing.sellValueTotal += sellValueTotal
+      existing.profitTotal += profitTotal
+      existing.ltcgToBook += Math.round(ltcgToBook)
+      existing.exemptionConsumed += Math.round(ltcgToBook)
+      existing.taxSaved += Math.round(taxSaved)
+    } else {
+      suggestionsByScheme.set(gain.schemeCode, {
+        schemeCode: gain.schemeCode,
+        schemeName,
+        unitsToSell,
+        costBasisPerUnit,
+        costBasisTotal,
+        sellValuePerUnit,
+        sellValueTotal,
+        profitPerUnit,
+        profitTotal: Math.round(profitTotal),
+        ltcgToBook: Math.round(ltcgToBook),
+        exemptionConsumed: Math.round(ltcgToBook),
+        taxSaved: Math.round(taxSaved),
+        reinvestInstruction: 'Reinvest proceeds in the same fund to reset cost basis'
+      })
+    }
 
     remainingExemptionConsumed -= ltcgToBook
   }
 
-  return suggestions
+  return Array.from(suggestionsByScheme.values())
 }
 
 /**

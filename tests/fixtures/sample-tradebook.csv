@@ -1,0 +1,4 @@
+symbol,isin,trade_date,exchange,trade_type,quantity,price,trade_id
+INFY,INE009A01021,2024-01-15,NSE,buy,10,1500.50,TXN001
+RELIANCE,INE002A01018,2024-01-16,NSE,sell,5,2800.00,TXN002
+UNKNOWN,,2024-01-17,BSE,buy,1,100.00,TXN003

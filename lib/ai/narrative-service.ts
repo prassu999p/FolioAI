@@ -6,7 +6,6 @@ import { getAIModel } from './provider'
 
 export async function generateNarrativeForHolder(
   holderId: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   supabase: SupabaseClient | any
 ): Promise<{ narrative: string }> {
 

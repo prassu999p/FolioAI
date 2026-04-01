@@ -132,10 +132,22 @@ Plans:
 - [x] 05-05-PLAN.md — Goals page UI: 3-col goal cards grid, CreateGoalModal with holdings multi-select, Fund-Goal Linkage strip
 - [x] 05-06-PLAN.md — Alert preferences DB scaffold (ALRT-01/02) + human verify checkpoint for all Phase 5 features
 
+### Phase 6: Tradebook Import
+**Goal**: Users can import stock trading history from manually-downloaded tradebook files (CSV/XLSX), with a preview-then-confirm workflow, deduplication by trade ID, and a unified holdings view that includes tradebook-sourced stocks alongside Zerodha broker imports
+**Depends on**: Phase 5
+**Requirements**: DATA-03
+**Plans**: 4 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — Foundation: SheetJS install (CDN tarball), DB migration (stock_transactions table + stock_holdings.source column), lib/tradebook/* modules, test scaffolds
+- [ ] 06-02-PLAN.md — TDD: column mapper, validator (trade_type normalisation, ISIN required), mapper (ValidatedRow → StockTransactionInsert)
+- [ ] 06-03-PLAN.md — API route (POST /api/holdings/import-tradebook, dedup + upsert) + TradebookImportForm (preview table, holder dropdown) + Tradebook tab on import page
+- [ ] 06-04-PLAN.md — Human verify checkpoint: end-to-end import flow, deduplication on re-upload, Zerodha data integrity
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 (Note: Phase 5 depends on Phase 2, not Phase 4 — can start Phase 5 in parallel with Phase 4 if needed)
 
 | Phase | Plans Complete | Status | Completed |
@@ -145,3 +157,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 3. Tax Engine | 2/7 | In Progress|  |
 | 4. AI Intelligence | 5/6 | In Progress|  |
 | 5. Goals, Alerts and Broker Integration | 6/6 | Complete   | 2026-03-25 |
+| 6. Tradebook Import | 3/4 | In Progress|  |

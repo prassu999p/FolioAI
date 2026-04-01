@@ -2,18 +2,30 @@ import { describe, it, expect } from 'vitest'
 import { computeHarvestingSuggestions } from '@/lib/tax/harvesting'
 import type { UnrealizedGain } from '@/lib/tax/types'
 
-const makeGain = (schemeCode: number, gain: number, isLTCG: boolean): UnrealizedGain => ({
-  lotId: `lot-${schemeCode}`,
-  currentNav: 100,
-  currentDate: new Date(),
-  holdingDays: 400,
-  effectiveCostBasis: 100 - gain / 100,  // so unrealizedGain = remainingUnits * gainPerUnit
-  unrealizedGain: gain,
-  wouldBeLTCG: isLTCG,
-  assetClass: 'equity',
-  schemeCode,
-  schemeName: `Fund ${schemeCode}`,
-})
+const makeGain = (schemeCode: number, gain: number, isLTCG: boolean): UnrealizedGain => {
+  // Helper to create realistic test gains
+  // If gain = 50000 with currentNav = 100, we need:
+  // unrealizedGain = remainingUnits * (currentNav - effectiveCostBasis)
+  // We'll assume 1000 units for simplicity: gainPerUnit = 50000 / 1000 = 50
+  // So effectiveCostBasis = 100 - 50 = 50
+  const currentNav = 100
+  const remainingUnits = 1000
+  const gainPerUnit = gain / remainingUnits
+  const effectiveCostBasis = currentNav - gainPerUnit
+
+  return {
+    lotId: `lot-${schemeCode}`,
+    currentNav,
+    currentDate: new Date(),
+    holdingDays: 400,
+    effectiveCostBasis,
+    unrealizedGain: gain,
+    wouldBeLTCG: isLTCG,
+    assetClass: 'equity',
+    schemeCode,
+    schemeName: `Fund ${schemeCode}`,
+  }
+}
 
 describe('Harvesting', () => {
   it('computeHarvestingSuggestions: selects optimal funds with positive unrealized LTCG', () => {
@@ -28,6 +40,15 @@ describe('Harvesting', () => {
     expect(suggestions[0].schemeCode).toBe(100)
     expect(suggestions[0].ltcgToBook).toBeGreaterThan(0)
     expect(suggestions[0].ltcgToBook).toBeLessThanOrEqual(50000)
+    // Verify FIFO profit fields exist
+    expect(suggestions[0].costBasisPerUnit).toBeGreaterThan(0)
+    expect(suggestions[0].costBasisTotal).toBeGreaterThan(0)
+    expect(suggestions[0].sellValuePerUnit).toBeGreaterThan(0)
+    expect(suggestions[0].sellValueTotal).toBeGreaterThan(0)
+    expect(suggestions[0].profitPerUnit).toBeGreaterThan(0)
+    expect(suggestions[0].profitTotal).toBeGreaterThan(0)
+    // Profit should approximately equal ltcgToBook
+    expect(Math.abs(suggestions[0].profitTotal - suggestions[0].ltcgToBook)).toBeLessThan(1)
   })
 
   it('computeHarvestingSuggestions: stops when exemption consumed', () => {
