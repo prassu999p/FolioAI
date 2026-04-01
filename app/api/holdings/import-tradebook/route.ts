@@ -129,23 +129,39 @@ export async function POST(req: Request) {
     mapToStockTransactionInsert(row as ValidatedRow, holderId, batchId, filename)
   )
 
-  // 5. Upsert into stock_transactions (dedup by holder_id, trade_id)
-  // ignoreDuplicates: true — re-importing same file skips already-imported rows
-  const { data: insertedTxns, error: txnError } = await (supabase as any)
+  // 5. Upsert into stock_transactions (dedup by holder_id, trade_id, exchange, trade_date)
+  // trade_id alone is not globally unique — exchanges assign IDs per-day so the same
+  // numeric ID can appear across different years. Including exchange + trade_date ensures
+  // independent annual tradebooks never collide with each other.
+  const { error: txnError } = await (supabase as any)
     .from('stock_transactions')
     .upsert(transactionRows, {
-      onConflict: 'holder_id,trade_id',
+      onConflict: 'holder_id,trade_id,exchange,trade_date',
       ignoreDuplicates: true,
     })
-    .select('id')
 
   if (txnError) {
     console.error('[import-tradebook] stock_transactions upsert error:', txnError)
     return NextResponse.json({ error: 'Failed to insert transactions' }, { status: 500 })
   }
 
-  const insertedCount = (insertedTxns ?? []).length
-  const skipped = rows.length - insertedCount
+  // Count newly inserted rows by batch_id — only rows from THIS import get this batchId.
+  // Conflicting (already-existing) rows retain their original batch_id and are NOT counted.
+  // This is more reliable than counting from RETURNING, which PostgREST may return as null
+  // when ignoreDuplicates:true even if rows were successfully inserted.
+  const { count: insertedCount, error: countError } = await (supabase as any)
+    .from('stock_transactions')
+    .select('id', { count: 'exact', head: true })
+    .eq('holder_id', holderId)
+    .eq('batch_id', batchId)
+
+  if (countError) {
+    console.error('[import-tradebook] count query error:', countError)
+    return NextResponse.json({ error: 'Failed to count inserted transactions' }, { status: 500 })
+  }
+
+  const inserted = insertedCount ?? 0
+  const skipped = rows.length - inserted
 
   // 6. Fetch ALL historical transactions for this holder to recalculate positions
   // This ensures we aggregate across all previous imports + new import, avoiding duplicates via trade_id
@@ -160,17 +176,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Failed to recalculate positions' }, { status: 500 })
   }
 
-  // Deduplicate transactions by trade_id (in case same file was imported multiple times)
-  // Keep the most recent entry for each trade_id
-  const txnsByTradeId = new Map<string, any>()
-  for (const t of (allStockTxns ?? [])) {
-    const existingTxn = txnsByTradeId.get(t.trade_id)
-    // Keep the transaction (only one entry per trade_id should exist due to DB constraints)
-    txnsByTradeId.set(t.trade_id, t)
-  }
-
-  // Aggregate ALL transactions (deduped by trade_id) to get correct net positions
-  const allTxnRows = Array.from(txnsByTradeId.values()).map((t: any) => ({
+  // Aggregate ALL transactions to get correct net positions.
+  // The DB constraint (holder_id, trade_id, exchange, trade_date) ensures no true duplicates
+  // exist, so we can aggregate directly without an in-memory dedup step.
+  const allTxnRows = (allStockTxns ?? []).map((t: any) => ({
     symbol: t.tradingsymbol,
     isin: t.isin,
     exchange: t.exchange,
@@ -210,7 +219,7 @@ export async function POST(req: Request) {
   }
 
   return NextResponse.json({
-    imported: insertedCount,
+    imported: inserted,
     skipped,
     batched: batchId,
   })

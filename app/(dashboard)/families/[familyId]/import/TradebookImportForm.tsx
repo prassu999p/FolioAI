@@ -120,7 +120,41 @@ export default function TradebookImportForm({ familyId, holders }: TradebookImpo
       const headers = Object.keys(rows[0])
       const mappings = detectMappings(headers)
       setDetectedMappings(mappings)
-      setParseState('mapping')
+
+      // Validate all rows immediately
+      const results: RowWithStatus[] = rows.map((rawRow) => {
+        const normalised = normaliseHeaders(rawRow)
+        const validation = validateRow(normalised)
+        return {
+          raw: rawRow,
+          valid: validation.valid,
+          data: validation.valid ? validation.data : undefined,
+          errors: !validation.valid ? validation.errors : undefined,
+        }
+      })
+      setRowResults(results)
+
+      // Check for mapping mismatches
+      const mappedCanonicalKeys = mappings
+        .filter((m) => m.status === 'auto')
+        .map((m) => m.canonicalKey)
+      const hasMappingMismatches = REQUIRED_COLUMNS.some(
+        (col) => !mappedCanonicalKeys.includes(col)
+      )
+      const hasInvalidRows = results.some((r) => !r.valid)
+
+      // Skip mapping/preview pages if no issues
+      if (!hasMappingMismatches && !hasInvalidRows) {
+        setParseState('importing')
+        // Automatically start import after a brief delay to show file was selected
+        setTimeout(() => handleImportAfterValidation(results, file), 500)
+      } else if (hasMappingMismatches) {
+        // Show mapping page if there are unmapped columns
+        setParseState('mapping')
+      } else {
+        // Show preview page if there are invalid rows but all mappings are good
+        setParseState('previewing')
+      }
     } catch (err) {
       setError(`Failed to parse ${file.name}. Please ensure it is a valid CSV or XLSX.`)
       setParseState('idle')
@@ -142,22 +176,27 @@ export default function TradebookImportForm({ familyId, holders }: TradebookImpo
     })
 
     setRowResults(results)
-    setParseState('previewing')
+
+    // If all rows are valid after mapping confirmation, skip preview and go to import
+    const hasInvalidRows = results.some((r) => !r.valid)
+    if (!hasInvalidRows) {
+      setParseState('importing')
+      const currentFile = filesToProcess[currentFileIndex]?.file
+      if (currentFile) {
+        setTimeout(() => handleImportAfterValidation(results, currentFile), 500)
+      }
+    } else {
+      setParseState('previewing')
+    }
   }
 
   // ─── Import handler ─────────────────────────────────────────────────────
 
-  async function handleImport() {
-    const validRows = rowResults.filter((r) => r.valid && r.data).map((r) => r.data!)
+  async function executeImport(validRows: ValidatedRow[], file: File) {
     if (validRows.length === 0 || !selectedHolderId) return
 
     setLoading(true)
     setError(null)
-    setParseState('importing')
-
-    // Import all files sequentially
-    const currentFile = filesToProcess[currentFileIndex]?.file
-    if (!currentFile) return
 
     const batchId = crypto.randomUUID()
 
@@ -167,7 +206,7 @@ export default function TradebookImportForm({ familyId, holders }: TradebookImpo
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           holderId: selectedHolderId,
-          filename: currentFile.name,
+          filename: file.name,
           batchId,
           rows: validRows,
         }),
@@ -176,8 +215,10 @@ export default function TradebookImportForm({ familyId, holders }: TradebookImpo
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error ?? `Import failed for ${currentFile.name}. Please try again.`)
+        setError(data.error ?? `Import failed for ${file.name}. Please try again.`)
         updateFileStatus(currentFileIndex, 'error', undefined, data.error)
+        setParseState('previewing')
+        setLoading(false)
         return
       }
 
@@ -198,9 +239,26 @@ export default function TradebookImportForm({ familyId, holders }: TradebookImpo
     } catch {
       setError('Network error — please try again.')
       updateFileStatus(currentFileIndex, 'error', undefined, 'Network error')
+      setParseState('previewing')
     } finally {
       setLoading(false)
     }
+  }
+
+  async function handleImportAfterValidation(
+    results: RowWithStatus[],
+    file: File
+  ) {
+    const validRows = results.filter((r) => r.valid && r.data).map((r) => r.data!)
+    await executeImport(validRows, file)
+  }
+
+  async function handleImport() {
+    const validRows = rowResults.filter((r) => r.valid && r.data).map((r) => r.data!)
+    const currentFile = filesToProcess[currentFileIndex]?.file
+    if (!currentFile) return
+    setParseState('importing')
+    await executeImport(validRows, currentFile)
   }
 
   function updateFileStatus(index: number, status: 'pending' | 'processing' | 'done' | 'error', result?: ImportResult, error?: string) {
