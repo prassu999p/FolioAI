@@ -1,5 +1,8 @@
+'use client'
+
 import type { HoldingRowWithAnalytics, AnalyticsTransaction } from '@/lib/supabase/types'
 import { SellTaxEstimatorModal } from '@/components/tax/sell-tax-estimator-modal'
+import { MFReviewModal } from '@/components/ai/mf-review-modal'
 import { getTaxAssetClass } from '@/lib/tax/rules'
 
 const formatINR = (value: number) =>
@@ -99,16 +102,24 @@ export function HoldingsTable({ holdings, fundCategories, transactions }: Holdin
                     {holding.xirr != null ? `${(holding.xirr * 100).toFixed(1)}%` : '—'}
                   </td>
                   <td className="py-5 px-4 text-center">
-                    <SellTaxEstimatorModal
-                      holding={holding}
-                      purchaseDate={purchaseDate}
-                      grandfatheringNav={null}
-                      taxAssetClass={taxAssetClass}
-                    >
-                      <button className="px-3 py-1.5 text-xs font-medium bg-surface-container-high hover:bg-surface-container rounded-lg transition-colors text-primary">
-                        Estimate Tax
-                      </button>
-                    </SellTaxEstimatorModal>
+                    <div className="flex items-center justify-center gap-2">
+                      <SellTaxEstimatorModal
+                        holding={holding}
+                        purchaseDate={purchaseDate}
+                        grandfatheringNav={null}
+                        taxAssetClass={taxAssetClass}
+                      >
+                        <button className="px-3 py-1.5 text-xs font-medium bg-surface-container-high hover:bg-surface-container rounded-lg transition-colors text-primary">
+                          Estimate Tax
+                        </button>
+                      </SellTaxEstimatorModal>
+                      <MFReviewModal holding={holding} category={category}>
+                        <button className="px-3 py-1.5 text-xs font-medium bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors text-primary flex items-center gap-1">
+                          <span className="material-symbols-outlined text-sm leading-none">auto_awesome</span>
+                          Review
+                        </button>
+                      </MFReviewModal>
+                    </div>
                   </td>
                 </tr>
               )
