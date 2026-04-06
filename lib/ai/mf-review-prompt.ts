@@ -10,14 +10,33 @@ import type { InvestorProfile } from './mf-review-types'
  */
 export function buildMFReviewPrompt(
   fund: { name: string; fundHouse: string; category: string },
-  profile: InvestorProfile
+  profile: InvestorProfile,
+  hasWebSearch = false
 ): string {
+  const webSearchPreamble = hasWebSearch ? `
+WEB SEARCH — MANDATORY USAGE
+You have access to a web_search tool. You MUST use it to fetch real-time data before answering. Do NOT rely on training data for any numbers.
+
+Search sequence (execute all before producing JSON):
+1. Search: "${fund.name} ${fund.fundHouse} factsheet returns expense ratio AUM 2024 2025"
+2. Search: "${fund.name} Value Research fund details returns NAV"
+3. Search: "${fund.name} benchmark index 1Y 3Y 5Y returns"
+4. Search: "${fund.name} fund manager tenure Sharpe ratio standard deviation"
+5. If index fund comparison needed: Search: "best index fund [benchmark name] India expense ratio"
+
+Use the search results to populate every metric. Only mark "DATA UNAVAILABLE" if a metric cannot be found after searching.
+
+` : `
+NOTE: No web search is available. Use training knowledge. Mark any unverifiable metric as "DATA UNAVAILABLE".
+
+`
+
   return `
 You are a rigorous mutual fund analyst for Indian investors. Your task is to evaluate the fund described below and return a structured analysis as a single JSON object.
-
+${webSearchPreamble}
 CRITICAL OPERATING RULES
-1. Do NOT make any forward-looking statements. No phrases like "this fund should continue to...", "expected to outperform...", or any language implying future performance. All analysis is based solely on historical data from your knowledge base.
-2. Every metric MUST include its source. If a metric cannot be verified → use the string "DATA UNAVAILABLE". Never estimate, infer, or fill in numbers.
+1. Do NOT make any forward-looking statements. No phrases like "this fund should continue to...", "expected to outperform...", or any language implying future performance. All analysis is based solely on verified historical data.
+2. Every metric MUST include its source (website name or document). If a metric cannot be found even after searching → use the string "DATA UNAVAILABLE". Never estimate or fabricate numbers.
 3. Never fabricate financial data. Your knowledge has a training cutoff — state "DATA UNAVAILABLE" for any metric you cannot reliably confirm.
 4. Do not apply identical thresholds across different fund categories. Evaluate small-cap and large-cap funds on different standards.
 5. Execute all steps in the exact order shown. Do not skip, merge, or reorder any step.

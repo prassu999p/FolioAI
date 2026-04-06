@@ -3,6 +3,9 @@
     "api/**/*.py": {
       "maxDuration": 60,
       "excludeFiles": "{tests/**,**/*.test.py,**/test_*.py,fixtures/**,sample-data/**,**/__pycache__/**}"
+    },
+    "app/api/ai/mf-review/route.ts": {
+      "maxDuration": 120
     }
   },
   "rewrites": [

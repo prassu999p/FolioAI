@@ -8,6 +8,7 @@
 
 import { generateText } from 'ai'
 import { z } from 'zod'
+import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@/lib/supabase/server'
 import { getAIModel } from '@/lib/ai/provider'
 import { buildMFReviewPrompt } from '@/lib/ai/mf-review-prompt'
@@ -139,22 +140,42 @@ export async function POST(req: Request) {
     }
   }
 
-  // Build prompt and call Claude
+  // Build prompt and call the AI — use Anthropic with web search if key is available
+  const hasAnthropicKey = !!process.env.ANTHROPIC_API_KEY
   const prompt = buildMFReviewPrompt(
     { name: schemeName, fundHouse, category },
-    investorProfile
+    investorProfile,
+    hasAnthropicKey
   )
 
   let rawText: string
   try {
-    const { text } = await generateText({
-      model: getAIModel(),
-      prompt,
-      maxOutputTokens: 4096,
-    })
-    rawText = text
+    if (hasAnthropicKey) {
+      // Use Anthropic SDK directly so we can attach the web_search_20250305 built-in tool.
+      // Anthropic executes searches server-side — no client tool loop required.
+      const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+      const message = await client.messages.create({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 8192,
+        tools: [{ type: 'web_search_20250305' as const, name: 'web_search', max_uses: 10 }],
+        messages: [{ role: 'user', content: prompt }],
+      })
+      // Collect only text blocks — tool_result blocks from web search are not part of the JSON
+      rawText = message.content
+        .filter((b): b is Anthropic.TextBlock => b.type === 'text')
+        .map((b) => b.text)
+        .join('')
+    } else {
+      // Fallback: AI SDK without web search (other providers)
+      const { text } = await generateText({
+        model: getAIModel(),
+        prompt,
+        maxOutputTokens: 4096,
+      })
+      rawText = text
+    }
   } catch (err) {
-    console.error('[mf-review] generateText error:', err)
+    console.error('[mf-review] AI generation error:', err)
     return jsonError('AI generation failed. Please try again.', 502)
   }
 
