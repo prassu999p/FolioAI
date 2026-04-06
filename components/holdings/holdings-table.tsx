@@ -14,11 +14,12 @@ const formatINR = (value: number) =>
 
 interface HoldingsTableProps {
   holdings: HoldingRowWithAnalytics[]
+  holderId: string                          // UUID of the holder — needed for mf_reviews RLS
   fundCategories?: Record<number, string>   // scheme_code → category
   transactions?: AnalyticsTransaction[]     // all holder transactions (for oldest lot date)
 }
 
-export function HoldingsTable({ holdings, fundCategories, transactions }: HoldingsTableProps) {
+export function HoldingsTable({ holdings, holderId, fundCategories, transactions }: HoldingsTableProps) {
   if (holdings.length === 0) {
     return (
       <div className="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-sm">
@@ -113,7 +114,7 @@ export function HoldingsTable({ holdings, fundCategories, transactions }: Holdin
                           Estimate Tax
                         </button>
                       </SellTaxEstimatorModal>
-                      <MFReviewModal holding={holding} category={category}>
+                      <MFReviewModal holding={holding} holderId={holderId} category={category}>
                         <button className="px-3 py-1.5 text-xs font-medium bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors text-primary flex items-center gap-1">
                           <span className="material-symbols-outlined text-sm leading-none">auto_awesome</span>
                           Review

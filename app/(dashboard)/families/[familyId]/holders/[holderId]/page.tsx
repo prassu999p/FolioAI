@@ -296,6 +296,7 @@ export default async function HolderHoldingsPage({ params, searchParams }: Holde
           <div className="lg:col-span-2">
             <HoldingsTable
                 holdings={holdingsWithAnalytics}
+                holderId={holderId}
                 fundCategories={fundCategories}
                 transactions={transactions}
               />

@@ -15,6 +15,52 @@ import type { MFReviewResult } from '@/lib/ai/mf-review-types'
 
 export const runtime = 'nodejs'
 
+// GET /api/ai/mf-review?holderId=...&schemeCode=...
+// Returns the cached review if one exists, without running AI.
+export async function GET(req: Request) {
+  const supabase = await createClient()
+  const authResult = await supabase.auth.getClaims()
+  if (!authResult.data?.claims) {
+    return jsonError('Unauthorized', 401)
+  }
+
+  const url = new URL(req.url)
+  const holderId = url.searchParams.get('holderId')
+  const schemeCodeStr = url.searchParams.get('schemeCode')
+  if (!holderId || !schemeCodeStr) {
+    return jsonError('Missing holderId or schemeCode', 400)
+  }
+  const schemeCode = parseInt(schemeCodeStr, 10)
+  if (isNaN(schemeCode)) {
+    return jsonError('Invalid schemeCode', 400)
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data } = await (supabase as any)
+    .from('mf_reviews')
+    .select('analysis_result, verdict, generated_at')
+    .eq('holder_id', holderId)
+    .eq('scheme_code', schemeCode)
+    .single() as { data: { analysis_result: MFReviewResult; verdict: string; generated_at: string } | null }
+
+  if (!data) {
+    return new Response(JSON.stringify({ exists: false }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
+  return new Response(
+    JSON.stringify({
+      exists: true,
+      result: data.analysis_result,
+      verdict: data.verdict,
+      generatedAt: data.generated_at,
+    }),
+    { status: 200, headers: { 'Content-Type': 'application/json' } }
+  )
+}
+
 const InvestorProfileSchema = z.object({
   planType: z.enum(['Direct', 'Regular']),
   age: z.number().int().min(1).max(120),

@@ -14,6 +14,7 @@ import type { MFReviewResult, InvestorProfile } from '@/lib/ai/mf-review-types'
 
 interface MFReviewModalProps {
   holding: HoldingRowWithAnalytics
+  holderId: string
   category?: string
   children: React.ReactNode
 }
@@ -25,6 +26,13 @@ interface ReviewResponse {
   verdict: string
   generatedAt: string
   cached: boolean
+}
+
+interface CachedCheckResponse {
+  exists: boolean
+  result?: MFReviewResult
+  verdict?: string
+  generatedAt?: string
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -607,7 +615,7 @@ const defaultProfile: InvestorProfile = {
 
 // ─── Main Modal ───────────────────────────────────────────────────────────────
 
-export function MFReviewModal({ holding, category, children }: MFReviewModalProps) {
+export function MFReviewModal({ holding, holderId, category, children }: MFReviewModalProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [state, setState] = useState<ModalState>('form')
   const [isRerunning, setIsRerunning] = useState(false)
@@ -615,11 +623,29 @@ export function MFReviewModal({ holding, category, children }: MFReviewModalProp
   const [customFundName, setCustomFundName] = useState(holding.scheme_name)
   const [loadingStageIdx, setLoadingStageIdx] = useState(0)
   const [reviewData, setReviewData] = useState<ReviewResponse | null>(null)
+  const [cachedPreview, setCachedPreview] = useState<CachedCheckResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const updateProfile = <K extends keyof InvestorProfile>(key: K, value: InvestorProfile[K]) => {
     setProfile((prev) => ({ ...prev, [key]: value }))
   }
+
+  // Check for cached result in background when modal opens
+  const checkCache = useCallback(async () => {
+    try {
+      const res = await fetch(
+        `/api/ai/mf-review?holderId=${encodeURIComponent(holderId)}&schemeCode=${holding.scheme_code}`
+      )
+      if (res.ok) {
+        const data: CachedCheckResponse = await res.json()
+        if (data.exists) {
+          setCachedPreview(data)
+        }
+      }
+    } catch {
+      // Silently ignore — cache check is best-effort
+    }
+  }, [holderId, holding.scheme_code])
 
   const runAnalysis = useCallback(async (forceRefresh = false) => {
     setError(null)
@@ -640,7 +666,7 @@ export function MFReviewModal({ holding, category, children }: MFReviewModalProp
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          holderId: holding.folio_id, // used as proxy; actual holderId resolved server-side from folio
+          holderId,
           schemeCode: holding.scheme_code,
           schemeName: customFundName || holding.scheme_name,
           fundHouse: holding.fund_house,
@@ -665,21 +691,24 @@ export function MFReviewModal({ holding, category, children }: MFReviewModalProp
       clearInterval(interval)
       setIsRerunning(false)
     }
-  }, [holding, customFundName, category, profile, reviewData])
+  }, [holderId, holding, customFundName, category, profile, reviewData])
 
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open)
-    if (!open) {
+    if (open) {
+      checkCache()
+    } else {
       // Reset to form when closed (but keep profile settings for next open)
       setState('form')
       setError(null)
+      setCachedPreview(null)
     }
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-w-4xl h-[88vh] flex flex-col p-0 overflow-hidden">
+      <DialogContent className="max-w-5xl w-[92vw] h-[88vh] flex flex-col p-0 overflow-hidden">
         {/* Header */}
         <div className="px-6 py-4 border-b border-outline-variant/30 shrink-0 bg-surface-container-low/50">
           <DialogTitle className="text-lg font-bold text-primary font-headline flex items-center gap-2">
@@ -693,6 +722,30 @@ export function MFReviewModal({ holding, category, children }: MFReviewModalProp
         <div className="flex-1 overflow-y-auto px-6 py-4">
           {state === 'form' && (
             <div className="space-y-6 max-w-2xl mx-auto">
+              {/* Previous analysis banner */}
+              {cachedPreview?.exists && cachedPreview.result && (
+                <div className="flex items-center justify-between gap-3 p-4 bg-[#f0faf5] rounded-xl border border-[#006d43]/20">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="material-symbols-outlined text-[#006d43] text-base shrink-0">history</span>
+                    <div className="min-w-0">
+                      <p className="text-xs font-medium text-[#006d43]">Previous analysis available</p>
+                      <p className="text-[11px] text-[#006d43]/70">
+                        {cachedPreview.verdict} · {new Date(cachedPreview.generatedAt!).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setReviewData({ result: cachedPreview.result!, verdict: cachedPreview.verdict!, generatedAt: cachedPreview.generatedAt!, cached: true })
+                      setState('result')
+                    }}
+                    className="shrink-0 px-3 py-1.5 text-xs font-medium bg-[#006d43] text-white rounded-lg hover:bg-[#005535] transition-colors"
+                  >
+                    View analysis
+                  </button>
+                </div>
+              )}
+
               {error && (
                 <div className="p-3 bg-[#fee2e2] rounded-xl text-xs text-[#991b1b] flex items-center gap-2">
                   <span className="material-symbols-outlined text-sm">error</span>
